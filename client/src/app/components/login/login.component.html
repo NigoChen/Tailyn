@@ -1,0 +1,106 @@
+<div class="container-sm d-flex align-items-center justify-content-center vh-100">
+    <div class="row p-1">
+        <!-- Progressbar -->
+        <ng-container *ngIf="progressbar_View">
+            <div class="col-12 mb-1">
+                <div style="width: 18rem; margin-left: auto; margin-right: auto;">
+                    <ngb-progressbar [showValue]="true" [type]="progressbar_Type" [value]="progressbar_Value"
+                        [max]="100">
+                    </ngb-progressbar>
+                </div>
+            </div>
+        </ng-container>
+        <!-- /Progressbar -->
+
+        <!-- Form -->
+        <div class="col-12">
+            <div class="card" style="width: 18rem; margin-left: auto; margin-right: auto;">
+                <!-- Card Header -->
+                <div class="card-body text-center">
+                    <h3 class="card-title text-danger">Tailyn</h3>
+                    <u class="font-weight-bold h6">登入系統</u>
+                    <div class="alert alert-danger p-1" role="alert"
+                        [class.d-none]="fbError.account && fbError.email && fbError.system ? true : false">
+                        <small class="form-text" *ngIf="!fbError.account">工號 或 密碼 錯誤</small>
+                        <small class="form-text" *ngIf="!fbError.email">工號 或 信箱 錯誤</small>
+                        <small class="form-text" *ngIf="!fbError.system">系統錯誤</small>
+                    </div>
+                </div>
+                <!-- /Card Header -->
+                <!-- Card Body -->
+                <div class="card-body">
+                    <form [formGroup]="fbGroup" (ngSubmit)="onSubmit();">
+                        <div class="form-group mb-2">
+                            <label for="jNumber">工號</label>
+                            <input type="text" id="jNumber" class="form-control mt-2" formControlName="jNumber"
+                                minlength="3" maxlength="10" required>
+                        </div>
+                        <ng-container *ngIf="isEmail; else passWord_Input">
+                            <div class="form-group">
+                                <label for="email">信箱</label>
+                                <input type="email" id="email" class="form-control mt-2" formControlName="email"
+                                    minlength="3" maxlength="40" required>
+                            </div>
+                            <ng-container *ngIf="isCode">
+                                <div class="form-group mb-2">
+                                    <label for="newPassWord">新密碼</label>
+                                    <div class="input-group input-group-md">
+                                        <input [type]="password_Type" id="newPassWord" class="form-control"
+                                            formControlName="newPassWord" minlength="3" maxlength="20" required>
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" (click)="toggle_password_Type();"
+                                                style="cursor: pointer;">
+                                                <i
+                                                    [ngClass]="password_Type == 'text' ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill'"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="code">代碼</label>
+                                    <input type="text" id="code" class="form-control mt-2" formControlName="code" required>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                        <!-- PassWord -->
+                        <ng-template #passWord_Input>
+                            <div class="form-group mb-2">
+                                <label for="passWord">密碼</label>
+                                <div class="input-group input-group-md">
+                                    <input [type]="password_Type" id="passWord" class="form-control"
+                                        formControlName="passWord" minlength="3" maxlength="20" required>
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" (click)="toggle_password_Type();"
+                                            style="cursor: pointer;">
+                                            <i
+                                                [ngClass]="password_Type == 'text' ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill'"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <!-- Footer -->
+                        <footer class="d-flex justify-content-between mt-3">
+                            <button type="button" class="btn btn-outline-secondary" (click)="email();">
+                                <ng-container *ngIf="isEmail; else btn_Email">
+                                    返回
+                                </ng-container>
+                                <ng-template #btn_Email>
+                                    忘記密碼
+                                </ng-template>
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                            <!-- <button type="submit" class="btn btn-primary" [disabled]="!fbGroup.valid"> -->
+                                <ng-container *ngIf="isEmail; else btn_Login">送出</ng-container>
+                                <ng-template #btn_Login>登入</ng-template>
+                            </button>
+                        </footer>
+                        <!-- /Footer -->
+                    </form>
+                </div>
+                <!-- /Card Body -->
+            </div>
+            <!-- /Form -->
+        </div>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+<!-- Buttons -->
+<div class="container-sm mt-2 mb-2">
+  <div class="row justify-content-md-center">
+    <!-- Search -->
+    <div class="col-md-6 col-sm-8">
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <button type="button" class="btn btn-outline-secondary btn-sm">刷新</button>
+        </div>
+        <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+        <div class="input-group-append">
+          <button type="button" class="btn btn-secondary btn-sm">搜尋</button>
+        </div>
+      </div>
+    </div>
+    <!-- /Search -->
+    <div class="col-sm-12 col-md-6 d-flex justify-content-between">
+      <div class="col text-center">
+        <button type="button" class="btn btn-outline-info btn-sm">新增</button>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn btn-outline-warning btn-sm">編輯</button>
+      </div>
+      <div class="col text-center">
+        <button type="button" class="btn btn-outline-danger btn-sm">刪除</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Buttons -->
+
+<!-- Form -->
+<div class="container-lg border border-dark p-2">
+  <!-- <form>
+    <div class="row">
+      <div class="col-sm-6 col-md-2 mb-2">
+        <input type="text" class="form-control" placeholder="姓名">
+      </div>
+      <div class="col-sm-6 col-md-2 mb-2">
+        <input type="text" class="form-control" placeholder="信箱">
+      </div>
+      <div class="col-sm-6 col-md-2 mb-2">
+        <input type="text" class="form-control" placeholder="工號">
+      </div>
+      <div class="col-sm-6 col-md-2 mb-2">
+        <input type="text" class="form-control" placeholder="權限">
+      </div>
+    </div>
+  </form> -->
+</div>
+<!-- /Form -->
+
+<!-- Table -->
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">姓名</th>
+      <th scope="col">信箱</th>
+      <th scope="col">工號</th>
+      <th scope="col">權限</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of result_Async$ | async; index as i">
+      <td>{{ item.e_Name }}</td>
+      <td>{{ item.e_Email }}</td>
+      <td>{{ item.e_JobNumber }}</td>
+      <td>{{ item.e_Lv }}</td>
+    </tr>
+  </tbody>
+</table>
+<!-- /Table -->
