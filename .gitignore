@@ -1,2 +1,4 @@
 node_modules
-~/.gitconfig
+.gitconfig
+/client/README.md
+/server/README.md
