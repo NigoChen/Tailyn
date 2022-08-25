@@ -13,17 +13,16 @@
         <!-- /Progressbar -->
 
         <!-- Form -->
-        <div class="col-12">
+        <div class="col-12 shadow p-3 mb-5 bg-white rounded">
             <div class="card" style="width: 18rem; margin-left: auto; margin-right: auto;">
                 <!-- Card Header -->
-                <div class="card-body text-center">
-                    <h3 class="card-title text-danger">Tailyn</h3>
-                    <u class="font-weight-bold h6">登入系統</u>
-                    <div class="alert alert-danger p-1" role="alert"
+                <div class="card-body d-flex align-items-center flex-column">
+                    <h1 class="card-title text-danger">Tailyn</h1>
+                    <div class="alert alert-danger p-1 w-75 text-center mt-2" role="alert"
                         [class.d-none]="fbError.account && fbError.email && fbError.system ? true : false">
                         <small class="form-text" *ngIf="!fbError.account">工號 或 密碼 錯誤</small>
                         <small class="form-text" *ngIf="!fbError.email">工號 或 信箱 錯誤</small>
-                        <small class="form-text" *ngIf="!fbError.system">系統錯誤</small>
+                        <small class="form-text" *ngIf="!fbError.system">系統錯誤，稍後在試</small>
                     </div>
                 </div>
                 <!-- /Card Header -->

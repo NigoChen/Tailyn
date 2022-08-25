@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.employeeController = void 0;
+const nodemailer_1 = __importDefault(require("nodemailer"));
 const database_1 = __importDefault(require("./../db/database"));
 const crypto_1 = __importDefault(require("crypto"));
 class EmployeeController {
@@ -288,32 +289,31 @@ const md5_Code = () => {
 };
 // Email Setting
 const send_Email = (user_Ip, user_Email) => {
-    emailHtml(user_Ip);
+    // emailHtml(user_Ip)
     // email setting
-    // const transporter = nodemailer.createTransport({
-    //     host: 'smtp.gmail.com',
-    //     port: 587,
-    //     secure: false,
-    //     auth: {
-    //         user: 'az7712456az@gmail.com',
-    //         pass: 'vuedhcxstusarfgr'
-    //     }
-    // });
-    // // email content
-    // const mailOptions = {
-    //     from: '<az7712456az@gmail.com>',
-    //     to: `<${user_Email}>`,
-    //     subject: 'Tailyn 員工密碼通知書',
-    //     html: emailHtml(user_Ip)
-    // }
-    // // send email
-    // transporter.sendMail(mailOptions, function(err) {        
-    //     if (err)
-    //     {
-    //         console.log(err);            
-    //     }
-    // });
-    // transporter.close();
+    const transporter = nodemailer_1.default.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: 'qwe286454@gmail.com',
+            pass: 'hmvpslfwussddpfx'
+        }
+    });
+    // email content
+    const mailOptions = {
+        from: '<qwe286454@gmail.com>',
+        to: `<${user_Email}>`,
+        subject: 'Tailyn 員工密碼通知書',
+        html: emailHtml(user_Ip)
+    };
+    // send email
+    transporter.sendMail(mailOptions, function (err) {
+        if (err) {
+            console.log(err);
+        }
+    });
+    transporter.close();
 };
 const emailHtml = (ip) => {
     const code = md5_Code();

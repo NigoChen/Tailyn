@@ -338,36 +338,36 @@ const md5_Code = (): string => {
 // Email Setting
 const send_Email = (user_Ip: string, user_Email: string): void =>  {
 
-    emailHtml(user_Ip)
+    // emailHtml(user_Ip)
     
     // email setting
-    // const transporter = nodemailer.createTransport({
-    //     host: 'smtp.gmail.com',
-    //     port: 587,
-    //     secure: false,
-    //     auth: {
-    //         user: 'az7712456az@gmail.com',
-    //         pass: 'vuedhcxstusarfgr'
-    //     }
-    // });
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: 'qwe286454@gmail.com',
+            pass: 'hmvpslfwussddpfx'
+        }
+    });
 
-    // // email content
-    // const mailOptions = {
-    //     from: '<az7712456az@gmail.com>',
-    //     to: `<${user_Email}>`,
-    //     subject: 'Tailyn 員工密碼通知書',
-    //     html: emailHtml(user_Ip)
-    // }
+    // email content
+    const mailOptions = {
+        from: '<qwe286454@gmail.com>',
+        to: `<${user_Email}>`,
+        subject: 'Tailyn 員工密碼通知書',
+        html: emailHtml(user_Ip)
+    }
 
-    // // send email
-    // transporter.sendMail(mailOptions, function(err) {        
-    //     if (err)
-    //     {
-    //         console.log(err);            
-    //     }
-    // });
+    // send email
+    transporter.sendMail(mailOptions, function(err) {        
+        if (err)
+        {
+            console.log(err);            
+        }
+    });
 
-    // transporter.close();
+    transporter.close();
 }
 
 const emailHtml = (ip: string): string => {
