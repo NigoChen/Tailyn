@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map, shareReplay } from 'rxjs/operators';
+import { Observable, of, Subject, throwError } from 'rxjs';
+import { catchError, delay, map, shareReplay } from 'rxjs/operators';
 import { Urls } from '../configs/url.config';
 import { Employee } from '../interfaces/employee';
 import { User } from '../interfaces/user';
@@ -145,7 +145,7 @@ export class LoginService {
       jNumber: employee.e_JobNumber,
       name: employee.e_Name,
       lv: employee.e_Lv
-    }
+    }    
 
     // localStorage.setItem('user', JSON.stringify(user));
     sessionStorage.setItem('user', btoa(JSON.stringify(user)));
@@ -154,13 +154,9 @@ export class LoginService {
   // Read User localStorage
   read_User_LocalStorage(): User | null {
     
-    let user = sessionStorage.getItem('user');
+    const user = sessionStorage.getItem('user');
     
-    if(user != null)
-    {      
-      return JSON.parse(atob(user));
-    }
-    return null; 
+    return user ? JSON.parse(atob(user)) : null; 
   }
 
   // Update User sessionStorage

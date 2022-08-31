@@ -1,1 +1,8 @@
-<router-outlet></router-outlet>
+<ng-container *ngIf="loading_val">
+    <app-loading></app-loading>
+</ng-container>
+
+{{loading_val}}
+
+<router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)">
+</router-outlet>

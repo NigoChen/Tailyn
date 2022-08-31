@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Employee } from 'src/app/interfaces/employee';
 import { User } from 'src/app/interfaces/user';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { LoginService } from 'src/app/services/login.service';
+import { ModalComponent } from '../modal/modal.component';
 
 @Component({
   selector: 'app-employee',
@@ -12,6 +13,9 @@ import { LoginService } from 'src/app/services/login.service';
   styleUrls: ['./employee.component.scss']
 })
 export class EmployeeComponent implements OnInit {
+
+  @ViewChild(ModalComponent) modal: ModalComponent;
+  
 
   // Employee Interface
   result_Data = [] as Employee[];
@@ -38,7 +42,9 @@ export class EmployeeComponent implements OnInit {
   constructor(
     private employeeService: EmployeeService, 
     private loginService: LoginService,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder) {
+
+    }
 
   ngOnInit(): void {
     this.read_Data();
@@ -71,7 +77,6 @@ export class EmployeeComponent implements OnInit {
       // this.stateView.next({loading: true, error: true});
     }
   }
-
 
   // Create
   create_Data(): void {
@@ -127,6 +132,32 @@ export class EmployeeComponent implements OnInit {
         }
       }
     );
+  }
+
+  // Refresh
+  refresh(): void {
+
+  }
+
+  // Search
+  search(): void {
+
+  }
+
+  // Insert
+  insert(): void {
+    this.modal.open();
+    this.modal.modal_Content
+  }
+
+  // Update
+  update(): void {
+    
+  }
+
+  // Delete
+  delete(): void {
+
   }
 
 }

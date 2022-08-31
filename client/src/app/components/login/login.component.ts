@@ -1,5 +1,8 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, EventEmitter, OnInit, Output} from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
 
 @Component({
@@ -9,6 +12,7 @@ import { LoginService } from 'src/app/services/login.service';
 })
 export class LoginComponent implements OnInit {
 
+  // loading Status
   // @ViewChildren('error_Text')
   // public error_Text!: QueryList<ElementRef<HTMLLIElement>>
 
@@ -53,10 +57,21 @@ export class LoginComponent implements OnInit {
   };
 
   // Constructor
-  constructor(private loginService: LoginService, private fb: FormBuilder) { }
+  constructor(
+    private loadingService: LoadingService,
+    private loginService: LoginService,
+    private fb: FormBuilder,
+    private router: Router){
+  }
 
-  // Init
-  ngOnInit(): void {}
+  // NgOnInit
+  ngOnInit(): void {
+  }
+
+  // NgAfterContentInit
+  ngAfterContentInit(): void {
+    this.loginService.logout();
+  }
 
   // FormGroup Controls Value
   get fb_Value(): { [key: string]: AbstractControl} {
@@ -184,30 +199,34 @@ export class LoginComponent implements OnInit {
 
   // Login
   login(): void {
+    
     this.loginService.login(this.fbGroup.value).subscribe(
       {
-        next: (res: boolean) => { 
+        next: (res: boolean) => {           
           this.fbError.account = res;
         },
         error: (err) => {
           this.fbError.system = false;
           this.progressbar_Show(this.fbError.system);
+          this.loadingService.set_Loading(false);
         },
         complete: () => {  
-
+          
           let complete: number = 0;
 
           if(this.fbError.account)
           {            
             complete = 100;
 
+            // this.status_View = new BehaviorSubject<object>({loading: true, error: false});
+            // this.router.navigate(['Login'], { state: { loading: true } });
+
             setTimeout(() => {
-              location.reload();
-            }, 2000);
+              window.location.reload();
+            }, 1500);
           }
 
           this.progressbar_Show(this.fbError.account , complete);
-
           this.reset_fbError();
         }
       }
@@ -274,8 +293,10 @@ export class LoginComponent implements OnInit {
   // Form Submit
   onSubmit(): void {
 
+    this.loadingService.set_Loading(true);
+
     this.progressbar_Show(true);
-    
+        
     if(this.isEmail && this.fb_Value['newPassWord'].value == null)
     {
       this.get_IP();
@@ -287,6 +308,6 @@ export class LoginComponent implements OnInit {
     else
     {
       this.login();
-    }
+    }    
   }
 }

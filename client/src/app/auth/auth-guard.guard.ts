@@ -7,19 +7,19 @@ import { LoginService } from '../services/login.service';
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private loginService:LoginService, private router: Router){}
+  constructor(private loginService: LoginService, private router: Router){}
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): boolean {      
 
     const user = this.loginService.read_User_LocalStorage();
-    
+            
     if(user != null)
     {
       if(Object.keys(user).length === 3)
       { 
-        this.router.navigate(['/Tailyn/Dashboard']);
+        this.router.navigate(['/Tailyn/Home']);
         return false;
       }
     }

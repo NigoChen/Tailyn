@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
-import { NgbModule, NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModalModule, NgbModule, NgbRatingModule } from '@ng-bootstrap/ng-bootstrap';
 import { 
   NgbPaginationModule, 
   NgbAlertModule, 
   NgbCollapseModule,
-  NgbDropdownModule
+  NgbDropdownModule,
+  NgbModal
  } from '@ng-bootstrap/ng-bootstrap';
 
 
@@ -14,7 +15,7 @@ import {
     NgbPaginationModule,
     NgbAlertModule,
     NgbCollapseModule,
-    NgbDropdownModule,
+    NgbDropdownModule
   ],
   exports: [
     NgbPaginationModule,

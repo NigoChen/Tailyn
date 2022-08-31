@@ -11,7 +11,7 @@ export class HomeComponent implements OnInit {
 
   chart_Line: any = null;
 
-  constructor(private ref: Element) { }
+  constructor() { }
 
   ngOnInit(): void {
   }

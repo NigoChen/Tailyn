@@ -2,9 +2,20 @@
 @import '~bootstrap/scss/bootstrap';
 @import "~bootstrap-icons/font/bootstrap-icons.css";
 
+*
+{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   font-size: .875rem;
+}
+
+a
+{
+  cursor: pointer;
 }
 
 .feather {
@@ -106,4 +117,22 @@ body {
   .bd-placeholder-img-lg {
     font-size: 3.5rem;
   }
+}
+
+/*  Modal Backdrop */
+.light-blue-backdrop
+{
+  background-color: rgba(0, 0, 0, 1)
+}
+
+.modal-holder
+{
+  animation-name: modal-effect;
+  animation-duration: 0.3s;
+}
+
+@keyframes modal-effect
+{
+  0%   {transform: scale(0.5)}
+  100% {transform: scale(1)}
 }

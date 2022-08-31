@@ -1,18 +1,21 @@
+<!-- <ng-container *ngIf="status_View['loading'] || header['loading']"> -->
+    <!-- Loading -->
+    <!-- <app-loading></app-loading> -->
+    <!-- /Loading -->
+<!-- </ng-container> -->
+
 <!-- Header -->
-<app-header #sidebar></app-header>
+<app-header></app-header>
 <!-- /Header -->
 
+<!-- Main -->
 <div class="d-flex">
-
-    <!-- Sidebar -->
-
-    <!-- /Sidebar -->
-    
-    <!-- Main -->
     <main role="main" class="container-fluid">
         <!-- Router-outlet -->
-        <router-outlet></router-outlet>
+        <router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)" (attach)="onAttach($event)"
+            (detach)="onDetach($event)">
+        </router-outlet>
         <!-- /Router-outlet -->
     </main>
-    <!-- /Main -->
 </div>
+<!-- /Main -->

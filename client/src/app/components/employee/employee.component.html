@@ -5,24 +5,24 @@
     <div class="col-md-6 col-sm-8">
       <div class="input-group input-group-sm mb-3">
         <div class="input-group-prepend">
-          <button type="button" class="btn btn-outline-secondary btn-sm">刷新</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="refresh();">刷新</button>
         </div>
         <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
         <div class="input-group-append">
-          <button type="button" class="btn btn-secondary btn-sm">搜尋</button>
+          <button type="button" class="btn btn-secondary btn-sm" (click)="search();">搜尋</button>
         </div>
       </div>
     </div>
     <!-- /Search -->
     <div class="col-sm-12 col-md-6 d-flex justify-content-between">
       <div class="col text-center">
-        <button type="button" class="btn btn-outline-info btn-sm">新增</button>
+        <button type="button" class="btn btn-outline-info btn-sm" (click)="insert();">新增</button>
       </div>
       <div class="col text-center">
-        <button type="button" class="btn btn-outline-warning btn-sm">編輯</button>
+        <button type="button" class="btn btn-outline-warning btn-sm" (click)="update();">更新</button>
       </div>
       <div class="col text-center">
-        <button type="button" class="btn btn-outline-danger btn-sm">刪除</button>
+        <button type="button" class="btn btn-outline-danger btn-sm" (click)="delete();">刪除</button>
       </div>
     </div>
   </div>
@@ -31,22 +31,7 @@
 
 <!-- Form -->
 <div class="container-lg border border-dark p-2">
-  <!-- <form>
-    <div class="row">
-      <div class="col-sm-6 col-md-2 mb-2">
-        <input type="text" class="form-control" placeholder="姓名">
-      </div>
-      <div class="col-sm-6 col-md-2 mb-2">
-        <input type="text" class="form-control" placeholder="信箱">
-      </div>
-      <div class="col-sm-6 col-md-2 mb-2">
-        <input type="text" class="form-control" placeholder="工號">
-      </div>
-      <div class="col-sm-6 col-md-2 mb-2">
-        <input type="text" class="form-control" placeholder="權限">
-      </div>
-    </div>
-  </form> -->
+Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor, nam.
 </div>
 <!-- /Form -->
 
@@ -70,3 +55,55 @@
   </tbody>
 </table>
 <!-- /Table -->
+
+
+<ng-template #form>
+  <form [formGroup]="fbGroup">
+    <!-- Name -->
+    <div class="mb-2">
+      <label for="dateOfBirth">姓名</label>
+      <div class="input-group">
+        <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
+        <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+      </div>
+    </div>
+    <!-- Email -->
+    <div class="mb-2">
+      <label for="dateOfBirth">信箱</label>
+      <div class="input-group">
+        <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
+        <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+      </div>
+    </div>
+    <!-- Work Number -->
+    <div class="mb-2">
+      <label for="dateOfBirth">工號</label>
+      <div class="input-group">
+        <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
+        <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+      </div>
+    </div>
+    <!-- Phone -->
+    <div class="mb-2">
+      <label for="dateOfBirth">電話</label>
+      <div class="input-group">
+        <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
+        <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+      </div>
+    </div>
+    <!-- Phone -->
+    <div class="mb-2">
+      <label for="dateOfBirth">權限</label>
+      <div class="input-group">
+        <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
+        <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+      </div>
+    </div>
+  </form>
+</ng-template>
+
+
+
+<!-- Modal -->
+<app-modal [form]="form"></app-modal>
+<!-- /Modal -->
