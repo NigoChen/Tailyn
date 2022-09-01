@@ -5,6 +5,8 @@ import { catchError, map, shareReplay } from 'rxjs/operators';
 import { Urls } from './../configs/url.config';
 import { Employee } from './../interfaces/employee';
 
+@Injectable()
+
 export class EmployeeService {
 
   constructor(private http: HttpClient) { }
