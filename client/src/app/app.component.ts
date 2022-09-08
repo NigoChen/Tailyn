@@ -10,18 +10,18 @@ import { LoadingService } from './services/loading.service';
 })
 export class AppComponent implements OnInit{
   // loading Status
-  public loading: Subscription;
+  public app_Loading: Subscription;
   public loading_val: boolean = false;
 
   constructor(private loadingService: LoadingService, private router: Router)
   {
-    this.loading = this.loadingService.get_Loading().subscribe();
+    this.app_Loading = this.loadingService.get_App_Loading().subscribe();
     this.loading_val = false;
   }
 
   ngOnInit(): void {
 
-    this.loadingService.get_Loading().subscribe(res => this.loading_val = res);
+    this.loadingService.get_App_Loading().subscribe(res => this.loading_val = res);
     // let test:any = this.router.getCurrentNavigation().extras.state.loading;
 
     // console.log(test);
@@ -58,7 +58,7 @@ export class AppComponent implements OnInit{
 
   ngOnDestroy() {
     // console.log('ngOnDestroy');
-    this.loading.unsubscribe();
+    this.app_Loading.unsubscribe();
   }
 
   ngDoCheck(): void {
@@ -72,7 +72,7 @@ export class AppComponent implements OnInit{
 
   onActivate(event: any){ // 刷新頁面
 
-    this.loading.unsubscribe();
+    this.app_Loading.unsubscribe();
 
     if(event)
     {

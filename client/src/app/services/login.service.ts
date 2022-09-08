@@ -1,107 +1,110 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, Subject, throwError } from 'rxjs';
-import { catchError, delay, map, shareReplay } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Urls } from '../configs/url.config';
 import { Employee } from '../interfaces/employee';
 import { User } from '../interfaces/user';
+import { LoadingService } from './loading.service';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class LoginService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private loadingService: LoadingService) {}
 
   private handleError(errorResponse: HttpErrorResponse)
   {
     // catchError
-    let message:string = '';
-
-    if (errorResponse.error instanceof ErrorEvent)
-    {
-      message = 'Clinet Error';
-    }
-    else
-    {
-      message = 'Server Error';
-    }
+    const message: string = errorResponse.error instanceof ErrorEvent ? 'Clinet Error' : 'Server Error';
     // callback to subscribe error
     return throwError(() => message); 
   }
 
-  // Read
-  read(): Observable<Employee[]> {
-    return this.http.get<Employee[]>(Urls.employee.read)
-      .pipe(shareReplay(1), catchError(this.handleError));
-  }
-
-  // Find
-  findOne(): Observable<Employee> {
-    return this.http.get<Employee>(Urls.employee.findOne)
-      .pipe(catchError(this.handleError));
-  }
-
   // Login
-  login(user: object): Observable<boolean> {
-    return this.http.post<Employee[]>(Urls.employee.login, user)
+  public login(user: object): Observable<boolean> {
+    return this.http.post<Employee[]>(Urls.login.login, user)
       .pipe(map((res: Employee[]) => {
-        if(res.length > 0)
+        if(res.length)
         {
-          this.create_User_LocalStorage(res[0]);
+          this.create_User_SessionStorage(res[0]);
           return true;
         }        
         return false;
       }), catchError(this.handleError));
   }
 
-  // Update
-  update(user: object): Observable<boolean>
+  // Update Password
+  public update(user: object): Observable<boolean>
   {        
-    return this.http.put<boolean>(Urls.employee.updatePassword, user)
+    return this.http.put<boolean>(Urls.login.update, user)
     .pipe(catchError(this.handleError));
   }
 
   // logout
-  logout(): void {
-    this.delete_User_LocalStorage();
-    this.delete_Time_LocalStorage();
+  public logout(): void {
+    this.loadingService.set_Dashboard_Loading(true);
+    this.delete_User_SessionStorage();
+    this.delete_Time_SessionStorage();
   }
 
-  // Send Email
-  send_Email(user: object): Observable<boolean> {
-
-    return this.http.post<boolean>(Urls.employee.email, user)
+  // Send Email For User
+  public send_Email(user: object): Observable<boolean> {
+    return this.http.post<boolean>(Urls.login.email, user)
     .pipe(catchError(this.handleError));
   }
 
-  // Read Time localStorage
-  read_Time_LocalStorage(): any {
-    return localStorage.getItem('time');
+  // Create Time 5 minutes sessionStorage  
+  public create_Time_SessionStorage(): void {
+    const date_ = new Date();
+    date_.setMinutes(date_.getMinutes() + 5);
+    const time_ = date_.getTime().toString();   
+    sessionStorage.setItem('time', btoa(time_));
   }
 
-  // Create Time localStorage
-  create_Time_LocalStorage(): void {
+  // Read Time sessionStorage
+  public read_Time_SessionStorage(): number {
 
-    const date_ = new Date();
+    let time_: any = sessionStorage.getItem('time');
 
-    date_.setMinutes(date_.getMinutes() + 5);
+    if(time_ != null)
+    {
+      const now_date = new Date().getTime();
 
-    const time_ = date_.getTime().toString();    
+      time_ = parseInt(atob(time_));
 
-    localStorage.setItem('time', time_);
+      if(time_ > now_date)
+      {                
+        const date_: number = (new Date(time_).getTime() - new Date().getTime());
+
+        // var hours = Math.floor(diff / 1000 / 60 / 60);
+        // diff -= hours * 1000 * 60 * 60;
+        const minutes = Math.floor(date_ / 1000 / 60);
+        // diff -= minutes * 1000 * 60;
+        // var seconds = Math.floor(diff / 1000);
+        return minutes;
+      }
+    }
+
+    this.delete_Time_SessionStorage();
+    return 0;
+  }
+  
+  // Delete Time sessionStorage
+  private delete_Time_SessionStorage(): void {
+    sessionStorage.removeItem('time');
   }
 
   // Create IP LocalStorage
-  user_Ip(): Observable<string> {
+  public user_Ip(): Observable<string> {
 
-     return this.http.get<string>('http://api.ipify.org/?format=json')
+    return this.http.get<string>(Urls.ip)
     .pipe(map((data:any) => {
 
       if('ip' in data)
       {
-        this.create_Time_LocalStorage();
-        
         return data.ip;
       }
 
@@ -109,64 +112,43 @@ export class LoginService {
     }),
     catchError(this.handleError));
   }
-
-  // Check Time localStorage
-  check_Time_LocalStorage(): number {
-
-    let time_LocalStorage:any = this.read_Time_LocalStorage();
-
-    if(time_LocalStorage != null)
-    {
-      const now_date = new Date().getTime();
-
-      time_LocalStorage = parseInt(time_LocalStorage);
-
-      if(time_LocalStorage > now_date)
-      {                
-        const counter:number = (new Date(time_LocalStorage).getMinutes() - new Date().getMinutes()) * 60;
-
-        return counter;
-      }
-    }
-
-    this.delete_Time_LocalStorage();
-
-    return 0;
-  }
   
-  // Delete Time sessionStorage
-  delete_Time_LocalStorage(): void {
-    localStorage.removeItem('email');
-  }
-
   // Create User sessionStorage
-  create_User_LocalStorage(employee: Employee): void {
-    const user: User = {
+  public create_User_SessionStorage(employee: Employee): void {
+
+    const new_user: User = {
       jNumber: employee.e_JobNumber,
       name: employee.e_Name,
       lv: employee.e_Lv
     }    
 
-    // localStorage.setItem('user', JSON.stringify(user));
-    sessionStorage.setItem('user', btoa(JSON.stringify(user)));
+    const old_User: User | null = this.read_User_SessionStorage();
+
+    if(old_User != null)
+    {
+        if((old_User.name != new_user.name) || (old_User.lv != new_user.lv))
+        {
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        }
+    }
+    
+    sessionStorage.setItem('user', btoa(JSON.stringify(new_user)));
   }
 
-  // Read User localStorage
-  read_User_LocalStorage(): User | null {
-    
+  // Read User SessionStorage
+  public read_User_SessionStorage(): User | null {
     const user = sessionStorage.getItem('user');
-    
-    return user ? JSON.parse(atob(user)) : null; 
+    return user && JSON.parse(atob(user)); 
   }
 
-  // Update User sessionStorage
-  update_User_LocalStorage(user: User): void {
-    sessionStorage.setItem('user', JSON.stringify(user));
-  }
-
-  // Delete sessionStorage
-  delete_User_LocalStorage(): void {
+  // Delete SessionStorage
+  public delete_User_SessionStorage(): void {
     sessionStorage.removeItem('user');
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   }
 }
 

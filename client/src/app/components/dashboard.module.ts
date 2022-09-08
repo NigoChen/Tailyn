@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ModalComponent } from './modal/modal.component';
 import { HomeComponent } from './home/home.component';
@@ -15,6 +14,8 @@ import { ErrorInterceptor } from '../helps/error.interceptor';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { EmployeeService } from '../services/employee.service';
+import { CommonModule } from '@angular/common';
+import { ChildGuard } from '../auth/child.guard';
 
 @NgModule({
   declarations: [
@@ -35,8 +36,10 @@ import { EmployeeService } from '../services/employee.service';
     ShardModule
   ],
   exports: [
+    
   ],
   providers: [
+    ChildGuard,
     EmployeeService,
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],

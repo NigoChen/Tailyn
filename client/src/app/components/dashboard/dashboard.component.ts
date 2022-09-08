@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { SidebarComponent } from '../sidebar/sidebar.component';
+import { Subscription } from 'rxjs';
+import { LoadingService } from 'src/app/services/loading.service';
+import { LoginService } from 'src/app/services/login.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,18 +10,17 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 })
 export class DashboardComponent implements OnInit {
 
-  public status_View: object = {
-    loading: false,
-    error: false
-  } as {
-    loading: boolean;
-    error: boolean;
-  };
+  // loading Status
+  public dashboard_Loading: Subscription;
+  public is_Loading: boolean;
 
-  constructor() {}
-
-  ngOnInit(): void {
-    console.log(this.status_View);    
+  constructor(private loadingService: LoadingService, private loginService: LoginService)
+  {
+    this.dashboard_Loading = this.loadingService.get_Dashboard_Loading().subscribe();
+    this.is_Loading = false;
+  }
+  ngOnInit(): void {    
+    this.loadingService.get_Dashboard_Loading().subscribe(res => this.is_Loading = res);
   }
 
   get canDeactivate() {
@@ -28,9 +28,12 @@ export class DashboardComponent implements OnInit {
   }  
 
   onActivate(event: any){ // 參數
-
-    console.log(event);
-    // this.status_View = new BehaviorSubject<object>({loading: false, error: false});
+    // setTimeout(() => {
+    //   if(event.result_Data.length)
+    //   {
+    //     this.loadingService.set_Loading(false);
+    //   }
+    // }, 1000);
   }
   
   onDeactivate(event: any){ // 切換
@@ -38,13 +41,8 @@ export class DashboardComponent implements OnInit {
     console.log("onDeactivate");
   }
 
-  onAttach(event: any) {
-    // console.log(event);
-    console.log("onAttach");
-  }
-  
-  onDetach(event: any) {
-    // console.log(event);
-    console.log("onDetach");
+  ngOnDestroy() {
+    // console.log('ngOnDestroy');
+    this.dashboard_Loading.unsubscribe();
   }
 }

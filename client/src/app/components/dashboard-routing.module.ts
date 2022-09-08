@@ -6,11 +6,9 @@ import { RepairComponent } from './repair/repair.component';
 import { WorkComponent } from './work/work.component';
 import { TutorialComponent } from './tutorial/tutorial.component';
 import { ErrorComponent } from './error/error.component';
-import { CommonModule } from '@angular/common';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'Home', pathMatch: 'full' },
-  { path: 'Home', component: HomeComponent },
+  { path: '', pathMatch: 'full', component: HomeComponent },
   { path: 'Employee', component: EmployeeComponent },
   { path: 'Repair', component: RepairComponent },
   { path: 'Work', component: WorkComponent },

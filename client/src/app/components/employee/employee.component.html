@@ -1,37 +1,9 @@
-<!-- Buttons -->
-<div class="container-sm mt-2 mb-2">
-  <div class="row justify-content-md-center">
-    <!-- Search -->
-    <div class="col-md-6 col-sm-8">
-      <div class="input-group input-group-sm mb-3">
-        <div class="input-group-prepend">
-          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="refresh();">刷新</button>
-        </div>
-        <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
-        <div class="input-group-append">
-          <button type="button" class="btn btn-secondary btn-sm" (click)="search();">搜尋</button>
-        </div>
-      </div>
-    </div>
-    <!-- /Search -->
-    <div class="col-sm-12 col-md-6 d-flex justify-content-between">
-      <div class="col text-center">
-        <button type="button" class="btn btn-outline-info btn-sm" (click)="insert();">新增</button>
-      </div>
-      <div class="col text-center">
-        <button type="button" class="btn btn-outline-warning btn-sm" (click)="update();">更新</button>
-      </div>
-      <div class="col text-center">
-        <button type="button" class="btn btn-outline-danger btn-sm" (click)="delete();">刪除</button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- /Buttons -->
-
+<app-content-header (refresh_)="refresh()" (search_)="search()" (open_)="open()" (update_)="update()"
+  (delete_)="delete()" [user_]="user" [fb_Value_]="fb_Value['e_Lv'].value">
+</app-content-header>
 <!-- Form -->
 <div class="container-lg border border-dark p-2">
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor, nam.
+  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor, nam.
 </div>
 <!-- /Form -->
 
@@ -56,54 +28,125 @@ Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor, nam.
 </table>
 <!-- /Table -->
 
+<!-- Modal -->
+<app-modal [fbGroup]="fbGroup" (onSubmit)="onSubmit()">
 
-<ng-template #form>
-  <form [formGroup]="fbGroup">
-    <!-- Name -->
-    <div class="mb-2">
-      <label for="dateOfBirth">姓名</label>
-      <div class="input-group">
-        <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
-        <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+  <ng-template #forms>
+    <form [formGroup]="fbGroup" (ngSubmit)="onSubmit()" #form="ngForm">
+      <!-- Name -->
+      <div class="form-group row">
+        <label for="e_Name" class="col-sm-2 col-form-label"
+          *ngIf="!errorValidators['e_Name'].length; else e_Name">姓名</label>
+
+        <ng-template #e_Name>
+          <label for="name" class="col-sm-2 col-form-label text-danger">{{ errorValidators['e_Name'] }}</label>
+        </ng-template>
+
+        <div class="col-sm-10">
+          <input type="text" id="e_Name" class="form-control" formControlName="e_Name" placeholder="姓名"
+            (blur)="inputValidators(fbGroup, 'e_Name')">
+        </div>
       </div>
-    </div>
-    <!-- Email -->
-    <div class="mb-2">
-      <label for="dateOfBirth">信箱</label>
-      <div class="input-group">
-        <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
-        <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+
+      <!-- Job Number -->
+      <div class="form-group row">
+        <label for="e_JobNumber" class="col-sm-2 col-form-label"
+          *ngIf="!errorValidators['e_JobNumber'].length; else e_JobNumber">姓名</label>
+
+        <ng-template #e_JobNumber>
+          <label for="e_JobNumber" class="col-sm-2 col-form-label text-danger">{{ errorValidators['e_JobNumber']
+            }}</label>
+        </ng-template>
+
+        <div class="col-sm-10">
+          <input type="text" id="e_JobNumber" class="form-control" formControlName="e_JobNumber" placeholder="工號"
+            (blur)="inputValidators(fbGroup, 'e_JobNumber')">
+        </div>
       </div>
-    </div>
-    <!-- Work Number -->
-    <div class="mb-2">
-      <label for="dateOfBirth">工號</label>
-      <div class="input-group">
-        <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
-        <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+
+      <!-- Password -->
+      <div class="form-group row">
+        <label for="e_PassWord" class="col-sm-2 col-form-label"
+          *ngIf="!errorValidators['e_PassWord'].length; else e_PassWord">密碼</label>
+
+        <ng-template #e_PassWord>
+          <label for="e_PassWord" class="col-sm-2 col-form-label text-danger">{{ errorValidators['e_PassWord']
+            }}</label>
+        </ng-template>
+
+        <div class="col-sm-10">
+          <input type="password" id="passWord" class="form-control" formControlName="e_PassWord" placeholder="密碼"
+            (blur)="inputValidators(fbGroup, 'e_PassWord')" autocomplete="false">
+        </div>
       </div>
-    </div>
-    <!-- Phone -->
-    <div class="mb-2">
-      <label for="dateOfBirth">電話</label>
-      <div class="input-group">
-        <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
-        <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
+
+      <!-- ConfirmPassword -->
+      <div class="form-group row">
+        <label for="e_ConfirmPassword" class="col-sm-2 col-form-label"
+          *ngIf="!errorValidators['e_ConfirmPassword'].length && !fbGroup.hasError('passwordMatch'); else e_PassWord">密碼</label>
+
+        <ng-template #e_ConfirmPassword>
+          <label for="e_ConfirmPassword" class="col-sm-2 col-form-label text-danger">
+            {{ errorValidators['e_ConfirmPassword'] }}
+            <span class="text-danger h6"
+              *ngIf="fb_Value['e_ConfirmPassword'].dirty && fbGroup.hasError('passwordMatch')">錯誤</span>
+          </label>
+        </ng-template>
+
+        <div class="col-sm-10">
+          <input type="password" id="e_ConfirmPassword" class="form-control" formControlName="e_ConfirmPassword"
+            placeholder="確認密碼" (blur)="inputValidators(fbGroup, 'e_ConfirmPassword')" autocomplete="false">
+        </div>
       </div>
-    </div>
-    <!-- Phone -->
-    <div class="mb-2">
+
+      <!-- Email -->
+      <div class="form-group row">
+        <label for="e_Email" class="col-sm-2 col-form-label"
+          *ngIf="!errorValidators['e_Email'].length; else e_Email">信箱</label>
+
+        <ng-template #e_Email>
+          <label for="e_Email" class="col-sm-2 col-form-label text-danger">{{ errorValidators['e_Email']
+            }}</label>
+        </ng-template>
+
+        <div class="col-sm-10">
+          <input type="email" id="e_Email" class="form-control" formControlName="e_Email" placeholder="信箱"
+            (blur)="inputValidators(fbGroup, 'e_Email')">
+        </div>
+      </div>
+
+      <!-- Level -->
+      <div class="form-group row">
+        <label for="e_Lv" class="col-sm-2 col-form-label">權限</label>
+
+        <div class="col-sm-10">
+          <select id="e_Lv" class="form-control text-center" formControlName="e_Lv">
+            <option value="1">普通</option>
+            <option value="2">中級</option>
+            <option value="3">高級</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- <div class="mb-2">
       <label for="dateOfBirth">權限</label>
       <div class="input-group">
         <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
         <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
       </div>
-    </div>
-  </form>
-</ng-template>
+    </div> -->
+    </form>
+  </ng-template>
 
+  <ngb-alert *ngIf="!alert.status" [type]="alert.type" (click)="alert.status = true" animation="true"
+    [dismissible]="true">
+    <strong>{{ alert.message }}</strong>
+  </ngb-alert>
 
+  <ng-template #contents>
+    <td>Andy</td>
+    <td>35</td>
+  </ng-template>
 
-<!-- Modal -->
-<app-modal [form]="form"></app-modal>
+</app-modal>
 <!-- /Modal -->

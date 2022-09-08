@@ -1,5 +1,5 @@
 <div class="d-flex">
-    <ul class="nav px-3">
+    <ul class="nav px-1">
         <li class="nav-item text-nowrap">
             <a class="nav-link text-white" routerLink="/">
                 <i class="bi bi-2-square text-white"></i>
@@ -19,6 +19,7 @@
             </a>
         </li>
         <li class="nav-item text-nowrap">
+            <!-- <a class="nav-link text-white stretched-link" routerLink="Employee"> -->
             <a class="nav-link text-white" routerLink="Employee">
                 <i class="bi bi-2-square text-white"></i>
                 員工
@@ -27,10 +28,17 @@
     </ul>
     <ul class="nav px-3">
         <li class="nav-item text-nowrap">
-            <a class="nav-link text-white" (click)="logout();">
-                <i class="bi bi-2-square text-white"></i>
-                登出
-            </a>
+            <div ngbDropdown class="d-inline-block" display="dynamic">
+                <a class="nav-link text-white" id="dropdownBasic1"
+                    ngbDropdownToggle>
+                    <i class="bi bi-person-circle"></i>
+                    <span class="p-1">{{ user.jNumber }}</span>
+                </a>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="header_DropMenu bg-dark">
+                    <button ngbDropdownItem>{{ user.name }}</button>
+                    <button ngbDropdownItem (click)="logout();">登出</button>
+                </div>
+            </div>
         </li>
     </ul>
 </div>

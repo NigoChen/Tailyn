@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Chart } from 'chart.js';
+import { LoadingService } from 'src/app/services/loading.service';
 
 @Component({
   selector: 'app-home',
@@ -8,12 +9,15 @@ import { Chart } from 'chart.js';
 })
 export class HomeComponent implements OnInit {
 
-
   chart_Line: any = null;
 
-  constructor() { }
+  constructor(private loadingService: LoadingService) { }
 
   ngOnInit(): void {
+  }
+
+  ngAfterViewInit(): void {
+    this.loadingService.set_Dashboard_Loading(false);
   }
 
   chart_setting(): void {

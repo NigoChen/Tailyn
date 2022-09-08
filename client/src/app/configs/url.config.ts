@@ -2,9 +2,13 @@ const url_Server: string = 'http://localhost:3000';
 // const url: string = 'http://localhost:3000';
 
 export const Urls = {
+    login: {
+        login:`${url_Server}/api/login`,
+        email:`${url_Server}/api/login/email`,
+        update:`${url_Server}/api/login/update`,
+    },
     employee: {
         read:`${url_Server}/api/employee/read`,
-        login:`${url_Server}/api/employee/login`,
         findOne:`${url_Server}/api/employee/find/one`,
         findLike:`${url_Server}/api/employee/find/like`,
         create:`${url_Server}/api/employee/create`,
@@ -36,4 +40,5 @@ export const Urls = {
         create:`${url_Server}/api/recycle/create`,
         delete:`${url_Server}/api/recycle/delete`,
     },
+    ip: 'http://api.ipify.org/?format=json'
 };

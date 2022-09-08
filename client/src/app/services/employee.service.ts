@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
+import { User } from '../interfaces/user';
 import { Urls } from './../configs/url.config';
 import { Employee } from './../interfaces/employee';
 
@@ -84,7 +85,7 @@ export class EmployeeService {
   }
 
   // Delete
-  public delete(id: number): Observable<boolean>
+  private delete(id: number): Observable<boolean>
   {    
     return this.http.delete<boolean>(`${Urls.employee.delete}/${id}`)
     .pipe(catchError(this.handleError))

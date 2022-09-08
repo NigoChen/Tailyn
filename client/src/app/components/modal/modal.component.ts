@@ -1,4 +1,5 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
+import { Component, ContentChild, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
+import { AbstractControl, FormGroup } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -8,9 +9,14 @@ import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 })
 export class ModalComponent {
 
-  @Input('form') form: TemplateRef<any>;
-  @ViewChild('modal') modal: any;
-  @ViewChild('formContent') modal_Content: ElementRef<HTMLInputElement>;
+  @Input() fbGroup: FormGroup;
+  @Output() onSubmit: EventEmitter<any> = new EventEmitter<any>();
+
+  @ContentChild('alerts') alerts: TemplateRef<any>;
+  @ContentChild('forms') forms: TemplateRef<any>;
+  @ViewChild('modal') modal: ElementRef<HTMLInputElement>;
+  // @ContentChild('headers') headers: TemplateRef<any>;
+  // @ContentChild('contents') contents: TemplateRef<any>;
 
   constructor(
     private modalService: NgbModal,
@@ -18,13 +24,17 @@ export class ModalComponent {
     private vref: ViewContainerRef
     ) {
       config.backdrop = 'static';
-      config.keyboard = false;
+      config.keyboard = false;      
     }
-  
-  open(): void {
+
+  // FormGroup Controls Value
+  get fb_Value(): { [key: string]: AbstractControl} {
+    return this.fbGroup.controls;
+  }
+
+  open(): void {    
 
     // secondChild
-
     
     // constructing new DOM after splitting
     // this.errorChild.nativeElement.innerHTML = `
@@ -36,23 +46,28 @@ export class ModalComponent {
 
 
     // this.modal_Content.((div: ElementRef) => console.log(div.nativeElement));
-    
-
     // this.vref.createEmbeddedView(this.form);
 
+    this.modalService.open(this.modal, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'},);
+        
     
-    this.modalService.open(this.modal, {backdropClass: 'light-blue-backdrop', size: 'sm', windowClass:'modal-holder'});
+    // this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {  
+    //   this.closeResult = `Closed with: ${result}`;  
+    // }, (reason) => {  
+    //   this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;  
+    // }); 
     
-    // this.vref.createEmbeddedView(this.form);
-    // this.modal_Content.nativeElement.innerHTML = this.form.elementRef.nativeElement;
 
-
-    console.log(this.form.elementRef.nativeElement);
-    
-
-    // console.log(this.modal_Content.nativeElement.innerHTML);
-    
-    
+    // if (reason === ModalOfDismissReasons.ESC) {  
+    //   return 'by pressing ESC';  
+    // } else if (reason === ModalOfDismissReasons.BACKDROP_CLICK) {  
+    //   return 'by clicking on a backdrop';  
+    // } else {  
+    //   return  `with: ${reason}`;  
+    // }  
   }
 
+  close(): void {
+    this.modalService.dismissAll();
+  }
 }

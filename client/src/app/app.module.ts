@@ -5,8 +5,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { ErrorInterceptor } from './helps/error.interceptor';
-import { ShardModule } from './shard/shard.module';
 import { DashboardModule } from './components/dashboard.module';
+import { ShardModule } from './shard/shard.module';
+import { AuthGuard } from './auth/auth-guard.guard';
 
 @NgModule({
   declarations: [
@@ -15,11 +16,12 @@ import { DashboardModule } from './components/dashboard.module';
   ],
   imports: [
     BrowserModule,
-    ShardModule,
     AppRoutingModule,
     DashboardModule,
+    ShardModule,
   ],
   providers: [
+    AuthGuard,
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]

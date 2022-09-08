@@ -11,10 +11,8 @@ const cors_1 = __importDefault(require("cors"));
 // routes
 const index_routes_1 = __importDefault(require("./routes/index.routes"));
 const employee_routes_1 = __importDefault(require("./routes/employee.routes"));
-// import inventoryRoutes from './routes/inventoryRoutes';
-// import recycleRoutes from './routes/recycleRoutes';
-// import rmaRoutes from './routes/rmaRoutes';
 const path_1 = __importDefault(require("path"));
+const login_routes_1 = __importDefault(require("./routes/login.routes"));
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -35,10 +33,8 @@ class Server {
     }
     routes() {
         this.app.use('/', index_routes_1.default);
+        this.app.use('/api/login', login_routes_1.default);
         this.app.use('/api/employee', employee_routes_1.default);
-        // this.app.use('/api/inventory', inventoryRoutes);
-        // this.app.use('/api/rma', rmaRoutes);
-        // this.app.use('/api/recycle', recycleRoutes);
     }
     start() {
         this.app.listen(this.app.get('port'), () => {

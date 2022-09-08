@@ -6,10 +6,8 @@ import cors from 'cors';
 // routes
 import indexRoutes from './routes/index.routes';
 import employeeRoutes from './routes/employee.routes';
-// import inventoryRoutes from './routes/inventoryRoutes';
-// import recycleRoutes from './routes/recycleRoutes';
-// import rmaRoutes from './routes/rmaRoutes';
 import path from 'path';
+import loginRoutes from './routes/login.routes';
 
 class Server
 {
@@ -39,10 +37,8 @@ class Server
     routes():void
     {
         this.app.use('/', indexRoutes);
+        this.app.use('/api/login', loginRoutes);
         this.app.use('/api/employee', employeeRoutes);
-        // this.app.use('/api/inventory', inventoryRoutes);
-        // this.app.use('/api/rma', rmaRoutes);
-        // this.app.use('/api/recycle', recycleRoutes);
     }
 
     start():void

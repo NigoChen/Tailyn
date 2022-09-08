@@ -1,19 +1,18 @@
-<!-- <ng-container *ngIf="status_View['loading'] || header['loading']"> -->
-    <!-- Loading -->
-    <!-- <app-loading></app-loading> -->
-    <!-- /Loading -->
-<!-- </ng-container> -->
-
 <!-- Header -->
 <app-header></app-header>
 <!-- /Header -->
 
 <!-- Main -->
 <div class="d-flex">
+    <ng-container *ngIf="is_Loading">
+        <!-- Loading -->
+        <app-loading></app-loading>
+        <!-- /Loading -->
+    </ng-container>
+
     <main role="main" class="container-fluid">
         <!-- Router-outlet -->
-        <router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)" (attach)="onAttach($event)"
-            (detach)="onDetach($event)">
+        <router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)">
         </router-outlet>
         <!-- /Router-outlet -->
     </main>
