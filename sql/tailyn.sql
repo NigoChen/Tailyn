@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.3
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- 主機： localhost
--- 產生時間： 2022-08-10 03:22:39
--- 伺服器版本： 5.7.36
--- PHP 版本： 8.1.3
+-- 產生時間： 2022-09-09 17:59:15
+-- 伺服器版本： 5.6.51
+-- PHP 版本： 8.0.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -41,7 +41,10 @@ CREATE TABLE `employee` (
 --
 
 INSERT INTO `employee` (`e_Id`, `e_Name`, `e_Email`, `e_JobNumber`, `e_PassWord`, `e_Lv`) VALUES
-(1, 'NIgo', 'az7712456az@gmail.com', '4138', '202cb962ac59075b964b07152d234b70', 3);
+(1, 'NIgo', 'az7712456az@gmail.com', '4138', '202cb962ac59075b964b07152d234b70', 3),
+(2, 'nikki', 'nikki@yahoo.com.tw', '1120', '202cb962ac59075b964b07152d234b70', 2),
+(3, 'andy', 'andy@yahoo.com', '2210', '202cb962ac59075b964b07152d234b70', 2),
+(4, 'Joe', 'joe@yahoo.com.tw', '3340', '202cb962ac59075b964b07152d234b70', 1);
 
 -- --------------------------------------------------------
 
@@ -53,7 +56,7 @@ CREATE TABLE `repair` (
   `r_Id` int(11) NOT NULL,
   `r_JobNumber` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '工號',
   `r_SerialNumber` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '序號',
-  `r_Order` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '訂單',
+  `r_WorkOrder` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '訂單',
   `r_Model` varchar(30) COLLATE utf8_unicode_ci NOT NULL COMMENT '機種',
   `r_EorrCode` varchar(10) COLLATE utf8_unicode_ci NOT NULL COMMENT '錯誤代碼',
   `r_Process` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '查修過程',
@@ -62,7 +65,7 @@ CREATE TABLE `repair` (
   `r_Status` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT '狀態',
   `r_Client` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT '客戶',
   `r_Remark` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '備註',
-  `r_DateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '日期'
+  `r_Time` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT '開始日期'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -133,7 +136,7 @@ ALTER TABLE `work`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `e_Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `e_Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `repair`
