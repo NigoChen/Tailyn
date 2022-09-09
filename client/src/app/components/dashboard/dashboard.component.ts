@@ -28,6 +28,8 @@ export class DashboardComponent implements OnInit {
   }  
 
   onActivate(event: any){ // 參數
+    console.log(event);
+    
     // setTimeout(() => {
     //   if(event.result_Data.length)
     //   {

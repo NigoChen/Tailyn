@@ -11,10 +11,22 @@
     </ng-container>
 
     <main role="main" class="container-fluid">
+        <app-content-header></app-content-header>
+
         <!-- Router-outlet -->
         <router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)">
         </router-outlet>
         <!-- /Router-outlet -->
+
+
+
+
+        
+<!-- Modal -->
+<app-modal>
+
+  </app-modal>
+  <!-- /Modal -->
     </main>
 </div>
 <!-- /Main -->

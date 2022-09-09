@@ -4,12 +4,12 @@
     <div class="col-md-7 col-sm-8">
       <div class="input-group input-group-sm mb-3">
         <div class="input-group-prepend">
-          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="refresh_.emit(search_Input.value = '')"
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="refresh()"
             [disabled]="!search_Input.value.length">刷新</button>
         </div>
           <input type="text" class="form-control" maxlength="20" ngModel #search_Input>
         <div class="input-group-append">
-          <button type="button" class="btn btn-secondary btn-sm" (click)="search_.emit()"
+          <button type="button" class="btn btn-secondary btn-sm" (click)="search()"
             [disabled]="!search_Input.value.length">搜尋</button>
         </div>
       </div>
@@ -18,16 +18,16 @@
     <!-- Crud -->
     <div class="col-md-5 col-sm-12 d-flex justify-content-between">
       <div class="col text-center">
-        <ng-container *ngIf="user_.lv > 1">
-          <button type="button" class="btn btn-outline-info btn-sm" (click)="open_.emit()">新增</button>
+        <ng-container *ngIf="user.lv > 1">
+          <button type="button" class="btn btn-outline-info btn-sm" (click)="open()">新增</button>
         </ng-container>
       </div>
-      <div class="col text-center">
-        <button type="button" class="btn btn-outline-warning btn-sm" (click)="update_.emit()"
-          [disabled]="user_.lv < 2 || false">更新</button>
+      <div class="col text-center">        
+        <button type="button" class="btn btn-outline-warning btn-sm" (click)="update()"
+          [disabled]="user.lv < 2 || false">更新</button>
       </div>
       <div class="col text-center">
-        <button type="button" class="btn btn-outline-danger btn-sm" (click)="delete_.emit()">刪除</button>
+        <button type="button" class="btn btn-outline-danger btn-sm" (click)="delete()">刪除</button>
       </div>
     </div>
     <!-- /Crud -->
