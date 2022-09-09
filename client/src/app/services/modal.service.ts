@@ -13,6 +13,7 @@ export class ModalService {
   }
 
   public get_modal(): Observable<boolean> {
+    
     return this.modal.asObservable();
   }
 
