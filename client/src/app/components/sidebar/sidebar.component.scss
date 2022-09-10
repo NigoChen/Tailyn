@@ -8,3 +8,24 @@
     background-color: white;
     color: black;
 }
+.nav-item .nav-link
+{
+    position: relative;
+}
+.nav-item .nav-link::before
+{
+    content: "";
+    background-color: white;
+    left: 19%;
+    position: absolute;
+    width: 55px;
+    height: 1px;
+    bottom: -4px;
+    transition: .5s;
+    opacity: 0;
+}
+.nav-item .nav-link:hover::before
+{
+    bottom: 8px;
+    opacity: .8;
+}
