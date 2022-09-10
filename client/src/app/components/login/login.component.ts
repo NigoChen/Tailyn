@@ -250,6 +250,7 @@ export class LoginComponent implements OnInit {
           {            
             this.progressbar_Show(true, true);
             this.loadingService.set_App_Loading(true);
+            window.location.reload();
           }
 
           this.fbGroup.reset();

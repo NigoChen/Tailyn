@@ -1,6 +1,8 @@
 import { Component, ContentChild, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+import { Subscription } from 'rxjs';
+import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
   selector: 'app-modal',
@@ -19,12 +21,20 @@ export class ModalComponent {
   // @ContentChild('contents') contents: TemplateRef<any>;
 
   constructor(
-    private modalService: NgbModal,
+    private ngbModal: NgbModal,
+    private modalService: ModalService,
     config: NgbModalConfig,
     private vref: ViewContainerRef
     ) {
       config.backdrop = 'static';
-      config.keyboard = false;      
+      config.keyboard = false;
+      
+      this.modalService.get_modal().subscribe(res => {
+        if(res)
+        {
+          this.ngbModal.open(this.modal, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'},);
+        }
+      });
     }
 
   // FormGroup Controls Value
@@ -33,7 +43,7 @@ export class ModalComponent {
   }
 
   open(): void {    
-
+    
     // secondChild
     
     // constructing new DOM after splitting
@@ -48,10 +58,10 @@ export class ModalComponent {
     // this.modal_Content.((div: ElementRef) => console.log(div.nativeElement));
     // this.vref.createEmbeddedView(this.form);
 
-    this.modalService.open(this.modal, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'},);
+    this.ngbModal.open(this.modal, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'},);
         
     
-    // this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {  
+    // this.ngbModal.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {  
     //   this.closeResult = `Closed with: ${result}`;  
     // }, (reason) => {  
     //   this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;  
@@ -68,6 +78,7 @@ export class ModalComponent {
   }
 
   close(): void {
-    this.modalService.dismissAll();
+    this.modalService.set_modal(false);
+    this.ngbModal.dismissAll();
   }
 }
