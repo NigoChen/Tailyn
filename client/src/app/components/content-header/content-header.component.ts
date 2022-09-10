@@ -20,7 +20,6 @@ export class ContentHeaderComponent implements OnInit {
   // private modal_Subscription: Subscription;
 
 
-
   // @Output() refresh_: EventEmitter<any> = new EventEmitter<any>();
   // @Output() search_: EventEmitter<any> = new EventEmitter<any>();
   // @Output() open_: EventEmitter<any> = new EventEmitter<any>();
@@ -33,13 +32,13 @@ export class ContentHeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.user = { jNumber: '', name: '', lv: 1};
-
     this.user_Profile();
   }
 
   // User Profile
   user_Profile(employee: Employee[] = []): void {
+
+    this.user = { jNumber: '', name: '', lv: 1};
 
     let user_Session: User | null = this.loginService.read_User_SessionStorage();
   

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
@@ -10,6 +10,7 @@ import { PasswordMatch } from 'src/app/methods/password-match';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
+import { ModalService } from 'src/app/services/modal.service';
 import { ModalComponent } from '../modal/modal.component';
 
 
@@ -25,6 +26,8 @@ export class EmployeeComponent implements OnInit {
   public result_Async$: Observable<Array<Employee>> | Observable<[]>;
   public result_Data: Employee[];
   public result_List: Employee[];
+
+  @ViewChild('form_') form_: TemplateRef<any>;
 
   // User
   public user: User;
@@ -50,27 +53,40 @@ export class EmployeeComponent implements OnInit {
   public inputValidators: Function = InputValidators;
   // Input Validators Error
   public errorValidators: object = ErrorValidators;
-
   // Alerts
   public alert: Alert;
 
   @ViewChild('staticAlert', {static: false}) staticAlert: NgbAlert;
 
-
   constructor(
     private loadingService: LoadingService,
     private loginService : LoginService,
     private employeeService: EmployeeService, 
-    private fb: FormBuilder) {}
+    private fb: FormBuilder,
+    private modalService: ModalService) {
+
+    }
 
   ngOnInit(): void {
     this.inputValidators(this.fbGroup);
     this.result_Data = [];
     this.result_List = [];
-    this.user = { jNumber: '', name: '', lv: 1};
     this.alert = { status: true, type: 'danger', message: '...'};
     this.read();
+
   }
+
+  ngAfterContentInit(): void {
+
+    console.log(this.form_);
+    
+    setTimeout(() => {
+      
+      this.modalService.set_Form(this.form_);
+    }, 4000);
+
+  }
+
 
   // FormGroup Controls Value
   get fb_Value(): { [key: string]: AbstractControl} {
@@ -84,6 +100,8 @@ export class EmployeeComponent implements OnInit {
 
   // User Profile
   user_Profile(employee: Employee[]): void {
+
+    this.user = { jNumber: '', name: '', lv: 1};
 
     let user_Session: User | null = this.loginService.read_User_SessionStorage();
   

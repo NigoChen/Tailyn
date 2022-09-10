@@ -11,9 +11,11 @@
   <div class="modal-body">
     <!-- Form -->
     <!-- <ng-container *ngTemplateOutlet="forms"></ng-container> -->
+    <ng-container *ngTemplateOutlet="form_"></ng-container>
+
     <!-- /Form -->
     <!-- Alert -->
-    <!-- <ng-content select="ngb-alert"></ng-content> -->
+    <ng-content select="ngb-alert"></ng-content>
     <!-- /Alert -->
   </div>
   <div class="modal-footer d-flex justify-content-between">
@@ -21,6 +23,9 @@
     <!-- <button type="submit" class="btn btn-outline-dark" (click)="onSubmit.emit()" [disabled]="!fbGroup.valid">確定</button> -->
   </div>
 </ng-template>
+
+<!-- <ng-template #form_></ng-template> -->
+
 
 <!-- <ng-template #nigo let-name let-age="age">
   {{ name }} / {{age}}

@@ -4,29 +4,24 @@
 
 <!-- Main -->
 <div class="d-flex">
+    <!-- Loading -->
     <ng-container *ngIf="is_Loading">
-        <!-- Loading -->
         <app-loading></app-loading>
-        <!-- /Loading -->
     </ng-container>
+    <!-- /Loading -->
 
     <main role="main" class="container-fluid">
+        <!-- Header Content -->
         <app-content-header></app-content-header>
+        <!-- /Header Content -->
 
-        <!-- Router-outlet -->
-        <router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)">
-        </router-outlet>
-        <!-- /Router-outlet -->
+        <!-- Router Outlet -->
+        <router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)"></router-outlet>
+        <!-- /Router Outlet -->
 
-
-
-
-        
-<!-- Modal -->
-<app-modal>
-
-  </app-modal>
-  <!-- /Modal -->
+        <!-- Modal -->
+        <app-modal></app-modal>
+        <!-- /Modal -->
     </main>
 </div>
 <!-- /Main -->

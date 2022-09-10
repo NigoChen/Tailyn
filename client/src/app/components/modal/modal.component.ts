@@ -17,8 +17,7 @@ export class ModalComponent {
   @ContentChild('alerts') alerts: TemplateRef<any>;
   @ContentChild('forms') forms: TemplateRef<any>;
   @ViewChild('modal') modal: ElementRef<HTMLInputElement>;
-  // @ContentChild('headers') headers: TemplateRef<any>;
-  // @ContentChild('contents') contents: TemplateRef<any>;
+  @ContentChild('form_') form_: TemplateRef<any>;
 
   constructor(
     private ngbModal: NgbModal,
@@ -37,12 +36,23 @@ export class ModalComponent {
       });
     }
 
+    ngAfterContentInit(): void {
+
+    }
+  
+
   // FormGroup Controls Value
   get fb_Value(): { [key: string]: AbstractControl} {
     return this.fbGroup.controls;
   }
 
   open(): void {    
+
+
+    this.modalService.get_Form().subscribe(res => {
+      console.log(res);
+      this.form_ = res;
+    });
     
     // secondChild
     
