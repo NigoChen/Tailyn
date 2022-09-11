@@ -1,9 +1,11 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, ComponentFactoryResolver, OnInit, ViewChild} from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
+import { AlertsDirective } from 'src/app/directives/alerts.directive';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
+import { AlertComponent } from '../alert/alert.component';
 
 @Component({
   selector: 'app-login',
@@ -61,13 +63,17 @@ export class LoginComponent implements OnInit {
     counter: 0
   };
 
+
+  @ViewChild(AlertsDirective) alerts: AlertsDirective;
+
   // Constructor
   constructor(
     private loadingService: LoadingService,
     private loginService: LoginService,
     private fb: FormBuilder,
-    private router: Router){
-}
+    private router: Router,
+    private componentFactoryResolver: ComponentFactoryResolver
+    ){}
 
   // NgOnInit
   ngOnInit(): void {
@@ -234,7 +240,13 @@ export class LoginComponent implements OnInit {
 
   // Login
   login(): void {
-    
+
+    const alertComponent = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
+    this.alerts.viewContainerRef.clear();
+    const componentRef = this.alerts.viewContainerRef.createComponent(alertComponent);
+    componentRef.instance.messages = 'Nigo Chen';    
+    componentRef.instance.status =  true;    
+
     this.loginService.login(this.fbGroup.value).subscribe(
       {
         next: (res: boolean) => {                     

@@ -1,1 +1,3 @@
-<p>alert works!</p>
+<ngb-alert *ngIf="false" [type]="types" (click)="status = false" animation="true" [dismissible]="true">
+    <strong>{{ messages }}</strong>
+</ngb-alert>

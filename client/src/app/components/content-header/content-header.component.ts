@@ -1,12 +1,8 @@
-import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { AbstractControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 import { Employee } from 'src/app/interfaces/employee';
 import { User } from 'src/app/interfaces/user';
-import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
 import { ModalService } from 'src/app/services/modal.service';
-import { ModalComponent } from '../modal/modal.component';
 
 @Component({
   selector: 'app-content-header',
@@ -31,7 +27,6 @@ export class ContentHeaderComponent implements OnInit {
   constructor(
     private loginService: LoginService,
     private modalService: ModalService,
-    private componentFactoryResolver: ComponentFactoryResolver
     ){}
 
   ngOnInit(): void {
@@ -80,10 +75,9 @@ export class ContentHeaderComponent implements OnInit {
   // Open
   open(): void {
 
-    const modal = this.componentFactoryResolver.resolveComponentFactory(ModalComponent);
 
     // modal.
-    // this.modalService.set_modal(true);
+    this.modalService.set_modal(true);
     // this.modal.open();
     // this.fbGroup.reset();
     // this.reset_Validators();      

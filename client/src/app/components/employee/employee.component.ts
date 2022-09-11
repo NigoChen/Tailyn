@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
@@ -12,7 +12,6 @@ import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { ModalComponent } from '../modal/modal.component';
-
 
 @Component({
   selector: 'app-employee',
@@ -58,12 +57,14 @@ export class EmployeeComponent implements OnInit {
 
   @ViewChild('staticAlert', {static: false}) staticAlert: NgbAlert;
 
+
   constructor(
     private loadingService: LoadingService,
     private loginService : LoginService,
     private employeeService: EmployeeService, 
     private fb: FormBuilder,
-    private modalService: ModalService) {}
+    private modalService: ModalService,
+    ) {}
 
   ngOnInit(): void {
     this.inputValidators(this.fbGroup);
@@ -74,10 +75,10 @@ export class EmployeeComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.modalService.set_FormGroup(this.fbGroup);
-      this.modalService.set_Form(this.form_);       
-    }, 1000);
+    // setTimeout(() => {
+    //   this.modalService.set_FormGroup(this.fbGroup);
+    //   this.modalService.set_Form(this.form_);       
+    // }, 1000);
   }
 
   // ngAfterViewChecked(): void {
@@ -182,6 +183,9 @@ export class EmployeeComponent implements OnInit {
         }
       }
     );
+
+
+
   }
   
   // Refresh
@@ -199,7 +203,8 @@ export class EmployeeComponent implements OnInit {
   }
 
   // Delete
-  delete(): void {}
+  delete(): void {
+  }
 
   // Submit
   onSubmit(): void {

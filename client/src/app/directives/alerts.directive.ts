@@ -1,10 +1,10 @@
-import { ComponentFactoryResolver, Directive } from '@angular/core';
+import {Directive, ViewContainerRef } from '@angular/core';
 
 @Directive({
   selector: '[appAlerts]'
 })
 export class AlertsDirective {
 
-  constructor(public componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor(public viewContainerRef: ViewContainerRef) { }
 
 }

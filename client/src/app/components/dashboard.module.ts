@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { SidebarComponent } from './sidebar/sidebar.component';
 import { ModalComponent } from './modal/modal.component';
 import { HomeComponent } from './home/home.component';
 import { EmployeeComponent } from './employee/employee.component';
@@ -9,14 +8,16 @@ import { WorkComponent } from './work/work.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { ShardModule } from '../shard/shard.module';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ErrorInterceptor } from '../helps/error.interceptor';
-import { HeaderComponent } from './header/header.component';
-import { FooterComponent } from './footer/footer.component';
+// import { HTTP_INTERCEPTORS } from '@angular/common/http';
+// import { ErrorInterceptor } from '../helps/error.interceptor';
 import { EmployeeService } from '../services/employee.service';
 import { CommonModule } from '@angular/common';
 import { ChildGuard } from '../auth/child.guard';
-import { AlertComponent } from './alert/alert.component';
+import { ErrorComponent } from './error/error.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
+import { HeaderComponent } from './header/header.component';
+import { ContentHeaderComponent } from './content-header/content-header.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -27,23 +28,22 @@ import { AlertComponent } from './alert/alert.component';
     TutorialComponent,
     RepairComponent,
     WorkComponent,
-    HeaderComponent,
+    ErrorComponent,
     SidebarComponent,
     FooterComponent,
-    AlertComponent
+    ContentHeaderComponent,
+    HeaderComponent,
   ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
     ShardModule
   ],
-  exports: [
-    
-  ],
+  exports: [],
   providers: [
     ChildGuard,
     EmployeeService,
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+    // { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
 })
 export class DashboardModule { }
