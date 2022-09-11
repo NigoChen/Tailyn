@@ -52,11 +52,6 @@ export class EmployeeComponent implements OnInit {
   public inputValidators: Function = InputValidators;
   // Input Validators Error
   public errorValidators: object = ErrorValidators;
-  // Alerts
-  public alert: Alert;
-
-  @ViewChild('staticAlert', {static: false}) staticAlert: NgbAlert;
-
 
   constructor(
     private loadingService: LoadingService,
@@ -67,23 +62,20 @@ export class EmployeeComponent implements OnInit {
     ) {}
 
   ngOnInit(): void {
-    this.inputValidators(this.fbGroup);
+    this.reset_Validators();
     this.result_Data = [];
     this.result_List = [];
-    this.alert = { status: true, type: 'danger', message: '...'};
     this.read();
   }
 
   ngAfterViewInit(): void {
-    // setTimeout(() => {
-    //   this.modalService.set_FormGroup(this.fbGroup);
-    //   this.modalService.set_Form(this.form_);       
-    // }, 1000);
+    this.modalService.set_FormGroup(this.fbGroup);
+    this.modalService.set_Form(this.form_);            
+    this.modalService.set_Submit(this.onSubmit);            
   }
 
   // ngAfterViewChecked(): void {
   //   console.log(this.form_);
-    
   // }
 
   // FormGroup Controls Value
@@ -183,15 +175,10 @@ export class EmployeeComponent implements OnInit {
         }
       }
     );
-
-
-
   }
   
   // Refresh
-  refresh(): void {
-
-  }
+  refresh(): void {}
 
   // Search
   search(): void {}
@@ -207,7 +194,8 @@ export class EmployeeComponent implements OnInit {
   }
 
   // Submit
-  onSubmit(): void {
+  onSubmit(): void {    
+    
     if(this.fbGroup.valid)
     {
       if(this.fb_Value['e_Id'].value)
@@ -218,8 +206,6 @@ export class EmployeeComponent implements OnInit {
       {      
         this.create();
       }
-
-      // this.modal.close();
     }
   }
 }

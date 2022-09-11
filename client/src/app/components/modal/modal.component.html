@@ -4,21 +4,17 @@
   </div>
 
   <div class="modal-body">
+    <ng-container *ngTemplateOutlet="form"></ng-container>
   </div>
 
-  <app-alert></app-alert>
+  <ng-container *ngTemplateOutlet="alert"></ng-container>
 
-
-  <ng-container ng></ng-container>
-  
-  
-  
   <div class="modal-footer d-flex justify-content-between">
-    <button type="button" class="btn btn-outline-secondary" (click)="d('cancel')">取消</button>
-    <button type="submit" class="btn btn-outline-dark" (click)="open()">確定</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="close()">取消</button>
+    <button type="submit" class="btn btn-outline-dark" (click)="submit()" [disabled]="!this.fbGroup.valid">確定</button>
   </div>
 </ng-template>
 
-<ng-template appAlerts></ng-template>
-
-
+<ng-template #alert>
+  <div appAlerts></div>
+</ng-template>

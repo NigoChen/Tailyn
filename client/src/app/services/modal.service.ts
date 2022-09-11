@@ -10,11 +10,13 @@ export class ModalService {
   private modal: Subject<boolean>;
   private fbGroup: Subject<FormGroup>;
   private form: Subject<TemplateRef<any>>;
+  private submit: Subject<Function>;
 
   constructor() {
     this.modal = new Subject<boolean>();
     this.fbGroup = new Subject<FormGroup>();
     this.form = new Subject<TemplateRef<any>>();
+    this.submit = new Subject<Function>();
   }
 
   public get_modal(): Observable<boolean> {
@@ -43,5 +45,15 @@ export class ModalService {
   // Set Form
   public set_Form(templateRef: TemplateRef<any>): void {    
     this.form.next(templateRef);
+  }
+
+  // Get Form
+  public get_Submit(): Observable<Function> {    
+    return this.submit.asObservable();
+  }
+  
+  // Set Form
+  public set_Submit(func: Function): void {    
+    this.submit.next(func);
   }
 }

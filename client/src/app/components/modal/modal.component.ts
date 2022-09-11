@@ -3,7 +3,6 @@ import { AbstractControl, FormGroup } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { AlertsDirective } from 'src/app/directives/alerts.directive';
 import { ErrorValidators, InputValidators } from 'src/app/methods/input-validators';
-import { AlertService } from 'src/app/services/alert.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { AlertComponent } from '../alert/alert.component';
 
@@ -14,17 +13,17 @@ import { AlertComponent } from '../alert/alert.component';
 })
 export class ModalComponent {
 
+  // @Input() fbGroup: FormGroup;
+  // @Input() errorValidators: object = ErrorValidators;
+  // @Input() inputValidators: Function = InputValidators;
+
+
+  @Input() form: TemplateRef<any>;
   @Input() fbGroup: FormGroup;
-  @Output() close = new EventEmitter();
-
+  @Input() submit: Function;
+  // Modal 
   @ViewChild('modal') public modal: ElementRef<HTMLInputElement>;
-
-
-  // Input Validators blur
-  public inputValidators: Function = InputValidators;
-  // Input Validators Error
-  public errorValidators: object = ErrorValidators;
-
+  // Alert
   @ViewChild(AlertsDirective) alerts: AlertsDirective;
 
   constructor(
@@ -46,10 +45,15 @@ export class ModalComponent {
           this.ngbModal.open(this.modal, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'});
         }
       });
-  
+      this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
+      this.modalService.get_Form().subscribe(res => this.form = res);
+      this.modalService.get_Submit().subscribe(res => this.submit = res);
+      // this.modalService.get_InputValidators().subscribe(res => this.inputValidators = res);
   }
 
   ngAfterContentInit(): void {
+    console.log('mmmm');
+    
   }
 
   open(): void {        
@@ -60,8 +64,6 @@ export class ModalComponent {
     const componentRef = this.alerts.viewContainerRef.createComponent(alertComponent);
     componentRef.instance.messages = 'Nigo Chen';    
     componentRef.instance.status =  true;  
-
-    console.log('ok');
     
     // secondChild
     
@@ -96,8 +98,9 @@ export class ModalComponent {
     // }  
   }
 
-  // close(): void {
-  //   this.modalService.set_modal(false);
-  //   this.ngbModal.dismissAll();
-  // }
+  close(): void {
+    this.fbGroup.reset();
+    this.modalService.set_modal(false);
+    this.ngbModal.dismissAll();
+  }
 }

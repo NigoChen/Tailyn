@@ -2,7 +2,7 @@ import { AbstractControl, FormGroup } from "@angular/forms";
 
 export let ErrorValidators: object = {};
 
-export const Reset_Validators = (fbGroup: FormGroup): void => {
+export const Reset_Validators = (fbGroup: FormGroup): void => {    
     Object.keys(fbGroup.controls).forEach((key: any, index: number) => {    
         ErrorValidators[key] = '';
     });
