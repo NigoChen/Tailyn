@@ -8,11 +8,13 @@ import { ErrorInterceptor } from './helps/error.interceptor';
 import { DashboardModule } from './components/dashboard.module';
 import { ShardModule } from './shard/shard.module';
 import { AuthGuard } from './auth/auth-guard.guard';
+import { AlertsDirective } from './directives/alerts.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    AlertsDirective
   ],
   imports: [
     BrowserModule,

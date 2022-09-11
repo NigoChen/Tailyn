@@ -63,9 +63,7 @@ export class EmployeeComponent implements OnInit {
     private loginService : LoginService,
     private employeeService: EmployeeService, 
     private fb: FormBuilder,
-    private modalService: ModalService) {
-
-    }
+    private modalService: ModalService) {}
 
   ngOnInit(): void {
     this.inputValidators(this.fbGroup);
@@ -73,20 +71,19 @@ export class EmployeeComponent implements OnInit {
     this.result_List = [];
     this.alert = { status: true, type: 'danger', message: '...'};
     this.read();
-
   }
 
-  ngAfterContentInit(): void {
-
-    console.log(this.form_);
-    
+  ngAfterViewInit(): void {
     setTimeout(() => {
-      
-      this.modalService.set_Form(this.form_);
-    }, 4000);
-
+      this.modalService.set_FormGroup(this.fbGroup);
+      this.modalService.set_Form(this.form_);       
+    }, 1000);
   }
 
+  // ngAfterViewChecked(): void {
+  //   console.log(this.form_);
+    
+  // }
 
   // FormGroup Controls Value
   get fb_Value(): { [key: string]: AbstractControl} {
@@ -217,7 +214,7 @@ export class EmployeeComponent implements OnInit {
         this.create();
       }
 
-      this.modal.close();
+      // this.modal.close();
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Employee } from 'src/app/interfaces/employee';
@@ -28,8 +28,11 @@ export class ContentHeaderComponent implements OnInit {
   // @Input() user_: User | null;
   // @Input() fb_Value_:  { [key: string]: AbstractControl};
 
-  constructor(private loginService: LoginService, private modalService: ModalService) {  
-  }
+  constructor(
+    private loginService: LoginService,
+    private modalService: ModalService,
+    private componentFactoryResolver: ComponentFactoryResolver
+    ){}
 
   ngOnInit(): void {
     this.user_Profile();
@@ -76,7 +79,11 @@ export class ContentHeaderComponent implements OnInit {
   
   // Open
   open(): void {
-    this.modalService.set_modal(true);
+
+    const modal = this.componentFactoryResolver.resolveComponentFactory(ModalComponent);
+
+    // modal.
+    // this.modalService.set_modal(true);
     // this.modal.open();
     // this.fbGroup.reset();
     // this.reset_Validators();      

@@ -1,7 +1,8 @@
-import { Component, ContentChild, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
+import { Component, ContentChild, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { Subscription } from 'rxjs';
+import { Alert } from 'src/app/interfaces/alert';
+import { ErrorValidators, InputValidators } from 'src/app/methods/input-validators';
 import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
@@ -12,47 +13,31 @@ import { ModalService } from 'src/app/services/modal.service';
 export class ModalComponent {
 
   @Input() fbGroup: FormGroup;
-  @Output() onSubmit: EventEmitter<any> = new EventEmitter<any>();
+  @Output() close = new EventEmitter();
 
-  @ContentChild('alerts') alerts: TemplateRef<any>;
-  @ContentChild('forms') forms: TemplateRef<any>;
-  @ViewChild('modal') modal: ElementRef<HTMLInputElement>;
-  @ContentChild('form_') form_: TemplateRef<any>;
+  @ViewChild('modal') public modal: ElementRef<HTMLInputElement>;
+
+  // Input Validators blur
+  public inputValidators: Function = InputValidators;
+  // Input Validators Error
+  public errorValidators: object = ErrorValidators;
+  // Alerts
+  public alert: Alert;
 
   constructor(
     private ngbModal: NgbModal,
     private modalService: ModalService,
     config: NgbModalConfig,
-    private vref: ViewContainerRef
-    ) {
+    private vref: ViewContainerRef,
+    private elementRef: ElementRef,
+    private _viewContainerRef: ViewContainerRef
+    )
+  {
       config.backdrop = 'static';
       config.keyboard = false;
-      
-      this.modalService.get_modal().subscribe(res => {
-        if(res)
-        {
-          this.ngbModal.open(this.modal, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'},);
-        }
-      });
-    }
-
-    ngAfterContentInit(): void {
-
-    }
-  
-
-  // FormGroup Controls Value
-  get fb_Value(): { [key: string]: AbstractControl} {
-    return this.fbGroup.controls;
   }
 
   open(): void {    
-
-
-    this.modalService.get_Form().subscribe(res => {
-      console.log(res);
-      this.form_ = res;
-    });
     
     // secondChild
     
@@ -87,8 +72,8 @@ export class ModalComponent {
     // }  
   }
 
-  close(): void {
-    this.modalService.set_modal(false);
-    this.ngbModal.dismissAll();
-  }
+  // close(): void {
+  //   this.modalService.set_modal(false);
+  //   this.ngbModal.dismissAll();
+  // }
 }

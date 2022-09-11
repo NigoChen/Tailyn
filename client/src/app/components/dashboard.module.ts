@@ -16,6 +16,7 @@ import { FooterComponent } from './footer/footer.component';
 import { EmployeeService } from '../services/employee.service';
 import { CommonModule } from '@angular/common';
 import { ChildGuard } from '../auth/child.guard';
+import { AlertComponent } from './alert/alert.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { ChildGuard } from '../auth/child.guard';
     WorkComponent,
     HeaderComponent,
     SidebarComponent,
-    FooterComponent
+    FooterComponent,
+    AlertComponent
   ],
   imports: [
     CommonModule,

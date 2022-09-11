@@ -1,62 +1,14 @@
-
-<!-- <ng-container *ngIf="showmodal && open()"></ng-container>
-{{showmodal}} -->
 <ng-template #modal let-c="close" let-d="dismiss">
   <div class="modal-header text-center">
-    <h4 class="modal-title">
-      <!-- {{ fb_Value['e_Name'].value || '新增項目' }} -->
-    </h4>
-    <!-- <button type="button" class="btn-close" aria-label="Close" (click)="d('Cross click')"></button> -->
+    <h4 class="modal-title">Modal</h4>
   </div>
   <div class="modal-body">
-    <!-- Form -->
-    <!-- <ng-container *ngTemplateOutlet="forms"></ng-container> -->
-    <ng-container *ngTemplateOutlet="form_"></ng-container>
-
-    <!-- /Form -->
-    <!-- Alert -->
-    <ng-content select="ngb-alert"></ng-content>
-    <!-- /Alert -->
   </div>
+
+  <ng-template appAlerts></ng-template>
+  
   <div class="modal-footer d-flex justify-content-between">
-    <button type="button" class="btn btn-outline-secondary" (click)="close()">取消</button>
-    <!-- <button type="submit" class="btn btn-outline-dark" (click)="onSubmit.emit()" [disabled]="!fbGroup.valid">確定</button> -->
+    <button type="button" class="btn btn-outline-secondary" (click)="d('cancel')">取消</button>
+    <button type="submit" class="btn btn-outline-dark">確定</button>
   </div>
 </ng-template>
-
-<!-- <ng-template #form_></ng-template> -->
-
-
-<!-- <ng-template #nigo let-name let-age="age">
-  {{ name }} / {{age}}
-</ng-template>
-
-<ng-container *ngTemplateOutlet="nigo; context:{ $implicit: 'Nigo', age: '20'}"></ng-container>
- -->
-
-
-
-<!-- Header -->
-<!-- <ng-template #default_headers>
-  <th>姓名</th>
-  <th>年齡</th>
-</ng-template> -->
-
-
-<!-- Content -->
-<!-- <ng-template #default_contents>
-  <td>Nikki</td>
-  <td>22</td>
-</ng-template>
-
-
-<table class="table table-light">
-  <tbody> -->
-<!-- <tr>
-      <ng-container *ngTemplateOutlet="headers || default_headers; context: {$implicit: form_Val}"></ng-container>
-    </tr> -->
-<!-- <tr>
-      <ng-container *ngTemplateOutlet="contents || default_contents; context: {$implicit: contents}"></ng-container>
-    </tr>
-  </tbody>
-</table> -->
