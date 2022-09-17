@@ -8,14 +8,18 @@ import { Observable, Subject } from 'rxjs';
 export class ModalService {
 
   private modal: Subject<boolean>;
+  private formControls: Subject<object>;
   private fbGroup: Subject<FormGroup>;
   private form: Subject<TemplateRef<any>>;
+  private close: Subject<Function>;
   private submit: Subject<Function>;
 
   constructor() {
     this.modal = new Subject<boolean>();
+    this.formControls = new Subject<object>();
     this.fbGroup = new Subject<FormGroup>();
     this.form = new Subject<TemplateRef<any>>();
+    this.close = new Subject<Function>();
     this.submit = new Subject<Function>();
   }
 
@@ -25,6 +29,16 @@ export class ModalService {
 
   public set_modal(value: boolean): void {
     this.modal.next(value);
+  }
+
+  // Get FormControls
+  public get_FormControls(): Observable<object> {    
+    return this.formControls.asObservable();
+  }
+  
+  // Set FormControls
+  public set_FormControls(controls: object): void {    
+    this.formControls.next(controls);
   }
 
   // Get FormGroup
@@ -50,6 +64,16 @@ export class ModalService {
   // Get Form
   public get_Submit(): Observable<Function> {    
     return this.submit.asObservable();
+  }
+  
+  // Set Form
+  public set_Close(func: Function): void {    
+    this.close.next(func);
+  }
+
+  // Get Form
+  public get_Close(): Observable<Function> {    
+    return this.close.asObservable();
   }
   
   // Set Form

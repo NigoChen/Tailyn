@@ -1,12 +1,10 @@
 import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
-import { Alert } from 'src/app/interfaces/alert';
 import { Employee } from 'src/app/interfaces/employee';
 import { User } from 'src/app/interfaces/user';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
-import { PasswordMatch } from 'src/app/methods/password-match';
+import { passwordMatchValidator } from 'src/app/methods/password-Match-Validator';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
@@ -30,21 +28,22 @@ export class EmployeeComponent implements OnInit {
 
   // User
   public user: User;
-
+  // Form Controls
+  public form_Controls: object = {
+    e_Id: [''],
+    e_Name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\u4e00-\u9fa5]{2,10}$/)]],
+    e_JobNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{3,5}$/)]],
+    e_PassWord: ['', [Validators.required, Validators.pattern(/^[\d\W\a-zA-Z]{3,30}$/)]],
+    e_ConfirmPassword: ['', [Validators.required]],
+    e_Email: ['', [Validators.required, Validators.maxLength(30), Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/)]],
+    e_Lv: ['1', [Validators.required, Validators.maxLength(1)]]
+  }
   // FormGroup
   public fbGroup: FormGroup = this.fb.group(
-      {
-      e_Id: [''],
-      e_Name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\u4e00-\u9fa5]{2,10}$/)]],
-      e_JobNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{3,5}$/)]],
-      e_PassWord: ['', [Validators.required, Validators.pattern(/^[\d\W\a-zA-Z]{3,30}$/)]],
-      e_ConfirmPassword: ['', [Validators.required]],
-      e_Email: ['', [Validators.required, Validators.maxLength(30), Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/)]],
-      e_Lv: ['', [Validators.required, Validators.maxLength(1)]]
-    },
+      this.form_Controls,
     {
       updateOn: 'blur',
-      validators: [PasswordMatch]
+      validators: [passwordMatchValidator]
     }
   );
 
@@ -62,13 +61,14 @@ export class EmployeeComponent implements OnInit {
     ) {}
 
   ngOnInit(): void {
-    this.reset_Validators();
+    Reset_Validators(this.fbGroup);
     this.result_Data = [];
     this.result_List = [];
     this.read();
   }
 
   ngAfterViewInit(): void {
+    this.modalService.set_FormControls(this.form_Controls);
     this.modalService.set_FormGroup(this.fbGroup);
     this.modalService.set_Form(this.form_);            
     this.modalService.set_Submit(this.onSubmit);            
@@ -81,11 +81,6 @@ export class EmployeeComponent implements OnInit {
   // FormGroup Controls Value
   get fb_Value(): { [key: string]: AbstractControl} {
     return this.fbGroup.controls;
-  }
-
-  // Reset Validators
-  reset_Validators(): void {
-    Reset_Validators(this.fbGroup);
   }
 
   // User Profile
@@ -119,11 +114,11 @@ export class EmployeeComponent implements OnInit {
   // Open
   open(): void {
     this.modal.open();
-    this.fbGroup.reset();
-    this.reset_Validators();      
-    this.fb_Value['e_ConfirmPassword'].setValidators([Validators.required]); 
-    this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
-    this.fb_Value['e_Lv'].patchValue('1');
+    // this.fbGroup.reset();
+    // Reset_Validators(this.fbGroup);    
+    // this.fb_Value['e_ConfirmPassword'].setValidators([Validators.required]); 
+    // this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
+    // this.fb_Value['e_Lv'].patchValue('1');
   }
 
   // Create

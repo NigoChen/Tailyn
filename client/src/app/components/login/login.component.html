@@ -54,15 +54,15 @@
                                     <div class="form-group mb-2">
                                         <label for="newPassWord">新密碼</label>
                                         <div class="input-group input-group-md">
-                                            <input [type]="password_Type" id="newPassWord" class="form-control"
+                                            <input [type]="'password'" id="newPassWord" class="form-control"
                                                 formControlName="newPassWord" minlength="3" maxlength="20"
-                                                autocomplete="false" required>
+                                                autocomplete="false" #newPassWord_Type>
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text" (click)="toggle_password_Type();"
-                                                    style="cursor: pointer;">
-                                                    <i
-                                                        [ngClass]="password_Type == 'text' ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill'"></i>
-                                                </span>
+                                                <span class="input-group-text"
+                                                (click)="newPassWord_Type.type == 'text' ? newPassWord_Type.type = 'password': newPassWord_Type.type = 'text'"
+                                                style="cursor: pointer;">
+                                                <i [ngClass]="newPassWord_Type.type == 'password' ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill'"></i>
+                                              </span>
                                             </div>
                                         </div>
                                     </div>
@@ -79,15 +79,15 @@
                             <div class="form-group mb-2">
                                 <label for="passWord">密碼</label>
                                 <div class="input-group input-group-md">
-                                    <input [type]="password_Type" id="passWord" class="form-control"
+                                    <input [type]="'passWord'" id="passWord" class="form-control"
                                         formControlName="passWord" minlength="3" maxlength="20" autocomplete="false"
-                                        required>
+                                        #passWord_Type>
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text" (click)="toggle_password_Type()"
-                                            style="cursor: pointer;">
-                                            <i
-                                                [ngClass]="password_Type == 'text' ? 'bi bi-eye-fill' : 'bi bi-eye-slash-fill'"></i>
-                                        </span>
+                                        <span class="input-group-text"
+                                        (click)="passWord_Type.type == 'text' ? passWord_Type.type = 'password': passWord_Type.type = 'text'"
+                                        style="cursor: pointer;">
+                                        <i [ngClass]="passWord_Type.type == 'password' ? 'bi bi-eye-slash-fill' : 'bi bi-eye-fill'"></i>
+                                      </span>
                                     </div>
                                 </div>
                             </div>

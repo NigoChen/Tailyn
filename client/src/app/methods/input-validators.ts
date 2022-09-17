@@ -17,7 +17,7 @@ export const InputValidators = (fbGroup: AbstractControl, controlsName: string =
         ErrorValidators[controlsName] = '';        
     
         if(errorKey != null)
-        {
+        {            
             if(errorKey.required)
             {
                 ErrorValidators[controlsName] = '未輸入';
@@ -25,7 +25,7 @@ export const InputValidators = (fbGroup: AbstractControl, controlsName: string =
 
             if(errorKey.pattern)
             {
-                ErrorValidators[controlsName] = '格式不符';
+                ErrorValidators[controlsName] = '格式錯';
             }
         }
         

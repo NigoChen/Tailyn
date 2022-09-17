@@ -14,9 +14,6 @@ import { AlertComponent } from '../alert/alert.component';
 })
 export class LoginComponent implements OnInit {
 
-  // Input Password type
-  public password_Type: string = 'password';
-
   // counter
   public iscounter?: Subscription | null;
   
@@ -116,12 +113,6 @@ export class LoginComponent implements OnInit {
       ip: '',
       counter: this.loginService.read_Time_SessionStorage() ? this.loginService.read_Time_SessionStorage() : 0
     };
-  }
-
-  //  Toggle PassWord Type
-  toggle_password_Type(): void
-  {
-    this.password_Type = this.password_Type == 'password' ? 'text' : 'password';
   }
 
   // Toggle View

@@ -2,7 +2,7 @@ import { Component, ComponentFactoryResolver, ElementRef, EventEmitter, Input, O
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { AlertsDirective } from 'src/app/directives/alerts.directive';
-import { ErrorValidators, InputValidators } from 'src/app/methods/input-validators';
+import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
 import { ModalService } from 'src/app/services/modal.service';
 import { AlertComponent } from '../alert/alert.component';
 
@@ -16,11 +16,13 @@ export class ModalComponent {
   // @Input() fbGroup: FormGroup;
   // @Input() errorValidators: object = ErrorValidators;
   // @Input() inputValidators: Function = InputValidators;
+  
+  public form: TemplateRef<any>;
+  public formControls: object;
+  public fbGroup: FormGroup;
+  public errorValidators: object = ErrorValidators;
 
-
-  @Input() form: TemplateRef<any>;
-  @Input() fbGroup: FormGroup;
-  @Input() submit: Function;
+  public submit: Function;
   // Modal 
   @ViewChild('modal') public modal: ElementRef<HTMLInputElement>;
   // Alert
@@ -38,27 +40,23 @@ export class ModalComponent {
   {
       config.backdrop = 'static';
       config.keyboard = false;
+  }
 
-      this.modalService.get_modal().subscribe(res => {
-        if(res)
-        {
-          this.ngbModal.open(this.modal, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'});
-        }
-      });
-      this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
-      this.modalService.get_Form().subscribe(res => this.form = res);
-      this.modalService.get_Submit().subscribe(res => this.submit = res);
-      // this.modalService.get_InputValidators().subscribe(res => this.inputValidators = res);
+  ngOnInit(): void {
+    this.modalService.get_modal().subscribe(res => {
+      if(res)
+        this.ngbModal.open(this.modal, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'});
+    });
+    this.modalService.get_FormControls().subscribe(res => this.formControls = res);
+    this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
+    this.modalService.get_Form().subscribe(res => this.form = res);
+    this.modalService.get_Submit().subscribe(res => this.submit = res);
   }
 
   ngAfterContentInit(): void {
-    console.log('mmmm');
-    
   }
 
   open(): void {        
-    
-
     const alertComponent = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
     this.alerts.viewContainerRef.clear();
     const componentRef = this.alerts.viewContainerRef.createComponent(alertComponent);
@@ -99,7 +97,10 @@ export class ModalComponent {
   }
 
   close(): void {
-    this.fbGroup.reset();
+    this.fbGroup.reset({
+      e_Lv: '1'
+    });
+    Reset_Validators(this.fbGroup);
     this.modalService.set_modal(false);
     this.ngbModal.dismissAll();
   }
