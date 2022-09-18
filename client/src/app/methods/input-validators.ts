@@ -12,12 +12,14 @@ export const InputValidators = (fbGroup: AbstractControl, controlsName: string =
 
     if(controlsName.length)
     {
-        const errorKey: any = fbGroup.get(controlsName).errors;        
+        const errorKey: any = fbGroup.get(controlsName).errors; 
+        
+        const otherErrorKey: boolean = fbGroup.hasError('passWordMatch');        
     
         ErrorValidators[controlsName] = '';        
     
         if(errorKey != null)
-        {            
+        {                        
             if(errorKey.required)
             {
                 ErrorValidators[controlsName] = '未輸入';
@@ -27,6 +29,10 @@ export const InputValidators = (fbGroup: AbstractControl, controlsName: string =
             {
                 ErrorValidators[controlsName] = '格式錯';
             }
+        }
+        else if(otherErrorKey && controlsName == 'e_ConfirmPassword')
+        {
+            ErrorValidators[controlsName] = '密碼不符';            
         }
         
         return ErrorValidators[controlsName];

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { Employee } from 'src/app/interfaces/employee';
 import { User } from 'src/app/interfaces/user';
 import { LoginService } from 'src/app/services/login.service';
@@ -12,6 +13,8 @@ import { ModalService } from 'src/app/services/modal.service';
 export class ContentHeaderComponent implements OnInit {
   // User
   public user: User;
+  public fbGroup: FormGroup;
+
   // Modal
   // private modal_Subscription: Subscription;
 
@@ -31,6 +34,12 @@ export class ContentHeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.user_Profile();
+    this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
+  }
+
+  // FormGroup Controls Value By Index
+  get fb_Value_Index(): { [key: number]: string} {
+    return Object.values(this.fbGroup.value) || '';
   }
 
   // User Profile
@@ -72,20 +81,10 @@ export class ContentHeaderComponent implements OnInit {
     }
   }
   
-  // Open
-  open(): void {
-
-
-    // modal.
-    this.modalService.set_modal(true);
-    // this.modal.open();
-    // this.fbGroup.reset();
-    // this.reset_Validators();      
-    // this.fb_Value['e_ConfirmPassword'].setValidators([Validators.required]); 
-    // this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
-    // this.fb_Value['e_Lv'].patchValue('1');
+  // Toggle Modal Show / hide
+  toggle(show: string, status: string): void {
+    this.modalService.set_modalForm([show, status]);
   }
-
   
   // Refresh
   refresh(): void {}
@@ -93,12 +92,14 @@ export class ContentHeaderComponent implements OnInit {
   // Search
   search(): void {}
 
-  // Update
-  update(): void {
-
-  }
+  // // Update
+  // update(): void {
+  //   this.modalService.set_modalForm(true);
+  // }
 
   // Delete
-  delete(): void {}
+  delete(): void {
+    this.modalService.set_modalSM(true);
+  }
 
 }

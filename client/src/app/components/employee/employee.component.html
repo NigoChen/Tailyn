@@ -1,15 +1,12 @@
-<!-- <app-content-header (refresh_)="refresh()" (search_)="search()" (open_)="open()" (update_)="update()"
-    (delete_)="delete()" [user_]="user" [fb_Value_]="fb_Value['e_Lv'].value">
-  </app-content-header> -->
 <!-- Form -->
-<div class="container-lg border border-dark p-2">
+<div class="container-lg border border-dark p-2 mt-2 mb-2">
   Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor, nam.
 </div>
 <!-- /Form -->
 
 <!-- Table -->
 <table class="table table-striped">
-  <thead>
+  <thead class="thead-dark">
     <tr>
       <th scope="col">姓名</th>
       <th scope="col">信箱</th>
@@ -18,7 +15,8 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let item of result_Async$ | async; index as i">
+    <tr *ngFor="let item of result_Async$ | async; index as i" [ngClass]="{'text-light bg-dark': item?.e_Id == fb_Value['e_Id'].value}" (click)="choose(item)">
+    <!-- <tr *ngFor="let item of result_List; index as i"> -->
       <td>{{ item.e_Name }}</td>
       <td>{{ item.e_Email }}</td>
       <td>{{ item.e_JobNumber }}</td>
@@ -33,8 +31,7 @@
   <form [formGroup]="fbGroup" (ngSubmit)="onSubmit()" #form="ngForm">
     <!-- Name -->
     <div class="form-group row">
-      <label for="e_Name" class="col-3 col-form-label"
-        *ngIf="!errorValidators['e_Name'].length; else e_Name">姓名</label>
+      <label for="e_Name" class="col-3 col-form-label" *ngIf="!errorValidators['e_Name'].length; else e_Name">姓名</label>
 
       <ng-template #e_Name>
         <label for="name" class="col-3 col-form-label text-danger">{{ errorValidators['e_Name'] }}</label>
@@ -68,8 +65,7 @@
         *ngIf="!errorValidators['e_PassWord'].length; else e_PassWord">密碼</label>
 
       <ng-template #e_PassWord>
-        <label for="e_PassWord" class="col-3 col-form-label text-danger">{{ errorValidators['e_PassWord']
-          }}</label>
+        <label for="e_PassWord" class="col-3 col-form-label text-danger">{{ errorValidators['e_PassWord'] }}</label>
       </ng-template>
 
       <div class="col">
@@ -90,15 +86,14 @@
     <!-- ConfirmPassword -->
     <div class="form-group row">
 
-      <!-- <ng-template *ngIf="!errorValidators['e_ConfirmPassword'].length" [ngIfElse]="loading">
-      </ng-template> -->
-
       <label for="e_ConfirmPassword" class="col-3 col-form-label"
-        *ngIf="!errorValidators['e_ConfirmPassword'].length && !fbGroup.hasError('passWordMatch'); else e_ConfirmPassword">確認密碼</label>
+        *ngIf="!errorValidators['e_ConfirmPassword'].length; else e_ConfirmPassword">
+        確認密碼
+      </label>
 
       <ng-template #e_ConfirmPassword>
         <label for="e_ConfirmPassword" class="col-3 col-form-label text-danger">
-          <span class="text-danger h6">{{ errorValidators['e_ConfirmPassword'] || '錯誤' }}</span>
+          <span class="text-danger h6">{{ errorValidators['e_ConfirmPassword'] }}</span>
         </label>
       </ng-template>
 
