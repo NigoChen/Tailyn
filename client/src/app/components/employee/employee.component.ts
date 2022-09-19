@@ -1,4 +1,4 @@
-import { Component, ComponentFactoryResolver, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ComponentFactoryResolver, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Employee } from 'src/app/interfaces/employee';
@@ -71,9 +71,11 @@ export class EmployeeComponent implements OnInit {
     private fb: FormBuilder,
     private modalService: ModalService,
     ) {
-      this.modalService.get_modalForm().subscribe(res => {
-        this.reset_FormGroup(res);
-      });
+      this.modalService.get_modalForm().subscribe(res => this.reset_FormGroup(res));
+      this.modalService.get_Search().subscribe(res => this.search(res));
+      this.modalService.get_Read().subscribe(res => this.read());
+      this.modalService.get_Update().subscribe(res => this.update(res));
+      this.modalService.get_Delete().subscribe(res => this.delete(res));
     }
 
   ngOnInit(): void {
@@ -87,13 +89,7 @@ export class EmployeeComponent implements OnInit {
     this.modalService.set_FormControls(this.form_Controls);
     this.modalService.set_FormGroup(this.fbGroup);
     this.modalService.set_Form(this.form_);            
-    this.modalService.set_Submit(this.onSubmit);            
-    this.modalService.set_Update(this.update);            
-    this.modalService.set_Create(this.create);            
-    this.modalService.set_Read(this.read);            
-    this.modalService.set_User_Profile(this.user_Profile);            
-    this.modalService.set_Result_List(this.result_List);            
-    this.modalService.set_Result_Data(this.result_Data);            
+    this.modalService.set_User_Profile(this.user_Profile);          
   }
 
   // ngAfterViewChecked(): void {
@@ -190,7 +186,7 @@ export class EmployeeComponent implements OnInit {
           if(res.length)
           {            
             // const arr = res[0].e_Inventory.split(',').filter(Boolean);
-            this.result_Async$ = this.employeeService.read();
+            // this.result_Async$ = this.employeeService.read();
             this.result_Data = res;
             this.result_List = res;
             this.user_Profile(res);
@@ -210,21 +206,82 @@ export class EmployeeComponent implements OnInit {
   refresh(): void {}
 
   // Search
-  search(): void {}
+  // search(searchText: HTMLInputElement): void {
+  search(searchText: string): void {
+
+    this.result_List = [];
+
+    for (let i = 0; i < this.result_Data.length; i++)
+    {
+      if (this.result_Data[i]['e_JobNumber'].includes(searchText) || this.result_Data[i]['e_Name'].includes(searchText))
+      {
+        this.result_List.push(this.result_Data[i]);
+      }
+    }    
+  }
 
   // Update
-  update(): void {
-    this.fb_Value['e_ConfirmPassword'].clearAsyncValidators();
-    this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
+  update(fg: FormGroup): void {
+
+    console.log(fg);
+
+    delete fg.controls.e_ConfirmPassword;
+
+    // const data: Employee = this.fb.control;
+    
+    this.employeeService.update(fg.value)
+    .subscribe(
+      {
+        next: (res: boolean) => {
+          if(res)
+          {
+            this.read();
+            // this.rightModal.hide();
+          }
+          else
+          {
+            // this.error_Alert_Toggle(this.f['e_JobNumber'].value+'更新失敗');
+          }
+
+          // this.stateView.next({loading: false, error: false});
+        },
+        error: (err) => {
+          // this.stateView.next({loading: true, error: true});
+        },
+        complete: () => {
+          // this.stateView.next({loading: false, error: false});
+        }
+      }
+    )
   }
 
   // Delete
-  delete(): void {
-  }
+  delete(id: number): void {
+    this.employeeService.delete(id)
+    .subscribe(
+      {
+        next: (res: boolean) => {
+          if(res)
+          {      
+            // this.read();
+          }
+          else
+          {
+            // this.error_Alert_Toggle('無法刪除會員');
+          }
 
+          // this.stateView.next({loading: false, error: false});
+        },
+        error: (err) => {
+          // this.stateView.next({loading: true, error: true});
+        }
+      }
+    );
+  }
 
   // choose
   choose(item: Employee): void {
+
     this.fbGroup.patchValue({
       e_Id: item.e_Id,
       e_Name: item.e_Name,
@@ -232,27 +289,27 @@ export class EmployeeComponent implements OnInit {
       e_Email: item.e_Email,
       e_Lv: item.e_Lv
     });
-    
+
+    // @Input() control: AbstractControl;
+    // let listOfAllValidationRules = this.control.getValidators().push(validateZipFn(countryCode)]);
+    // this.control.setValidators(listOfAllValidationRules);
+
     // Update Modal FormGroup
     this.modalService.set_FormGroup(this.fbGroup);
   }
 
   // Submit
   onSubmit(): void {    
-
-    console.log(Object.values(this.fbGroup.value));
-    
-    
-    // if(this.fbGroup.valid)
-    // {      
-    //   if(this.fb_Value['e_Id'].value.length)
-    //   {        
-    //     this.update();
-    //   }
-    //   else
-    //   {      
-    //     this.create();
-    //   }
-    // }
+    if(this.fbGroup.valid)
+    {      
+      if(this.fb_Value['e_Id'].value.length)
+      {        
+        // this.update();
+      }
+      else
+      {      
+        this.create();
+      }
+    }
   }
 }

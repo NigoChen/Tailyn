@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Employee } from 'src/app/interfaces/employee';
 import { User } from 'src/app/interfaces/user';
@@ -14,7 +14,7 @@ export class ContentHeaderComponent implements OnInit {
   // User
   public user: User;
   public fbGroup: FormGroup;
-
+  public searchText: string;
   // Modal
   // private modal_Subscription: Subscription;
 
@@ -33,8 +33,14 @@ export class ContentHeaderComponent implements OnInit {
     ){}
 
   ngOnInit(): void {
+    this.searchText = '';
     this.user_Profile();
     this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
+  }
+
+  ngAfterViewInit(): void {
+
+
   }
 
   // FormGroup Controls Value By Index
@@ -86,11 +92,16 @@ export class ContentHeaderComponent implements OnInit {
     this.modalService.set_modalForm([show, status]);
   }
   
-  // Refresh
-  refresh(): void {}
+  // Read
+  read(): void {
+    this.searchText = '';
+    this.modalService.set_Read(true);
+  }
 
   // Search
-  search(): void {}
+  search(): void {
+    this.modalService.set_Search(this.searchText);    
+  }
 
   // // Update
   // update(): void {

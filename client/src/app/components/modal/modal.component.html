@@ -17,7 +17,7 @@
   <!-- Footer -->
   <div class="modal-footer d-flex justify-content-between">
     <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('Cross click')">取消</button>
-    <button type="submit" class="btn btn-outline-dark" (click)="submit()" [disabled]="!fbGroup.valid">確定</button>
+    <button type="submit" class="btn btn-outline-dark" (click)="onSubmit()" [disabled]="!fbGroup.valid && !fb_Value_Index[0]">確定</button>
   </div>
   <!-- /Footer -->
 </ng-template>

@@ -85,7 +85,7 @@ export class EmployeeService {
   }
 
   // Delete
-  private delete(id: number): Observable<boolean>
+  public delete(id: number): Observable<boolean>
   {    
     return this.http.delete<boolean>(`${Urls.employee.delete}/${id}`)
     .pipe(catchError(this.handleError))

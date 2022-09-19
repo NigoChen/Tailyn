@@ -4,13 +4,13 @@
     <div class="col-md-7 col-sm-8">
       <div class="input-group input-group-sm mb-3">
         <div class="input-group-prepend">
-          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="refresh()"
-            [disabled]="!search_Input.value.length">刷新</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="read()"
+            [disabled]="!searchText.length">刷新</button>
         </div>
-        <input type="text" class="form-control" maxlength="20" ngModel #search_Input>
+        <input type="text" class="form-control" maxlength="20" [(ngModel)]="searchText">
         <div class="input-group-append">
           <button type="button" class="btn btn-secondary btn-sm" (click)="search()"
-            [disabled]="!search_Input.value.length">搜尋</button>
+            [disabled]="!searchText.length">搜尋</button>
         </div>
       </div>
     </div>

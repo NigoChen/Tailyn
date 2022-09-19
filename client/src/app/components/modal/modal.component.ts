@@ -66,13 +66,7 @@ export class ModalComponent {
     this.modalService.get_FormControls().subscribe(res => this.formControls = res);
     this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
     this.modalService.get_Form().subscribe(res => this.form = res);
-    this.modalService.get_Submit().subscribe(res => this.submit = res);
-    this.modalService.get_Update().subscribe(res => this.update = res);
-    this.modalService.get_Create().subscribe(res => this.create = res);
-    this.modalService.get_Read().subscribe(res => this.read = res);
     this.modalService.get_User_Profile().subscribe(res => this.user_Profile = res);
-    this.modalService.get_Result_List().subscribe(res => this.result_List = res);
-    this.modalService.get_Result_Data().subscribe(res => this.result_Data = res);
   }
 
   // FormGroup Controls Value
@@ -132,6 +126,11 @@ export class ModalComponent {
     if(arr[0] == 'show')
     {
       this.ngbModal.open(this.modalForm, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'});
+      
+      if(arr[1] == 'update')
+      {
+        // this.modalService.set_UpdateForm(true);
+      }
     }
     else
     {
@@ -142,6 +141,18 @@ export class ModalComponent {
 
   // Delete
   delete(): void {
+    const id: number = parseInt(this.fb_Value_Index[0]);
+    this.modalService.set_Delete(id);
+    this.ngbModal.dismissAll();
+  }
 
+  onSubmit(): void {
+
+
+    // if(this.fbGroup.valid && this.fb_Value_Index[0])
+    if(this.fb_Value_Index[0])
+    {      
+        this.modalService.set_Update(this.fbGroup);
+    }
   }
 }
