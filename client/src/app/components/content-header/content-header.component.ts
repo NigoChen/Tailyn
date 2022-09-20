@@ -15,9 +15,11 @@ export class ContentHeaderComponent implements OnInit {
   public user: User;
   public fbGroup: FormGroup;
   public searchText: string;
+  // Delay Time
+  public delayTime: boolean;
+
   // Modal
   // private modal_Subscription: Subscription;
-
 
   // @Output() refresh_: EventEmitter<any> = new EventEmitter<any>();
   // @Output() search_: EventEmitter<any> = new EventEmitter<any>();
@@ -35,13 +37,11 @@ export class ContentHeaderComponent implements OnInit {
   ngOnInit(): void {
     this.searchText = '';
     this.user_Profile();
+    this.delayTime = true;
     this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
   }
 
-  ngAfterViewInit(): void {
-
-
-  }
+  ngAfterViewInit(): void {}
 
   // FormGroup Controls Value By Index
   get fb_Value_Index(): { [key: number]: string} {
@@ -94,8 +94,12 @@ export class ContentHeaderComponent implements OnInit {
   
   // Read
   read(): void {
+    this.delayTime = false;
     this.searchText = '';
     this.modalService.set_Read(true);
+    setTimeout(() => {
+      this.delayTime = true;
+    }, 5000);
   }
 
   // Search

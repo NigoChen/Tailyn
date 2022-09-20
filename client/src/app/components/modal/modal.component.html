@@ -2,11 +2,12 @@
 <ng-template #modalForm let-modal>
   <!-- Header -->
   <div class="modal-header">
-    <h4 class="modal-title">
-      <!-- Alert -->
-      <ng-container *ngTemplateOutlet="alert"></ng-container>
-      <!-- /Alert -->
-    </h4>
+    <!-- Alert -->
+    <ngb-alert *ngIf="alerts.status" class="modal-title text-center w-100 p-0" [type]="alerts.type"
+      (click)="alerts.status = !alerts.status" animation="true" [dismissible]="true">
+      <p>{{ alerts.message }}</p>
+    </ngb-alert>
+    <!-- /Alert -->
   </div>
   <!-- /Header -->
   <div class="modal-body">
@@ -17,7 +18,8 @@
   <!-- Footer -->
   <div class="modal-footer d-flex justify-content-between">
     <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('Cross click')">取消</button>
-    <button type="submit" class="btn btn-outline-dark" (click)="onSubmit()" [disabled]="!fbGroup.valid && !fb_Value_Index[0]">確定</button>
+    <button type="button" class="btn btn-outline-dark" (click)="save()"
+      [disabled]="!fbGroup.valid && !fb_Value_Index[0]">確定</button>
   </div>
   <!-- /Footer -->
 </ng-template>
@@ -27,11 +29,12 @@
 <ng-template #modalSM let-modal>
   <!-- Header -->
   <div class="modal-header">
-    <h4 class="modal-title">
-      <!-- Alert -->
-      <ng-container *ngTemplateOutlet="alert"></ng-container>
-      <!-- /Alert -->
-    </h4>
+    <!-- Alert -->
+    <ngb-alert *ngIf="alerts.status" class="modal-title text-center w-100 p-0" [type]="alerts.type"
+      (click)="alerts.status = !alerts.status" animation="true" [dismissible]="true">
+      <p>{{ alerts.message }}</p>
+    </ngb-alert>
+    <!-- /Alert -->
   </div>
   <!-- /Header -->
   <div class="modal-body">
@@ -44,9 +47,6 @@
       <strong>{{fb_Value_Index[1]}}</strong>
       {{fb_Value_Index[2]}}
     </p>
-    <!-- Alert -->
-    <ng-container *ngTemplateOutlet="alert"></ng-container>
-    <!-- /Alert -->
   </div>
   <!-- Footer -->
   <div class="modal-footer d-flex justify-content-between">
@@ -58,7 +58,9 @@
 <!-- /Modal SM -->
 
 <!-- Alert -->
+<!-- <ng-container *ngTemplateOutlet="alert"></ng-container>
+
 <ng-template #alert>
   <div appAlerts></div>
-</ng-template>
+</ng-template> -->
 <!-- /Alert -->

@@ -16,13 +16,12 @@ class EmployeeController
         const passWord:string = md5_PassWord(data.e_PassWord);
         const lv:number = data.e_Lv;
 
-        const sql:string = `INSERT INTO employee(e_JobNumber, e_Name, e_PassWord, e_Email, e_Lv) `+
+        const sql: string = `INSERT INTO employee(e_JobNumber, e_Name, e_PassWord, e_Email, e_Lv) `+
                            `SELECT * FROM (SELECT '${jNumber}' AS e_JobNumber, '${name}' AS e_Name, '${passWord}' AS e_PassWord, '${email}' AS e_Email, '${lv}' AS e_Lv) AS new_value `+
                            `WHERE NOT EXISTS (SELECT e_JobNumber FROM employee WHERE e_JobNumber = '${jNumber}') LIMIT 1`;
         
         await pool.then(con => {
-            return con.query(sql)
-            .then((result:any) => {                
+            return con.query(sql).then((result:any) => {                
                 if (result.insertId > 0)
                 {                    
                     res.status(200).send(true);
@@ -41,11 +40,10 @@ class EmployeeController
     public async read(req: Request, res: Response): Promise<void>
     {
         // const sql:string = 'SELECT employee.* FROM employee WHERE NOT EXISTS(SELECT recycle.r_ClassId, recycle.r_Title FROM recycle WHERE employee.e_Id = recycle.r_ClassId AND recycle.r_Title = "員工") GROUP BY employee.e_Id';
-        const sql:string = 'SELECT * FROM employee';
+        const sql: string = 'SELECT * FROM employee';
 
         await pool.then(con => {
-            return con.query(sql)
-            .then((result:Array<Object>) => {
+            return con.query(sql).then((result: Array<Object>) => {
                 if(result.length > 0)
                 {
                     res.status(200).json(result);
@@ -70,9 +68,7 @@ class EmployeeController
         const sql: string = `SELECT * FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}'`;
 
         await pool.then(con => {
-            return con.query(sql)
-            .then((result:Array<Object>) => {
-                
+            return con.query(sql).then((result: Array<Object>) => {
                 if(result.length > 0)
                 {
                     res.status(200).json(result);                    
@@ -92,9 +88,10 @@ class EmployeeController
     {
         const user:any = JSON.parse(req.params.q);
 
+        const sql: string = `SELECT e_JobNumber,e_Name,e_Email,e_Lv,e_Inventory,e_Img FROM employee WHERE e_Name = '${user.e_Name}' AND e_JobNumber = '${user.e_JobNumber}'`;
+
         await pool.then(con => {
-            return con.query(`SELECT e_JobNumber,e_Name,e_Email,e_Lv,e_Inventory,e_Img FROM employee WHERE e_Name = '${user.e_Name}' AND e_JobNumber = '${user.e_JobNumber}'`)
-            .then((result:Array<Employee>) => {                
+            return con.query(sql).then((result: Array<Employee>) => {                
                 if(result.length > 0)
                 {
                     res.status(200).json(result);
@@ -115,9 +112,10 @@ class EmployeeController
         // con.query('DESCRIBE employee');
         const like = req.params.q;
 
+        const sql: string = `SELECT * FROM employee WHERE e_JobNumber = '${like}' OR e_Name = '${like}'`;
+
         await pool.then(con => {
-            return con.query(`SELECT * FROM employee WHERE e_JobNumber = '${like}' OR e_Name = '${like}'`)
-            .then((result:Array<Object>) => {
+            return con.query(sql).then((result: Array<Object>) => {
                 if(result.length > 0)
                 {
                     res.status(200).json(result);
@@ -139,7 +137,7 @@ class EmployeeController
 
         await pool.then(con => {
 
-            let query_:any;
+            let query_: any;
 
             if('e_PassWord' in data)
             {
@@ -158,8 +156,7 @@ class EmployeeController
                 query_ = con.query(`UPDATE employee SET e_Name = '${data.e_Name}',e_PassWord = '${data.e_PassWord}',e_Email = '${data.e_Email}' WHERE e_Id = '${data.e_Id}' AND e_JobNumber = '${data.e_JobNumber}'`);
             }
 
-            return query_
-            .then((result:any) => {
+            return query_.then((result: any) => {
                 if (result.affectedRows > 0)
                 {
                     res.status(200).send(true);
@@ -185,8 +182,9 @@ class EmployeeController
         
                 data.newPassWord = md5_PassWord(data.newPassWord);
 
-                return con.query(`UPDATE employee SET e_PassWord = '${data.newPassWord}' WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`)
-                .then((result: any) => {
+                const sql: string = `UPDATE employee SET e_PassWord = '${data.newPassWord}' WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
+
+                return con.query(sql).then((result: any) => {
                     if (result.affectedRows > 0)
                     {
                         res.status(200).send(true);
@@ -213,11 +211,10 @@ class EmployeeController
 
         await pool.then(con => {
 
-            const query_ = con.query(`UPDATE employee SET e_Inventory = CONCAT(e_Inventory, ',') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
+            const sql: string = `UPDATE employee SET e_Inventory = CONCAT(e_Inventory, ',') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`;
             // const query_ = con.query(`UPDATE employee SET e_Inventory = CONCAT(e_Inventory, '${data.e_Inventory},') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
 
-            return query_
-            .then((result:any) => {
+            return con.query(sql).then((result: any) => {
                 if (result.affectedRows > 0)
                 {
                     res.status(200).send(true);
@@ -238,11 +235,10 @@ class EmployeeController
         const data:Employee = req.body;
 
         await pool.then(con => {
-            const query_ = con.query(`UPDATE employee SET e_Inventory = REPLACE(TRIM(e_Inventory), ',', '') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
+            const sql: string = `UPDATE employee SET e_Inventory = REPLACE(TRIM(e_Inventory), ',', '') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`;
             // const query_ = con.query(`UPDATE employee SET e_Inventory = REPLACE(TRIM(e_Inventory), '${data.e_Inventory},', '') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
 
-            return query_
-            .then((result:any) => {
+            return con.query(sql).then((result: any) => {
                 if (result.affectedRows > 0)
                 {
                     res.status(200).send(true);
@@ -261,7 +257,7 @@ class EmployeeController
     public async delete(req: Request, res: Response): Promise<void>
     {
         const id:string = req.params.id;
-        
+
         await pool.then(con => {
             return con.query('DELETE FROM employee WHERE e_Id = ?', [id])
             .then((result:any) => {
@@ -286,13 +282,12 @@ class EmployeeController
 
         if(('email' in data) && ('jNumber' in data) && ('ip' in data))
         {                        
+            const sql: string = `SELECT e_JobNumber,e_Email FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
             await pool.then(con => {
-                return con.query(`SELECT e_JobNumber,e_Email FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`)
-                .then((result: Employee[]) => {
+                return con.query(sql).then((result: Employee[]) => {
                     if (result.length > 0)
                     {                        
                         send_Email(data.ip, result[0].e_Email);
-
                         res.status(200).send(true);
                     }
                     else

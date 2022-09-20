@@ -28,7 +28,7 @@
 
 <!-- Template -->
 <ng-template #form_>
-  <form [formGroup]="fbGroup" (ngSubmit)="onSubmit()" #form="ngForm">
+  <form [formGroup]="fbGroup" #form="ngForm">
     <!-- Name -->
     <div class="form-group row">
       <label for="e_Name" class="col-3 col-form-label" *ngIf="!errorValidators['e_Name'].length; else e_Name">姓名</label>

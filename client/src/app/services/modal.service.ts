@@ -12,16 +12,12 @@ export class ModalService {
   private formControls: Subject<object>;
   private fbGroup: Subject<FormGroup>;
   private form: Subject<TemplateRef<any>>;
-  // private close: Subject<Function>;
-  private submit: Subject<Function>;
   private update: Subject<FormGroup>;
-  private create: Subject<Function>;
+  private create: Subject<FormGroup>;
   private read: Subject<boolean>;
   private delete: Subject<number>;
   private search: Subject<string>;
   private user_Profile: Subject<Function>;
-  private result_Data: Subject<Array<any>>;
-  private result_List: Subject<Array<any>>;
 
   constructor() {
     this.modalForm = new Subject<Array<string>>();
@@ -29,16 +25,12 @@ export class ModalService {
     this.formControls = new Subject<object>();
     this.fbGroup = new Subject<FormGroup>();
     this.form = new Subject<TemplateRef<any>>();
-    // this.close = new Subject<Function>();
-    this.submit = new Subject<Function>();
     this.update = new Subject<FormGroup>();
-    this.create = new Subject<Function>();
+    this.create = new Subject<FormGroup>();
     this.read = new Subject<boolean>();
     this.delete = new Subject<number>();
     this.search = new Subject<string>();
     this.user_Profile = new Subject<Function>();
-    this.result_List = new Subject<Array<any>>();
-    this.result_Data = new Subject<Array<any>>();
   }
 
   public get_modalForm(): Observable<Array<string>> {
@@ -86,16 +78,6 @@ export class ModalService {
   public set_Form(templateRef: TemplateRef<any>): void {    
     this.form.next(templateRef);
   }
-
-  // Get Submit
-  public get_Submit(): Observable<Function> {    
-    return this.submit.asObservable();
-  }
-
-  // Set Submit
-  public set_Submit(func: Function): void {    
-    this.submit.next(func);
-  }
   
   // Get Update
   public get_Update(): Observable<FormGroup> {    
@@ -108,13 +90,13 @@ export class ModalService {
   }
   
   // Get Create
-  public get_Create(): Observable<Function> {    
+  public get_Create(): Observable<FormGroup> {    
     return this.create.asObservable();
   }
 
   // Set Create
-  public set_Create(func: Function): void {    
-    this.create.next(func);
+  public set_Create(fg: FormGroup): void {    
+    this.create.next(fg);
   }
 
   // Get Read
@@ -156,34 +138,4 @@ export class ModalService {
   public set_User_Profile(func: Function): void {    
     this.user_Profile.next(func);
   }
-
-  // Get Read
-  public get_Result_List(): Observable<Array<any>> {    
-    return this.result_List.asObservable();
-  }
-
-  // Set Read
-  public set_Result_List(func: Array<any>): void {    
-    this.result_List.next(func);
-  }
-
-  // Get Read
-  public get_Result_Data(): Observable<Array<any>> {    
-    return this.result_Data.asObservable();
-  }
-
-  // Set Read
-  public set_Result_Data(func: Array<any>): void {    
-    this.result_Data.next(func);
-  }
-  
-  // Set Form
-  // public set_Close(func: Function): void {    
-  //   this.close.next(func);
-  // }
-
-  // // Get Form
-  // public get_Close(): Observable<Function> {    
-  //   return this.close.asObservable();
-  // }
 }

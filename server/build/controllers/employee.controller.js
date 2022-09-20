@@ -29,8 +29,7 @@ class EmployeeController {
                 `SELECT * FROM (SELECT '${jNumber}' AS e_JobNumber, '${name}' AS e_Name, '${passWord}' AS e_PassWord, '${email}' AS e_Email, '${lv}' AS e_Lv) AS new_value ` +
                 `WHERE NOT EXISTS (SELECT e_JobNumber FROM employee WHERE e_JobNumber = '${jNumber}') LIMIT 1`;
             yield database_1.default.then(con => {
-                return con.query(sql)
-                    .then((result) => {
+                return con.query(sql).then((result) => {
                     if (result.insertId > 0) {
                         res.status(200).send(true);
                     }
@@ -49,8 +48,7 @@ class EmployeeController {
             // const sql:string = 'SELECT employee.* FROM employee WHERE NOT EXISTS(SELECT recycle.r_ClassId, recycle.r_Title FROM recycle WHERE employee.e_Id = recycle.r_ClassId AND recycle.r_Title = "員工") GROUP BY employee.e_Id';
             const sql = 'SELECT * FROM employee';
             yield database_1.default.then(con => {
-                return con.query(sql)
-                    .then((result) => {
+                return con.query(sql).then((result) => {
                     if (result.length > 0) {
                         res.status(200).json(result);
                     }
@@ -70,8 +68,7 @@ class EmployeeController {
             data.passWord = md5_PassWord(data.passWord);
             const sql = `SELECT * FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}'`;
             yield database_1.default.then(con => {
-                return con.query(sql)
-                    .then((result) => {
+                return con.query(sql).then((result) => {
                     if (result.length > 0) {
                         res.status(200).json(result);
                     }
@@ -88,9 +85,9 @@ class EmployeeController {
     findOne(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = JSON.parse(req.params.q);
+            const sql = `SELECT e_JobNumber,e_Name,e_Email,e_Lv,e_Inventory,e_Img FROM employee WHERE e_Name = '${user.e_Name}' AND e_JobNumber = '${user.e_JobNumber}'`;
             yield database_1.default.then(con => {
-                return con.query(`SELECT e_JobNumber,e_Name,e_Email,e_Lv,e_Inventory,e_Img FROM employee WHERE e_Name = '${user.e_Name}' AND e_JobNumber = '${user.e_JobNumber}'`)
-                    .then((result) => {
+                return con.query(sql).then((result) => {
                     if (result.length > 0) {
                         res.status(200).json(result);
                     }
@@ -108,9 +105,9 @@ class EmployeeController {
         return __awaiter(this, void 0, void 0, function* () {
             // con.query('DESCRIBE employee');
             const like = req.params.q;
+            const sql = `SELECT * FROM employee WHERE e_JobNumber = '${like}' OR e_Name = '${like}'`;
             yield database_1.default.then(con => {
-                return con.query(`SELECT * FROM employee WHERE e_JobNumber = '${like}' OR e_Name = '${like}'`)
-                    .then((result) => {
+                return con.query(sql).then((result) => {
                     if (result.length > 0) {
                         res.status(200).json(result);
                     }
@@ -141,8 +138,7 @@ class EmployeeController {
                 else if ('e_Email' in data) {
                     query_ = con.query(`UPDATE employee SET e_Name = '${data.e_Name}',e_PassWord = '${data.e_PassWord}',e_Email = '${data.e_Email}' WHERE e_Id = '${data.e_Id}' AND e_JobNumber = '${data.e_JobNumber}'`);
                 }
-                return query_
-                    .then((result) => {
+                return query_.then((result) => {
                     if (result.affectedRows > 0) {
                         res.status(200).send(true);
                     }
@@ -162,8 +158,8 @@ class EmployeeController {
             if (email_Code == data.code) {
                 yield database_1.default.then(con => {
                     data.newPassWord = md5_PassWord(data.newPassWord);
-                    return con.query(`UPDATE employee SET e_PassWord = '${data.newPassWord}' WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`)
-                        .then((result) => {
+                    const sql = `UPDATE employee SET e_PassWord = '${data.newPassWord}' WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
+                    return con.query(sql).then((result) => {
                         if (result.affectedRows > 0) {
                             res.status(200).send(true);
                         }
@@ -185,10 +181,9 @@ class EmployeeController {
         return __awaiter(this, void 0, void 0, function* () {
             const data = req.body;
             yield database_1.default.then(con => {
-                const query_ = con.query(`UPDATE employee SET e_Inventory = CONCAT(e_Inventory, ',') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
+                const sql = `UPDATE employee SET e_Inventory = CONCAT(e_Inventory, ',') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`;
                 // const query_ = con.query(`UPDATE employee SET e_Inventory = CONCAT(e_Inventory, '${data.e_Inventory},') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
-                return query_
-                    .then((result) => {
+                return con.query(sql).then((result) => {
                     if (result.affectedRows > 0) {
                         res.status(200).send(true);
                     }
@@ -206,10 +201,9 @@ class EmployeeController {
         return __awaiter(this, void 0, void 0, function* () {
             const data = req.body;
             yield database_1.default.then(con => {
-                const query_ = con.query(`UPDATE employee SET e_Inventory = REPLACE(TRIM(e_Inventory), ',', '') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
+                const sql = `UPDATE employee SET e_Inventory = REPLACE(TRIM(e_Inventory), ',', '') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`;
                 // const query_ = con.query(`UPDATE employee SET e_Inventory = REPLACE(TRIM(e_Inventory), '${data.e_Inventory},', '') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
-                return query_
-                    .then((result) => {
+                return con.query(sql).then((result) => {
                     if (result.affectedRows > 0) {
                         res.status(200).send(true);
                     }
@@ -246,9 +240,9 @@ class EmployeeController {
         return __awaiter(this, void 0, void 0, function* () {
             const data = req.body;
             if (('email' in data) && ('jNumber' in data) && ('ip' in data)) {
+                const sql = `SELECT e_JobNumber,e_Email FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
                 yield database_1.default.then(con => {
-                    return con.query(`SELECT e_JobNumber,e_Email FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`)
-                        .then((result) => {
+                    return con.query(sql).then((result) => {
                         if (result.length > 0) {
                             send_Email(data.ip, result[0].e_Email);
                             res.status(200).send(true);

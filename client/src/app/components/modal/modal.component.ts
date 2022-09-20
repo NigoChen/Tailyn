@@ -2,7 +2,9 @@ import { Component, ComponentFactoryResolver, ElementRef, EventEmitter, Input, O
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { AlertsDirective } from 'src/app/directives/alerts.directive';
+import { Alert } from 'src/app/interfaces/alert';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
+import { AlertService } from 'src/app/services/alert.service';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
@@ -24,24 +26,19 @@ export class ModalComponent {
   public formControls: object;
   public fbGroup: FormGroup;
   public errorValidators: object = ErrorValidators;
-  public submit: Function;
-  public update: Function;
-  public create: Function;
-  public read: Function;
-  public user_Profile: Function;
-  public result_Data: Array<any>;
-  public result_List: Array<any>;
+  public alerts: Alert;
 
   // Modal 
   @ViewChild('modalForm') public modalForm: ElementRef<HTMLInputElement>;
   @ViewChild('modalSM') public modalSM: ElementRef<HTMLInputElement>;
   // Alert
-  @ViewChild(AlertsDirective) alerts: AlertsDirective;
+  // @ViewChild(AlertsDirective) alerts: AlertsDirective;
 
   constructor(
     private ngbModal: NgbModal,
     private modalService: ModalService,
     config: NgbModalConfig,
+    private alertService: AlertService,
     private vref: ViewContainerRef,
     private elementRef: ElementRef,
     private _viewContainerRef: ViewContainerRef,
@@ -53,6 +50,11 @@ export class ModalComponent {
   {
       config.backdrop = 'static';
       config.keyboard = false;
+      this.alerts = {
+          status: false,
+          type: 'danger',
+          message: '...'
+        }
   }
 
   ngOnInit(): void {
@@ -66,7 +68,9 @@ export class ModalComponent {
     this.modalService.get_FormControls().subscribe(res => this.formControls = res);
     this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
     this.modalService.get_Form().subscribe(res => this.form = res);
-    this.modalService.get_User_Profile().subscribe(res => this.user_Profile = res);
+    
+    // this.modalService.get_User_Profile().subscribe(res => this.user_Profile = res);
+    this.alertService.get_Alert().subscribe(res => this.alerts = res);
   }
 
   // FormGroup Controls Value
@@ -146,13 +150,15 @@ export class ModalComponent {
     this.ngbModal.dismissAll();
   }
 
-  onSubmit(): void {
-
-
+  save(): void {
     // if(this.fbGroup.valid && this.fb_Value_Index[0])
     if(this.fb_Value_Index[0])
     {      
-        this.modalService.set_Update(this.fbGroup);
+      this.modalService.set_Update(this.fbGroup);
+    }
+    else
+    {
+      this.modalService.set_Create(this.fbGroup);
     }
   }
 }

@@ -5,6 +5,7 @@ import { Employee } from 'src/app/interfaces/employee';
 import { User } from 'src/app/interfaces/user';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
 import { passwordMatchValidator } from 'src/app/methods/password-Match-Validator';
+import { AlertService } from 'src/app/services/alert.service';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
@@ -70,9 +71,11 @@ export class EmployeeComponent implements OnInit {
     private employeeService: EmployeeService, 
     private fb: FormBuilder,
     private modalService: ModalService,
+    private alertService: AlertService
     ) {
       this.modalService.get_modalForm().subscribe(res => this.reset_FormGroup(res));
       this.modalService.get_Search().subscribe(res => this.search(res));
+      this.modalService.get_Create().subscribe(res => this.create(res));
       this.modalService.get_Read().subscribe(res => this.read());
       this.modalService.get_Update().subscribe(res => this.update(res));
       this.modalService.get_Delete().subscribe(res => this.delete(res));
@@ -152,25 +155,25 @@ export class EmployeeComponent implements OnInit {
   }
   
   // Create
-  create(): void {
+  create(fg: FormGroup): void {
 
-    this.employeeService.create(this.fbGroup.value)
+    this.employeeService.create(fg.value)
     .subscribe(
       {
         next: (res:boolean) => {
           if(res)
           {
             this.read();
+            this.modalService.set_modalForm(['hide', 'create']);
           }
           else
           {
-            // this.error_Alert_Toggle(this.f['e_JobNumber'].value+'帳號已被使用');
+            this.alertService.set_Alert(22);
           }
 
-          // this.stateView.next({loading: false, error: false});
         },
         error: (err) => {
-          // this.stateView.next({loading: true, error: true});
+          this.alertService.set_Alert(23);
         }
       }
     );
@@ -193,7 +196,7 @@ export class EmployeeComponent implements OnInit {
           }
         },
         error: (err) => {
-          // this.stateView.next({loading: true, error: true});
+          this.alertService.set_Alert(13);
         },
         complete: () => {
           this.loadingService.set_Dashboard_Loading(false);          
@@ -223,10 +226,7 @@ export class EmployeeComponent implements OnInit {
   // Update
   update(fg: FormGroup): void {
 
-    console.log(fg);
-
     delete fg.controls.e_ConfirmPassword;
-
     // const data: Employee = this.fb.control;
     
     this.employeeService.update(fg.value)
@@ -236,17 +236,19 @@ export class EmployeeComponent implements OnInit {
           if(res)
           {
             this.read();
+            this.modalService.set_modalForm(['hide', 'update']);
             // this.rightModal.hide();
           }
           else
           {
+            this.alertService.set_Alert(32);
             // this.error_Alert_Toggle(this.f['e_JobNumber'].value+'更新失敗');
           }
 
           // this.stateView.next({loading: false, error: false});
         },
         error: (err) => {
-          // this.stateView.next({loading: true, error: true});
+          this.alertService.set_Alert(33);
         },
         complete: () => {
           // this.stateView.next({loading: false, error: false});
@@ -263,17 +265,18 @@ export class EmployeeComponent implements OnInit {
         next: (res: boolean) => {
           if(res)
           {      
-            // this.read();
+            this.read();
+            this.modalService.set_modalForm(['hide', 'delete']);
           }
           else
           {
-            // this.error_Alert_Toggle('無法刪除會員');
+            this.alertService.set_Alert(42);
           }
 
           // this.stateView.next({loading: false, error: false});
         },
         error: (err) => {
-          // this.stateView.next({loading: true, error: true});
+          this.alertService.set_Alert(43);
         }
       }
     );
@@ -296,20 +299,5 @@ export class EmployeeComponent implements OnInit {
 
     // Update Modal FormGroup
     this.modalService.set_FormGroup(this.fbGroup);
-  }
-
-  // Submit
-  onSubmit(): void {    
-    if(this.fbGroup.valid)
-    {      
-      if(this.fb_Value['e_Id'].value.length)
-      {        
-        // this.update();
-      }
-      else
-      {      
-        this.create();
-      }
-    }
   }
 }
