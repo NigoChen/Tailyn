@@ -9,7 +9,10 @@ import { ErrorComponent } from './error/error.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', component: HomeComponent },
-  { path: 'Employee', component: EmployeeComponent },
+  {
+    path: 'Employee', component: EmployeeComponent,
+    data: { title: '員工', icon: 'bi bi-file-earmark-person' }
+  },
   { path: 'Repair', component: RepairComponent },
   { path: 'Work', component: WorkComponent },
   { path: 'Tutorial', component: TutorialComponent },

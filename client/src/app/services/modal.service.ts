@@ -7,7 +7,7 @@ import { Observable, Subject } from 'rxjs';
 })
 export class ModalService {
 
-  private modalForm: Subject<Array<string>>;
+  private modalMDForm: Subject<Array<string>>;
   private modalSM: Subject<boolean>;
   private formControls: Subject<object>;
   private fbGroup: Subject<FormGroup>;
@@ -20,7 +20,7 @@ export class ModalService {
   private user_Profile: Subject<Function>;
 
   constructor() {
-    this.modalForm = new Subject<Array<string>>();
+    this.modalMDForm = new Subject<Array<string>>();
     this.modalSM = new Subject<boolean>();
     this.formControls = new Subject<object>();
     this.fbGroup = new Subject<FormGroup>();
@@ -33,12 +33,12 @@ export class ModalService {
     this.user_Profile = new Subject<Function>();
   }
 
-  public get_modalForm(): Observable<Array<string>> {
-    return this.modalForm.asObservable();
+  public get_modalMDForm(): Observable<Array<string>> {
+    return this.modalMDForm.asObservable();
   }
 
-  public set_modalForm(value: Array<string>): void {
-    this.modalForm.next(value);
+  public set_modalMDForm(value: Array<string>): void {
+    this.modalMDForm.next(value);
   }
 
   public get_modalSM(): Observable<boolean> {

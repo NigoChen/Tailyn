@@ -1,16 +1,34 @@
-.header_DropMenu > *
+.header_DropMenu button
 {
-    background-color: black;
+    position: relative;
     color: white;
 }
-.header_DropMenu > *:hover
+.header_DropMenu button:hover
 {
-    background-color: white;
     color: black;
 }
+
+.header_DropMenu button::after {
+    content:"\A";
+    border-style: solid;
+    border-width: 5px 10px 5px 0;
+    border-color: transparent red transparent transparent;
+    position: absolute;
+    opacity: 0;
+    transition: .5s;
+    right: -5%;
+    top: 40%;
+}
+.header_DropMenu button:hover::after {
+    opacity: .8;
+    right:25%;
+}
+
+
 .nav-item .nav-link
 {
     position: relative;
+    color: var(--white-color);
 }
 .nav-item .nav-link::before
 {
@@ -21,11 +39,11 @@
     width: 55px;
     height: 1px;
     bottom: -4px;
-    transition: .5s;
     opacity: 0;
+    transition: .5s;
 }
 .nav-item .nav-link:hover::before
 {
     bottom: 8px;
-    opacity: .8;
+    opacity: .8;    
 }

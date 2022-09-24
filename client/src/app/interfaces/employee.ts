@@ -4,5 +4,7 @@ export interface Employee {
     e_Email?: string;
     e_JobNumber: string;
     e_PassWord?: string;
+    e_ConfirmPassword?: string;
     e_Lv: number;
+    e_Recycle?: number;
 }

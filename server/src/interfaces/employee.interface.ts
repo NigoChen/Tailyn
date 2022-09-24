@@ -5,4 +5,5 @@ export interface Employee {
     e_JobNumber: string;
     e_PassWord: string;
     e_Lv: number;
+    e_Recycle?: number;
 }

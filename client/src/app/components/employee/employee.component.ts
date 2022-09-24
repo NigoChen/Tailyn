@@ -1,5 +1,6 @@
 import { Component, ComponentFactoryResolver, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgbRatingConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { Employee } from 'src/app/interfaces/employee';
 import { User } from 'src/app/interfaces/user';
@@ -20,13 +21,12 @@ import { ModalComponent } from '../modal/modal.component';
 export class EmployeeComponent implements OnInit {
   // Modal
   @ViewChild(ModalComponent) private modal: ModalComponent;
+  // Form
+  @ViewChild('form_') form_: TemplateRef<any>;
   // Employee Data
   public result_Async$: Observable<Array<Employee>> | Observable<[]>;
   public result_Data: Employee[];
   public result_List: Employee[];
-
-  @ViewChild('form_') form_: TemplateRef<any>;
-
   // User
   public user: User;
   // Form Controls
@@ -71,9 +71,12 @@ export class EmployeeComponent implements OnInit {
     private employeeService: EmployeeService, 
     private fb: FormBuilder,
     private modalService: ModalService,
-    private alertService: AlertService
-    ) {
-      this.modalService.get_modalForm().subscribe(res => this.reset_FormGroup(res));
+    private alertService: AlertService,
+    private ngbRatingConfig: NgbRatingConfig)
+    {
+      ngbRatingConfig.max = 3;
+      ngbRatingConfig.readonly = true;
+      this.modalService.get_modalMDForm().subscribe(res => this.reset_FormGroup(res));
       this.modalService.get_Search().subscribe(res => this.search(res));
       this.modalService.get_Create().subscribe(res => this.create(res));
       this.modalService.get_Read().subscribe(res => this.read());
@@ -86,13 +89,16 @@ export class EmployeeComponent implements OnInit {
     this.result_Data = [];
     this.result_List = [];
     this.read();
+
+    console.log(this.fbGroup.value);
+
   }
 
   ngAfterViewInit(): void {
     this.modalService.set_FormControls(this.form_Controls);
     this.modalService.set_FormGroup(this.fbGroup);
     this.modalService.set_Form(this.form_);            
-    this.modalService.set_User_Profile(this.user_Profile);          
+    this.modalService.set_User_Profile(this.user_Profile);   
   }
 
   // ngAfterViewChecked(): void {
@@ -110,20 +116,24 @@ export class EmployeeComponent implements OnInit {
   }
 
   // FormGroup Reset
-  reset_FormGroup(arr: Array<string>): void {   
+  reset_FormGroup(value: Array<string>): void {  
 
-    if(arr[0] == 'show')
+    if(value[0] == 'show')
     {
-      if(arr[1] == 'insert')
+      if(value[1] == 'create')
       {
-        Reset_Validators(this.fbGroup);
         this.fbGroup.reset({e_Lv: '1'});
       }
+      else
+      {
+        this.fbGroup.get('e_PassWord').setValidators(null);
+        this.fb_Value['e_PassWord'].updateValueAndValidity();
+        this.fb_Value['e_ConfirmPassword'].setValidators(null);
+        this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
+      }
     }
-    else
-    {      
-      this.fbGroup.reset();
-    }
+
+    Reset_Validators(this.fbGroup);
   }
 
   // User Profile
@@ -164,16 +174,17 @@ export class EmployeeComponent implements OnInit {
           if(res)
           {
             this.read();
-            this.modalService.set_modalForm(['hide', 'create']);
           }
           else
           {
             this.alertService.set_Alert(22);
           }
-
         },
         error: (err) => {
           this.alertService.set_Alert(23);
+        },
+        complete: () => {
+          this.modalService.set_modalMDForm(['hide', 'create']);
         }
       }
     );
@@ -225,10 +236,6 @@ export class EmployeeComponent implements OnInit {
 
   // Update
   update(fg: FormGroup): void {
-
-    delete fg.controls.e_ConfirmPassword;
-    // const data: Employee = this.fb.control;
-    
     this.employeeService.update(fg.value)
     .subscribe(
       {
@@ -236,13 +243,11 @@ export class EmployeeComponent implements OnInit {
           if(res)
           {
             this.read();
-            this.modalService.set_modalForm(['hide', 'update']);
-            // this.rightModal.hide();
+            this.modalService.set_modalMDForm(['hide', 'update']);
           }
           else
           {
             this.alertService.set_Alert(32);
-            // this.error_Alert_Toggle(this.f['e_JobNumber'].value+'更新失敗');
           }
 
           // this.stateView.next({loading: false, error: false});
@@ -266,7 +271,7 @@ export class EmployeeComponent implements OnInit {
           if(res)
           {      
             this.read();
-            this.modalService.set_modalForm(['hide', 'delete']);
+            this.modalService.set_modalMDForm(['hide', 'delete']);
           }
           else
           {
@@ -299,5 +304,10 @@ export class EmployeeComponent implements OnInit {
 
     // Update Modal FormGroup
     this.modalService.set_FormGroup(this.fbGroup);
+  }
+
+  // 
+  ngOnDestroy(): void {
+    this.modalService.set_FormGroup(null);    
   }
 }

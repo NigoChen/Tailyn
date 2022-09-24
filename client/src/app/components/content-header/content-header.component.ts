@@ -20,12 +20,6 @@ export class ContentHeaderComponent implements OnInit {
 
   // Modal
   // private modal_Subscription: Subscription;
-
-  // @Output() refresh_: EventEmitter<any> = new EventEmitter<any>();
-  // @Output() search_: EventEmitter<any> = new EventEmitter<any>();
-  // @Output() open_: EventEmitter<any> = new EventEmitter<any>();
-  // @Output() update_: EventEmitter<any> = new EventEmitter<any>();
-  // @Output() delete_: EventEmitter<any> = new EventEmitter<any>();
   // @Input() user_: User | null;
   // @Input() fb_Value_:  { [key: string]: AbstractControl};
 
@@ -39,12 +33,19 @@ export class ContentHeaderComponent implements OnInit {
     this.user_Profile();
     this.delayTime = true;
     this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
+
+
+    console.log(this.fbGroup);
+    
   }
 
   ngAfterViewInit(): void {}
 
   // FormGroup Controls Value By Index
   get fb_Value_Index(): { [key: number]: string} {
+
+    if(!this.fbGroup) return '';
+    
     return Object.values(this.fbGroup.value) || '';
   }
 
@@ -87,9 +88,14 @@ export class ContentHeaderComponent implements OnInit {
     }
   }
   
-  // Toggle Modal Show / hide
-  toggle(show: string, status: string): void {
-    this.modalService.set_modalForm([show, status]);
+  // Create
+  create(): void {
+    this.modalService.set_modalMDForm(['show', 'create']);
+  }
+
+  // Update
+  update(): void {
+    this.modalService.set_modalMDForm(['show', 'update']);
   }
   
   // Read
@@ -107,14 +113,8 @@ export class ContentHeaderComponent implements OnInit {
     this.modalService.set_Search(this.searchText);    
   }
 
-  // // Update
-  // update(): void {
-  //   this.modalService.set_modalForm(true);
-  // }
-
   // Delete
   delete(): void {
     this.modalService.set_modalSM(true);
   }
-
 }

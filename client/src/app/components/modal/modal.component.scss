@@ -1,0 +1,32 @@
+/*  Modal Backdrop */
+.light-blue-backdrop
+{
+  background-color: rgba(0, 0, 0, 1)
+}
+
+.modal-holder
+{
+  animation-name: modal-effect;
+  animation-duration: 0.3s;
+}
+
+@keyframes modal-effect
+{
+  0%   {transform: scale(0.5)}
+  100% {transform: scale(1)}
+}
+
+/* Main form-group label Bg */
+.modal-body .form-group label
+{
+  text-align: center;
+  letter-spacing: 4px;
+  background-color: rgba($color: #cccccc, $alpha: .2);
+}
+
+.modal-body .form-group label::after
+{
+  content: ":";
+  float: right;
+  font-weight: bold;
+}

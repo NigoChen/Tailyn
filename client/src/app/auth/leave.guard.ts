@@ -13,9 +13,9 @@ export class LeaveGuard implements CanDeactivate<DashboardComponent> {
     currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     
-      console.log('LeaveGuard');
-      console.log(currentRoute.params);
-      console.log(currentState.url);
+      // console.log('LeaveGuard');
+      // console.log(currentRoute.params);
+      // console.log(currentState.url);
       
       return component.canDeactivate || window.confirm('Are u sure??');
   }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LoadingService } from 'src/app/services/loading.service';
 
 @Component({
   selector: 'app-work',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class WorkComponent implements OnInit {
 
-  constructor() { }
+  constructor(private loadingService: LoadingService,
+    ) { }
 
   ngOnInit(): void {
+
+    this.loadingService.set_Dashboard_Loading(false);
   }
 
 }

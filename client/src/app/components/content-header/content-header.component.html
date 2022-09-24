@@ -16,23 +16,26 @@
     </div>
     <!-- /Search Btn -->
     <!-- Crud Btns -->
-    <div class="col-md-5 col-sm-12 d-flex justify-content-between">
-      <div class="col text-center">
-        <ng-container *ngIf="user.lv > 1">
-          <button type="button" class="btn btn-outline-info btn-sm" (click)="toggle('show','insert')">新增</button>
+
+    <ng-container *ngIf="fbGroup != null">
+      <div class="col-md-5 col-sm-12 d-flex justify-content-between">
+        <div class="col text-center">
+          <ng-container *ngIf="user.lv > 1">
+            <button type="button" class="btn btn-outline-info btn-sm" (click)="create()">新增</button>
+          </ng-container>
+        </div>
+        <ng-container *ngIf="fb_Value_Index[0]">
+          <div class="col text-center">
+            <button type="button" class="btn btn-outline-warning btn-sm" (click)="update()"
+              [disabled]="user.lv < 2 || false">更新</button>
+          </div>
+          <div class="col text-center">
+            <button type="button" class="btn btn-outline-danger btn-sm" (click)="delete()"
+              [disabled]="user.lv < 2 || false">刪除</button>
+          </div>
         </ng-container>
       </div>
-      <ng-container *ngIf="fb_Value_Index[0]">
-        <div class="col text-center">
-          <button type="button" class="btn btn-outline-warning btn-sm" (click)="toggle('show','update')"
-            [disabled]="user.lv < 2 || false">更新</button>
-        </div>
-        <div class="col text-center">
-          <button type="button" class="btn btn-outline-danger btn-sm" (click)="delete()"
-            [disabled]="user.lv < 2 || false">刪除</button>
-        </div>
-      </ng-container>
-    </div>
+    </ng-container>
     <!-- /Crud Btns -->
   </div>
 </div>

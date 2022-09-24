@@ -1,27 +1,26 @@
 <div class="d-flex">
     <ul class="nav px-1">
         <li class="nav-item text-nowrap">
-            <a class="nav-link text-white" routerLink="/">
-                <i class="bi bi-2-square text-white"></i>
+            <a class="nav-link" routerLink="/" title="首頁">
+                <i class="bi bi-house-door-fill"></i>
                 首頁
             </a>
         </li>
         <li class="nav-item text-nowrap">
-            <a class="nav-link text-white" routerLink="Work">
-                <i class="bi bi-2-square text-white"></i>
+            <a class="nav-link" routerLink="Work" routerLinkActive="text-danger font-weight-bold" title="工時">
+                <i class="bi bi-calculator-fill"></i>
                 工時
             </a>
         </li>
         <li class="nav-item text-nowrap">
-            <a class="nav-link text-white" routerLink="Repair">
-                <i class="bi bi-2-square text-white"></i>
+            <a class="nav-link" routerLink="Repair" routerLinkActive="text-danger font-weight-bold" title="維修">
+                <i class="bi bi-hammer"></i>
                 維修
             </a>
         </li>
         <li class="nav-item text-nowrap">
-            <!-- <a class="nav-link text-white stretched-link" routerLink="Employee"> -->
-            <a class="nav-link text-white" routerLink="Employee">
-                <i class="bi bi-2-square text-white"></i>
+            <a class="nav-link" routerLink="Employee" routerLinkActive="text-danger font-weight-bold" title="員工">
+                <i class="bi bi-file-earmark-person"></i>
                 員工
             </a>
         </li>
@@ -29,14 +28,13 @@
     <ul class="nav px-3">
         <li class="nav-item text-nowrap">
             <div ngbDropdown class="d-inline-block" display="dynamic">
-                <a class="nav-link text-white" id="dropdownBasic1"
-                    ngbDropdownToggle>
+                <a class="nav-link text-white" id="dropdownBasic1" ngbDropdownToggle>
                     <i class="bi bi-person-circle"></i>
                     <span class="p-1">{{ user.jNumber }}</span>
                 </a>
-                <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="header_DropMenu bg-dark">
-                    <button ngbDropdownItem>{{ user.name }}</button>
-                    <button ngbDropdownItem (click)="logout();">登出</button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="shadow header_DropMenu bg-dark">
+                    <button ngbDropdownItem class="text-center">{{ user.name }}</button>
+                    <button ngbDropdownItem class="text-center" (click)="logout()">登出</button>
                 </div>
             </div>
         </li>

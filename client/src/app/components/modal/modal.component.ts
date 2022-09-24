@@ -9,7 +9,6 @@ import { EmployeeService } from 'src/app/services/employee.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
 import { ModalService } from 'src/app/services/modal.service';
-import { AlertComponent } from '../alert/alert.component';
 
 @Component({
   selector: 'app-modal',
@@ -23,7 +22,6 @@ export class ModalComponent {
   // @Input() inputValidators: Function = InputValidators;
   
   public form: TemplateRef<any>;
-  public formControls: object;
   public fbGroup: FormGroup;
   public errorValidators: object = ErrorValidators;
   public alerts: Alert;
@@ -48,28 +46,40 @@ export class ModalComponent {
     private employeeService: EmployeeService, 
     )
   {
-      config.backdrop = 'static';
-      config.keyboard = false;
-      this.alerts = {
-          status: false,
-          type: 'danger',
-          message: '...'
-        }
+    config.backdrop = 'static';
+    config.keyboard = false;
+
+    this.alerts = {
+        status: false,
+        type: 'danger',
+        message: '...'
+      }
   }
 
   ngOnInit(): void {
-    this.modalService.get_modalForm().subscribe(res => this.toggle(res));
+    this.modalService.get_modalMDForm().subscribe((res: Array<string>) => {
+
+      if(res[0] == 'show')
+      {
+        this.ngbModal.open(this.modalForm, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'});
+      }
+      else
+      {
+        this.close();
+      }
+    });
+    
     this.modalService.get_modalSM().subscribe(res => {
       if(res)
       {
         this.ngbModal.open(this.modalSM, {backdropClass: 'light-blue-backdrop', size: 'sm', windowClass:'modal-holder'});
       }
-    });
-    this.modalService.get_FormControls().subscribe(res => this.formControls = res);
+      else
+      {
+        this.close();
+      }});
     this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
     this.modalService.get_Form().subscribe(res => this.form = res);
-    
-    // this.modalService.get_User_Profile().subscribe(res => this.user_Profile = res);
     this.alertService.get_Alert().subscribe(res => this.alerts = res);
   }
 
@@ -80,6 +90,13 @@ export class ModalComponent {
 
   // FormGroup Controls Value By Index
   get fb_Value_Index(): { [key: number]: string} {
+    
+    // if(Number.isInteger(Object.values(this.fbGroup.value)))
+    // {
+    //   return Object.values(this.fbGroup.value).toString() || '';
+    // }
+
+    // return '0';
     return Object.values(this.fbGroup.value) || '';
   }
   
@@ -124,35 +141,21 @@ export class ModalComponent {
   // }
 
 
-  // Toggle Modal Show / hide
-  toggle(arr: Array<string>): void {
-    
-    if(arr[0] == 'show')
-    {
-      this.ngbModal.open(this.modalForm, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'});
-      
-      if(arr[1] == 'update')
-      {
-        // this.modalService.set_UpdateForm(true);
-      }
-    }
-    else
-    {
-      this.modalService.set_modalSM(false);
-      this.ngbModal.dismissAll();
-    }
+
+  close(): void {
+    this.ngbModal.dismissAll();
+    this.alertService.clear_Alert();
   }
 
   // Delete
   delete(): void {
     const id: number = parseInt(this.fb_Value_Index[0]);
     this.modalService.set_Delete(id);
-    this.ngbModal.dismissAll();
+    this.close();
   }
 
   save(): void {
-    // if(this.fbGroup.valid && this.fb_Value_Index[0])
-    if(this.fb_Value_Index[0])
+    if(this.fbGroup.valid && this.fb_Value_Index[0])
     {      
       this.modalService.set_Update(this.fbGroup);
     }

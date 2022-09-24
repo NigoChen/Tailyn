@@ -156,11 +156,15 @@ export class AlertService {
     }
   }
 
-  // Set Alert
+  // Clear Alert
   public clear_Alert(): void {   
-    setTimeout(() => {
-      this.alerts.unsubscribe();
-    }, 2000); 
+    this.alerts.next(
+      {
+        status: false,
+        type: 'light',
+        message: '...'
+      }
+    )
   }
 
   // show(): void {
