@@ -20,7 +20,7 @@
     <tbody>
       <!-- <tr *ngFor="let item of result_Async$ | async; index as i" [ngClass]="{'text-light bg-dark': item?.e_Id == fb_Value['e_Id'].value}" (click)="choose(item)"> -->
       <tr *ngFor="let item of result_List; let i = index"
-        [ngClass]="{'text-light bg-secondary': item?.e_Id == fb_Value['e_Id'].value}" (click)="choose(item)">
+        [ngClass]="{'text-light bg-secondary': item?.e_Id == fb_Value_Index[0]}" (click)="choose(item)">
         <td>
           {{ i+1 }}
         </td>
@@ -44,8 +44,8 @@
 </div>
 <!-- /Table -->
 
-<!-- Template -->
 <ng-template #form_>
+  <!-- Form -->
   <form [formGroup]="fbGroup" #form="ngForm">
     <!-- Name -->
     <div class="form-group row">
@@ -147,7 +147,7 @@
         <ngb-rating [rate]="fb_Value['e_Lv'].value" readonly="true" class="h4"></ngb-rating>
       </div>
       <div class="col-6">
-        <select id="lv" class="form-control text-center custom-select" data-show-content="true" formControlName="e_Lv">
+        <select id="lv" class="form-control text-center custom-select" formControlName="e_Lv">
           <option value="1" [selected]="fb_Value['e_Lv'].value == 1">
             普通
           </option>
@@ -169,5 +169,5 @@
       </div>
     </div> -->
   </form>
+  <!-- /Form -->
 </ng-template>
-<!-- /Template -->

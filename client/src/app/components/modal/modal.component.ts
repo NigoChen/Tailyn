@@ -25,6 +25,7 @@ export class ModalComponent {
   public fbGroup: FormGroup;
   public errorValidators: object = ErrorValidators;
   public alerts: Alert;
+  times = {hour: 15, minute: 58};
 
   // Modal 
   @ViewChild('modalForm') public modalForm: ElementRef<HTMLInputElement>;
@@ -43,18 +44,17 @@ export class ModalComponent {
     private componentFactoryResolver: ComponentFactoryResolver,
     private loadingService: LoadingService,
     private loginService : LoginService,
-    private employeeService: EmployeeService, 
-    )
-  {
-    config.backdrop = 'static';
-    config.keyboard = false;
+    private employeeService: EmployeeService)
+    {
+      config.backdrop = 'static';
+      config.keyboard = false;
 
-    this.alerts = {
-        status: false,
-        type: 'danger',
-        message: '...'
+      this.alerts = {
+          status: false,
+          type: 'danger',
+          message: '...'
       }
-  }
+    }
 
   ngOnInit(): void {
     this.modalService.get_modalMDForm().subscribe((res: Array<string>) => {

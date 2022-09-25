@@ -2,12 +2,12 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
+import { WorkHours } from '../interfaces/work-hours';
 import { Urls } from './../configs/url.config';
-import { Employee } from './../interfaces/employee';
 
 @Injectable()
 
-export class EmployeeService {
+export class WorkHoursService {
 
   constructor(private http: HttpClient) { }
   
@@ -29,9 +29,9 @@ export class EmployeeService {
   }
 
   // Read
-  public read(): Observable<Employee[]>
+  public read(): Observable<WorkHours[]>
   {
-    return this.http.get<Employee[]>(Urls.employee.read)
+    return this.http.get<WorkHours[]>(Urls.workHours.read)
     .pipe(map(res => {
       if(typeof res !== "object")
       {
@@ -42,51 +42,38 @@ export class EmployeeService {
   }
 
   // Find One
-  public findOne(user: object): Observable<Employee[]>
+  public findOne(user: object): Observable<WorkHours[]>
   { 
     const jString = JSON.stringify(user);
-    return this.http.get<Employee[]>(`${Urls.employee.findOne}/${jString}`)
+    return this.http.get<WorkHours[]>(`${Urls.workHours.findOne}/${jString}`)
    .pipe(catchError(this.handleError));
   }
 
   // Find Like
-  public findLike(employee: string): Observable<Employee[]>
+  public findLike(WorkHours: string): Observable<WorkHours[]>
   { 
-    return this.http.get<Employee[]>(`${Urls.employee.findLike}/${employee}`)
+    return this.http.get<WorkHours[]>(`${Urls.workHours.findLike}/${WorkHours}`)
    .pipe(catchError(this.handleError));
   }
 
   // Create
-  public create(employee: Employee): Observable<boolean>
+  public create(WorkHours: WorkHours): Observable<boolean>
   {        
-    return this.http.post<boolean>(Urls.employee.create, employee)
+    return this.http.post<boolean>(Urls.workHours.create, WorkHours)
     .pipe(catchError(this.handleError));
   }
 
   // Update
-  public update(employee: Employee): Observable<boolean>
+  public update(WorkHours: WorkHours): Observable<boolean>
   {        
-    return this.http.put<boolean>(Urls.employee.update, employee)
-    .pipe(catchError(this.handleError));
-  }
-  
-  // concat
-  public concat(employee: Employee): Observable<boolean>
-  {        
-    return this.http.put<boolean>(Urls.employee.concat, employee)
-    .pipe(catchError(this.handleError));
-  }
-  // Replace
-  public replace(employee: Employee): Observable<boolean>
-  {        
-    return this.http.put<boolean>(Urls.employee.replace, employee)
+    return this.http.put<boolean>(Urls.workHours.update, WorkHours)
     .pipe(catchError(this.handleError));
   }
 
   // Delete
   public delete(id: number): Observable<boolean>
   {    
-    return this.http.delete<boolean>(`${Urls.employee.delete}/${id}`)
+    return this.http.delete<boolean>(`${Urls.workHours.delete}/${id}`)
     .pipe(catchError(this.handleError))
   }
 }

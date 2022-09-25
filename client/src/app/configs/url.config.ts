@@ -19,13 +19,13 @@ export const Urls = {
         delete:`${url_Server}/api/employee/delete`,
         email:`${url_Server}/api/employee/email`,
     },
-    inventory: {
-        read:`${url_Server}/api/inventory/read`,
-        findOne:`${url_Server}/api/inventory/find/one`,
-        findLike:`${url_Server}/api/inventory/find/like`,
-        create:`${url_Server}/api/inventory/create`,
-        update:`${url_Server}/api/inventory/update`,
-        delete:`${url_Server}/api/inventory/delete`,
+    workHours: {
+        read:`${url_Server}/api/workHours/read`,
+        findOne:`${url_Server}/api/workHours/find/one`,
+        findLike:`${url_Server}/api/workHours/find/like`,
+        create:`${url_Server}/api/workHours/create`,
+        update:`${url_Server}/api/workHours/update`,
+        delete:`${url_Server}/api/workHours/delete`,
     },
     rma: {
         read:`${url_Server}/api/rma/read`,

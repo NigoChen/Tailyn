@@ -8,6 +8,7 @@ import indexRoutes from './routes/index.routes';
 import employeeRoutes from './routes/employee.routes';
 import path from 'path';
 import loginRoutes from './routes/login.routes';
+import workHoursRoutes from './routes/work-hours.routes';
 
 class Server
 {
@@ -39,6 +40,7 @@ class Server
         this.app.use('/', indexRoutes);
         this.app.use('/api/login', loginRoutes);
         this.app.use('/api/employee', employeeRoutes);
+        this.app.use('/api/workHours', workHoursRoutes);
     }
 
     start():void

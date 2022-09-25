@@ -18,6 +18,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { HeaderComponent } from './header/header.component';
 import { ContentHeaderComponent } from './content-header/content-header.component';
 import { FooterComponent } from './footer/footer.component';
+import { WorkHoursService } from '../services/work-hours.service';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { FooterComponent } from './footer/footer.component';
   providers: [
     ChildGuard,
     EmployeeService,
+    WorkHoursService
     // { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
 })

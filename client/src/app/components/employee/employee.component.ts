@@ -11,7 +11,6 @@ import { EmployeeService } from 'src/app/services/employee.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
 import { ModalService } from 'src/app/services/modal.service';
-import { ModalComponent } from '../modal/modal.component';
 
 @Component({
   selector: 'app-employee',
@@ -19,11 +18,9 @@ import { ModalComponent } from '../modal/modal.component';
   styleUrls: ['./employee.component.scss']
 })
 export class EmployeeComponent implements OnInit {
-  // Modal
-  @ViewChild(ModalComponent) private modal: ModalComponent;
   // Form
-  @ViewChild('form_') form_: TemplateRef<any>;
-  // Employee Data
+  @ViewChild('form_') form_: TemplateRef<HTMLElement>;
+  // Data
   public result_Async$: Observable<Array<Employee>> | Observable<[]>;
   public result_Data: Employee[];
   public result_List: Employee[];
@@ -89,9 +86,6 @@ export class EmployeeComponent implements OnInit {
     this.result_Data = [];
     this.result_List = [];
     this.read();
-
-    console.log(this.fbGroup.value);
-
   }
 
   ngAfterViewInit(): void {
@@ -306,7 +300,7 @@ export class EmployeeComponent implements OnInit {
     this.modalService.set_FormGroup(this.fbGroup);
   }
 
-  // 
+  // Destroy
   ngOnDestroy(): void {
     this.modalService.set_FormGroup(null);    
   }

@@ -32,11 +32,7 @@ export class ContentHeaderComponent implements OnInit {
     this.searchText = '';
     this.user_Profile();
     this.delayTime = true;
-    this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
-
-
-    console.log(this.fbGroup);
-    
+    this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);    
   }
 
   ngAfterViewInit(): void {}
