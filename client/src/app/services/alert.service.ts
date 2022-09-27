@@ -41,7 +41,7 @@ export class AlertService {
   * 43 delete err
   *
   */
-  public set_Alert(status: number): void {    
+  public set_Alert(status: any): void {    
 
     switch(status)
     {
@@ -153,7 +153,21 @@ export class AlertService {
           }
         );
         break;
+      default:
+        this.alerts.next(
+          {
+            status: true,
+            type: 'warning',
+            message: status
+          }
+        );
+        break;
     }
+
+    // Close Alert
+    setTimeout(() => {
+      this.clear_Alert();
+    }, 5000);
   }
 
   // Clear Alert
