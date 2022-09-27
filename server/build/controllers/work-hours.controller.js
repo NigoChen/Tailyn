@@ -51,7 +51,10 @@ class WorkHoursController {
     }
     read(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = 'SELECT * FROM workhours';
+            const sql = `SELECT *, ` +
+                `TIMESTAMPDIFF(MINUTE, SUBSTRING_INDEX(w_BMinute, ',', 1), SUBSTRING_INDEX(w_BMinute, ',', -1)) AS bTotal, ` +
+                `TIMESTAMPDIFF(MINUTE, SUBSTRING_INDEX(w_OMinute, ',', 1), SUBSTRING_INDEX(w_OMinute, ',', -1)) AS oTotal ` +
+                `FROM workhours`;
             yield database_1.default.then(con => {
                 return con.query(sql).then((result) => {
                     if (result.length > 0) {

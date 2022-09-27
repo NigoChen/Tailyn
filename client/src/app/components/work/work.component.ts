@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { WorkHours } from 'src/app/interfaces/work-hours';
 import { LoadingService } from 'src/app/services/loading.service';
@@ -10,7 +10,8 @@ import { LoginService } from 'src/app/services/login.service';
 import { AlertService } from 'src/app/services/alert.service';
 import { WorkHoursService } from 'src/app/services/work-hours.service';
 import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
-import { timeStamp } from 'console';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-work',
@@ -44,18 +45,14 @@ export class WorkComponent implements OnInit {
   // Input Validators Error
   public errorValidators: object = ErrorValidators;
 
-  public dates: string = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
-
   // Timezone
   public getTimezoneOffset: number = (new Date()).getTimezoneOffset() * 60000;
   // Date Time
-  public start_bMinute: string = (new Date(Date.now() - this.getTimezoneOffset)).toISOString().slice(0, -8);
-  public end_bMinute: string = this.start_bMinute;
-  public dateTime: string = this.start_bMinute;
-  private SoMinute: string = '';
-  private EoMinute: string = '';
-  private SbMinute: string = '';
-  private EbMinute: string = '';
+  public start_Minute: string = (new Date(Date.now() - this.getTimezoneOffset)).toISOString().slice(0, -8);
+  public end_Minute: string = this.start_Minute;
+  public dateTime: string = this.start_Minute;
+  public bTotal: Array<string> = ['',''];
+  public oTotal: Array<string> = ['',''];
 
   constructor(
     private loadingService: LoadingService,
@@ -64,14 +61,16 @@ export class WorkComponent implements OnInit {
     private fb: FormBuilder,
     private modalService: ModalService,
     private alertService: AlertService,
-    private calendar: NgbCalendar) {
-    this.modalService.get_modalMDForm().subscribe(res => this.reset_FormGroup(res));
-    this.modalService.get_Search().subscribe(res => this.search(res));
-    this.modalService.get_Create().subscribe(res => this.create(res));
-    this.modalService.get_Read().subscribe(res => this.read());
-    this.modalService.get_Update().subscribe(res => this.update(res));
-    this.modalService.get_Delete().subscribe(res => this.delete(res));
-  }
+    private calendar: NgbCalendar,
+    private elementRef: ElementRef)
+    {
+      this.modalService.get_modalMDForm().subscribe(res => this.reset_FormGroup(res));
+      this.modalService.get_Search().subscribe(res => this.search(res));
+      this.modalService.get_Create().subscribe(res => this.create(res));
+      this.modalService.get_Read().subscribe(res => this.read());
+      this.modalService.get_Update().subscribe(res => this.update(res));
+      this.modalService.get_Delete().subscribe(res => this.delete(res));
+    }
 
   ngOnInit(): void {
     Reset_Validators(this.fbGroup);
@@ -114,12 +113,11 @@ export class WorkComponent implements OnInit {
       }
       else
       {
-        this.start_bMinute = '';
-        this.end_bMinute = '';
-        this.SoMinute = '';
-        this.EoMinute = '';
-        this.SbMinute = '';
-        this.EbMinute = '';
+        // this.start_bMinute = '';
+        // this.end_bMinute = '';
+        // this.bTotal = [];
+        // this.oTotal = [];
+
       }
       // else
       // {
@@ -288,73 +286,162 @@ export class WorkComponent implements OnInit {
 
   // choose
   choose(item: WorkHours): void {
-    this.fbGroup.patchValue(item);
-
-    console.log(item);
-    
+    this.fbGroup.patchValue(item);    
     // Update Modal FormGroup
     this.modalService.set_FormGroup(this.fbGroup);
   }
 
-  onDate(event: HTMLInputElement): void {
-
-    const value: string = event.value;
-    let datetime = value.replace('T', ' ');
-    const id: string = event.id;
-    datetime = datetime.replace('-','/');
-    // const now = new Date();
-
-    // day2.getTime()-day1.getTime();
-    // now.setHours(0,0,0,0);
-
-    console.log(datetime);
-    
-
-    if(value)
+  // DateTimePick Chekc Value
+  onValue_Check(id: string, index: number): string {
+    let values: string = this.fb_Value[id].value;
+          
+    if(values.length > 19)
     {
+      values = values.split(',')[index];
+    }   
+    return values || '';
+  }
+
+  // DateTimePick Value
+  onValue(id: string): string {
+    // var t = document.querySelector('#productrow');
+
+    // // Clone the new row and insert it into the table
+    // var tb = document.querySelector("tbody");
+    // var clone = document.importNode(t.content, true);'
+    // tb.appendChild(clone);
+    
+    // let templateForm = this.elementRef.nativeElement.querySelector('#form_');
+
+    //   let SbMinute = this.elementRef.nativeElement.querySelector('#EoMinute') as HTMLInputElement | null;
+    //   console.log(SbMinute);
+
+    // let EbMinute = this.elementRef.nativeElement.querySelector('#EbMinute') as HTMLInputElement | null;
+    // let SoMinute = this.elementRef.nativeElement.querySelector('#SoMinute') as HTMLInputElement | null;
+    // let EoMinute = this.elementRef.nativeElement.querySelector('#EoMinute') as HTMLInputElement | null;
+
+    // SbMinute.value = this.start_Minute;
+  
+    let values: any;
+
+    if(this.fb_Value_Index[0])
+    {      
       switch (id)
       {
-        case 'SbMinute':
-          this.SbMinute = datetime;
+        case 'SbMinute':    
+          values = this.onValue_Check('w_BMinute', 0);          
           break;
         case 'EbMinute':
-          this.EbMinute = datetime;
+          values = this.onValue_Check('w_BMinute', 1);
           break;
         case 'SoMinute':
-          this.SoMinute = datetime;
+          values = this.onValue_Check('w_OMinute', 0);
           break;
         case 'EoMinute':
-          this.EoMinute = datetime;
-          break;
-        case 'dateTime':
-          this.fb_Value['w_Time'].patchValue(datetime);
+          values = this.onValue_Check('w_OMinute', 1);
           break;
       }
+    }        
 
-      if(this.SbMinute.length > 2 && this.EbMinute.length > 2)
+    if(values.length == 19)
+    {
+      values = values.replace(' ', 'T');
+      // substring skip second value
+      return values.substring(0, 16);
+    }
+
+    return values;
+  }
+
+  // DateTime Replace Value
+  datetim_Replace(value: string): string {
+    const timestamp = value.replace('T', ' ');
+    let datetime = timestamp.replace('/','-');
+    return value ? `${datetime}:00`: '';
+  }
+
+  // Cheke VALUE
+
+  onDate_Check(id: string, value: string, index: number):void {
+    let choose_Value: Array<string>;
+
+    if(this.fb_Value[id].value.length)
+    {
+      choose_Value = this.fb_Value[id].value.split(',');
+
+      choose_Value[index] = '';
+
+      if(value.length)
       {
-        const oMinute: string = this.minutes_Total(this.SbMinute, this.EbMinute);
-        this.fb_Value['w_BMinute'].patchValue(oMinute);
+        choose_Value[index] = value;
       }
 
-      if(this.SoMinute.length > 2 && this.EoMinute.length > 2)
+      if(choose_Value.toString().length > 19)
       {
-        const oMinute: string = this.minutes_Total(this.SoMinute, this.EoMinute);
-        this.fb_Value['w_OMinute'].patchValue(oMinute);
+        this.fb_Value[id].patchValue(choose_Value.toString());
       }
     }
   }
 
-  // Minutes Total
-  minutes_Total(startDate: string, endDate: string): string {
-    const start: any = new Date(startDate);
-    const end: any = new Date(endDate);
-    const total = Math.abs(end-start);
-    const days = total/(1000 * 3600 * 24);
-    const hours = Math.floor(days*24);
-    const minutes = Math.floor(hours*60);
+  // DateTimePick Event
+  onDate(event: HTMLInputElement): void {
 
-    return (start.getTime() > end.getTime()) ? `-${minutes.toString()}` : minutes.toString();
+    const id: string = event.id;
+    // day2.getTime()-day1.getTime();
+    // now.setHours(0,0,0,0);    
+    const value = this.datetim_Replace(event.value);
+
+    switch (id)
+    {
+      case 'SbMinute':
+        this.onDate_Check('w_BMinute', value, 0);
+        break;
+      case 'EbMinute':
+        this.onDate_Check('w_BMinute', value, 1);
+        break;
+      case 'SoMinute':
+        this.onDate_Check('w_OMinute', value, 0);        
+        break;
+      case 'EoMinute':
+        this.onDate_Check('w_OMinute', value, 1);
+        break;
+      case 'dateTime':
+        if(value.length)
+        {
+          this.fb_Value['w_Time'].patchValue(value);
+        }
+
+        this.fb_Value['w_Time'].patchValue(this.start_Minute);
+        break;
+    }      
+  }
+  
+  // Minutes Total
+  minutes_Total(id: string): string {    
+
+    let times_Total: Array<string> = ['',''];
+
+    if(id == 'bMinute' && this.fb_Value['w_BMinute'].value.length == 39)
+    {
+      times_Total = this.fb_Value['w_BMinute'].value.split(',');
+    }
+    else if(id == 'oMinute' && this.fb_Value['w_OMinute'].value.length == 39)
+    {
+      times_Total = this.fb_Value['w_OMinute'].value.split(',');
+    }
+    
+    if(times_Total[0].length && times_Total[1].length)
+    {            
+      const start: any = new Date(times_Total[0]);
+      const end: any = new Date(times_Total[1]);
+      const total = Math.abs(end-start);
+      const days = total/(1000 * 3600 * 24);
+      const hours = days*24;
+      const minutes = Math.floor(hours*60);
+      return (start.getTime() > end.getTime()) ? `<font class="text-danger">-${minutes}</font>` : `${minutes}`;
+    }
+
+    return '0';
   }
 
   // Destroy

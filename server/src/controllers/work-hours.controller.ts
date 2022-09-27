@@ -46,7 +46,10 @@ class WorkHoursController
 
     public async read(req: Request, res: Response): Promise<void>
     {
-        const sql: string = 'SELECT * FROM workhours';
+        const sql: string = `SELECT *, `+ 
+        `TIMESTAMPDIFF(MINUTE, SUBSTRING_INDEX(w_BMinute, ',', 1), SUBSTRING_INDEX(w_BMinute, ',', -1)) AS bTotal, `+
+        `TIMESTAMPDIFF(MINUTE, SUBSTRING_INDEX(w_OMinute, ',', 1), SUBSTRING_INDEX(w_OMinute, ',', -1)) AS oTotal `+
+        `FROM workhours`;
 
         await pool.then(con => {
             return con.query(sql).then((result: Array<Object>) => {
