@@ -10,7 +10,7 @@ class EmployeeRoutes
         this.config();
     }
 
-    config():void
+    config(): void
     {
         this.router.post('/create', employeeController.create);
         // this.router.post('/login', employeeController.login);

@@ -17,12 +17,11 @@ export class ChildGuard implements CanActivateChild {
 
     this.loadingService.set_Dashboard_Loading(true);
 
-    const user = this.loginService.read_User_SessionStorage();
+    const user = this.loginService.read_User_SessionStorage();    
     
-    if ((user == null) || (Object.keys(user).length < 3))
+    if((user == null) || (Object.keys(user).length < 3))
     {
       this.router.navigate(['/Login']);
-      
       return false;
     }
 

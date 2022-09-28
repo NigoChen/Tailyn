@@ -140,8 +140,6 @@ export class ModalComponent {
     // }  
   // }
 
-
-
   close(): void {
     this.ngbModal.dismissAll();
     this.alertService.clear_Alert();

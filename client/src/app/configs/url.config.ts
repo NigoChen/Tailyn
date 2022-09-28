@@ -27,6 +27,12 @@ export const Urls = {
         update:`${url_Server}/api/workHours/update`,
         delete:`${url_Server}/api/workHours/delete`,
     },
+    stand: {
+        read:`${url_Server}/api/stand/read`,
+        create:`${url_Server}/api/stand/create`,
+        update:`${url_Server}/api/stand/update`,
+        delete:`${url_Server}/api/stand/delete`,
+    },
     rma: {
         read:`${url_Server}/api/rma/read`,
         findOne:`${url_Server}/api/rma/find/one`,

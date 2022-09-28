@@ -9,7 +9,7 @@ class IndexRoutes
         this.config();
     }
 
-    config():void
+    config(): void
     {
         this.router.get('/', (req, res) => {
             res.send("Welcome To Tailyn");

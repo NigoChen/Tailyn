@@ -9,6 +9,7 @@ import employeeRoutes from './routes/employee.routes';
 import path from 'path';
 import loginRoutes from './routes/login.routes';
 import workHoursRoutes from './routes/work-hours.routes';
+import standRoutes from './routes/stand.routes';
 
 class Server
 {
@@ -21,7 +22,7 @@ class Server
         this.routes();
     }
 
-    config():void
+    config(): void
     {
         this.app.set('port', process.env.PORT || 3000);
         this.app.use(morgan('dev'));
@@ -41,9 +42,10 @@ class Server
         this.app.use('/api/login', loginRoutes);
         this.app.use('/api/employee', employeeRoutes);
         this.app.use('/api/workHours', workHoursRoutes);
+        this.app.use('/api/stand', standRoutes);
     }
 
-    start():void
+    start(): void
     {
         this.app.listen(this.app.get('port'), () => {
             console.log(`Serve on port`, this.app.get('port'));

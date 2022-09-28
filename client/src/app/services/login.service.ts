@@ -99,7 +99,6 @@ export class LoginService {
 
   // Create IP LocalStorage
   public user_Ip(): Observable<string> {
-
     return this.http.get<string>(Urls.ip)
     .pipe(map((data:any) => {
 

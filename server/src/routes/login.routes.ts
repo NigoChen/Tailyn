@@ -10,7 +10,7 @@ class LoginRoutes
         this.config();
     }
 
-    config():void
+    config(): void
     {
         this.router.post('', loginController.login);
         this.router.post('/email', loginController.email);
