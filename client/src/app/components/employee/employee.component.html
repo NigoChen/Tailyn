@@ -24,16 +24,8 @@
         <td>
           {{ i+1 }}
         </td>
-        <td>
-          <span class="w-75 text-truncate">
-            {{ item.e_Name }}
-          </span>
-        </td>
-        <td>
-          <span class="w-75 text-truncate">
-            {{ item.e_Email }}
-          </span>
-        </td>
+        <td>{{ item.e_Name }}</td>
+        <td>{{ item.e_Email }}</td>
         <td>{{ item.e_JobNumber }}</td>
         <td>
           <ngb-rating [rate]="item.e_Lv" readonly="true" class="h6"></ngb-rating>

@@ -10,7 +10,6 @@
     <!-- <table class="table table-striped"> -->
     <thead class="thead-dark">
       <tr>
-        <th scope="col">#</th>
         <th scope="col">工號</th>
         <th scope="col">一般工時</th>
         <th scope="col">加班工時</th>
@@ -22,39 +21,20 @@
       </tr>
     </thead>
     <tbody>
-      <!-- <tr *ngFor="let item of result_Async$ | async; index as i" [ngClass]="{'text-light bg-dark': item?.e_Id == fb_Value['e_Id'].value}" (click)="choose(item)"> -->
       <tr *ngFor="let item of result_List; let i = index"
         [ngClass]="{'text-light bg-secondary': item?.w_Id == fb_Value_Index[0]}" (click)="choose(item)">
-        <td>
-          {{ i+1 }}
+        <td>{{ item.w_JobNumber }}</td>
+        <td class="text-truncate" [class.text-danger]="item.w_BTotal < 0">
+          {{ item.w_BTotal }}分 | 已扣除{{ item.w_BDeduct }}
         </td>
-        <td>
-          <span class="w-75 text-truncate">
-            {{ item.w_JobNumber }}
-          </span>
+        <td class="text-truncate" [class.text-danger]="item.w_OTotal < 0">
+          {{ item.w_OTotal }}分 | 已扣除{{ item.w_ODeduct }}
         </td>
-        <td>{{ item.bTotal }} 分</td>
-        <td>{{ item.oTotal }} 分</td>
-        <td>
-          <span class="w-75 text-truncate">
-            {{ item.w_WorkOrder }}
-          </span>
-        <td>
-          <span class="w-75 text-truncate">
-            {{ item.w_Model }}
-          </span>
-        </td>
-        <td>{{ item.w_Stand }}</td>
-        <td>
-          <span class="w-75 text-truncate">
-            {{ item.w_Remark }}
-          </span>
-        </td>
-        <td>
-          <span class="w-75 text-truncate">
-            {{ item.w_Time | date: 'yyyy-MM-dd HH:mm' }}
-          </span>
-        </td>
+        <td>{{ item.w_WorkOrder }}</td>
+        <td>{{ item.w_Model }}</td>
+        <td>{{ item.w_Stand }} {{item.s_Title}}</td>
+        <td>{{ item.w_Remark }}</td>
+        <td>{{ item.w_Time | date: 'yyyy-MM-dd HH:mm' }}</td>
       </tr>
     </tbody>
   </table>
@@ -74,7 +54,7 @@
         </ng-template>
 
         <input type="text" id="jobNumber" class="form-control form-control-sm" formControlName="w_JobNumber"
-          placeholder="姓名" (blur)="inputValidators(fbGroup, 'w_JobNumber')">
+          placeholder="工號" (blur)="inputValidators(fbGroup, 'w_JobNumber')">
       </div>
 
       <!-- stand -->
@@ -85,66 +65,86 @@
           <label for="stand" class="text-danger">{{ errorValidators['w_Stand'] }}</label>
         </ng-template>
 
-        <input type="text" id="stand" class="form-control form-control-sm" formControlName="w_Stand" placeholder="站別"
-          (blur)="inputValidators(fbGroup, 'w_Stand')">
+        <input class="form-control form-control-sm" formControlName="w_Stand" list="standtOptions" id="stand"
+          placeholder="站別" (blur)="inputValidators(fbGroup, 'w_Stand')">
+
+        <datalist id="standtOptions">
+          <option *ngFor="let item of standList$ | async; index as i" [value]="item.s_Code"> {{item.s_Title}}
+        </datalist>
       </div>
     </div>
 
     <!-- BMinute -->
     <div class="form-row border border-dark mb-1">
       <div class="form-group col-md-12 text-center mb-0">
-        <label for="bMinute" *ngIf="!errorValidators['w_BMinute'].length; else bMinute">一般工時</label>
+        <label *ngIf="!errorValidators['w_BMinute'].length; else bMinute">一般工時</label>
 
         <ng-template #bMinute>
-          <label for="bMinute" class="text-danger">{{ errorValidators['w_BMinute'] }}</label>
+          <label class="text-danger">{{ errorValidators['w_BMinute'] }}</label>
         </ng-template>
 
         <i class="bi bi-clock ml-2 mr-2"></i>
         <!-- Value -->
-        <span class="font-weight-bold" [innerHtml]="minutes_Total('bMinute')"></span>
+        <span class="font-weight-bold" [class.text-danger]="fb_Value['w_BTotal'].value < 0">{{
+          fb_Value['w_BTotal'].value }}</span>
       </div>
 
       <!-- BMinute Start -->
-      <div class="form-group col text-center">
-        <label>開始</label>
-        <input type="datetime-local" id="SbMinute" step="3600" class="form-control form-control-sm" [value]="onValue('SbMinute')"
-          (input)="onDate($event.target)">
+      <div class="form-group col-5 text-center">
+        <label for="SbMinute">開始</label>
+        <input type="datetime-local" id="SbMinute" step="3600" class="form-control form-control-sm datetime-font-size"
+          [value]="onValue('SbMinute')" (input)="onDate($event.target)">
       </div>
 
       <!-- BMinute End -->
+      <div class="form-group col-5 text-center">
+        <label for="EbMinute">結束</label>
+        <input type="datetime-local" id="EbMinute" step="3600" class="form-control form-control-sm datetime-font-size"
+          [value]="onValue('EbMinute')" (input)="onDate($event.target)">
+      </div>
+      <!-- Deduct -->
       <div class="form-group col text-center">
-        <label>結束</label>
-        <input type="datetime-local" id="EbMinute" step="3600" class="form-control form-control-sm" [value]="onValue('EbMinute')"
-          (input)="onDate($event.target)">
+        <label for="bDeduct">扣除</label>
+        <input type="number" id="bDeduct" class="form-control form-control-sm" step="5" min="0" max="100"
+          formControlName="w_BDeduct" (input)="deduct_Change('w_BMinute')">
       </div>
     </div>
 
     <!-- OMinute -->
     <div class="form-row border border-dark mb-1">
       <div class="form-group col-md-12 text-center mb-0">
-        <label for="oMinute" *ngIf="!errorValidators['w_OMinute'].length; else oMinute">加班工時</label>
+        <label *ngIf="!errorValidators['w_OMinute'].length; else oMinute">加班工時</label>
 
         <ng-template #oMinute>
-          <label for="oMinute" class="text-danger">{{ errorValidators['w_OMinute'] }}</label>
+          <label class="text-danger">{{ errorValidators['w_OMinute'] }}</label>
         </ng-template>
 
         <i class="bi bi-clock ml-2 mr-2"></i>
         <!-- Value -->
-        <span class="font-weight-bold" [innerHtml]="minutes_Total('oMinute')"></span>
+        <span class="font-weight-bold" [class.text-danger]="fb_Value['w_OTotal'].value < 0">{{
+          fb_Value['w_OTotal'].value }}</span>
+        <!-- <span class="font-weight-bold" [innerHtml]="minutes_Total('oMinute')"></span> -->
       </div>
 
       <!-- OMinute Start -->
       <div class="form-group col text-center">
-        <label>開始</label>
-        <input type="datetime-local" id="SoMinute" step="3600" class="form-control form-control-sm" [value]="onValue('SoMinute')"
-          (input)="onDate($event.target)">
+        <label for="SoMinute">開始</label>
+        <input type="datetime-local" id="SoMinute" step="3600" class="form-control form-control-sm datetime-font-size"
+          [value]="onValue('SoMinute')" (input)="onDate($event.target)">
       </div>
 
       <!-- OMinute End -->
       <div class="form-group col text-center">
-        <label>結束</label>
-        <input type="datetime-local" id="EoMinute" step="3600" class="form-control form-control-sm" [value]="onValue('EoMinute')"
-          (input)="onDate($event.target)">
+        <label for="EoMinute">結束</label>
+        <input type="datetime-local" id="EoMinute" step="3600" class="form-control form-control-sm datetime-font-size"
+          [value]="onValue('EoMinute')" (input)="onDate($event.target)">
+      </div>
+
+      <!-- Deduct -->
+      <div class="form-group col-2 text-center">
+        <label for="oDeduct">扣除</label>
+        <input type="number" id="oDeduct" class="form-control form-control-sm" step="5" min="0" max="100"
+          formControlName="w_ODeduct" (input)="deduct_Change('w_OMinute')">
       </div>
     </div>
 
@@ -189,13 +189,13 @@
 
       <!-- Model -->
       <div class="form-group col-md-6">
-        <label for="dateTime" *ngIf="!errorValidators['w_Time'].length; else model">日期</label>
+        <label for="w_Time" *ngIf="!errorValidators['w_Time'].length; else model">日期</label>
 
         <ng-template #model>
-          <label for="dateTime" class="text-danger">{{ errorValidators['w_Time'] }}</label>
+          <label for="w_Time" class="text-danger">{{ errorValidators['w_Time'] }}</label>
         </ng-template>
 
-        <input type="datetime-local" id="dateTime" step="3600" class="form-control form-control-sm" [value]="dateTime"
+        <input type="datetime-local" id="w_Time" step="3600" class="form-control form-control-sm" [value]="dateTime"
           (input)="onDate($event.target)">
       </div>
     </div>

@@ -10,8 +10,9 @@ import { LoginService } from 'src/app/services/login.service';
 import { AlertService } from 'src/app/services/alert.service';
 import { WorkHoursService } from 'src/app/services/work-hours.service';
 import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { StandService } from 'src/app/services/stand.service';
+import { Observable } from 'rxjs';
+import { Stand } from 'src/app/interfaces/stand';
 
 @Component({
   selector: 'app-work',
@@ -30,13 +31,17 @@ export class WorkComponent implements OnInit {
   public form_Controls: object = {
     w_Id: [''],
     w_JobNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{3,5}$/)]],
-    w_BMinute: ['0', [Validators.required, Validators.maxLength(30)]],
-    w_OMinute: ['0', [Validators.maxLength(30)]],
+    w_BMinute: ['', [Validators.required, Validators.maxLength(40)]],
+    w_OMinute: ['', [Validators.required, Validators.maxLength(40)]],
     w_WorkOrder: ['', [Validators.required, Validators.maxLength(30)]],
     w_Model: ['', [Validators.required, Validators.maxLength(30)]],
     w_Stand: ['', [Validators.required, Validators.maxLength(30)]],
     w_Remark: ['', [Validators.maxLength(50)]],
-    w_Time: ['', [Validators.required, Validators.maxLength(30)]]
+    w_Time: ['', [Validators.required, Validators.maxLength(30)]],
+    w_BTotal: ['0', [Validators.required]],
+    w_OTotal: ['0', [Validators.required]],
+    w_BDeduct: [0, [Validators.required]],
+    w_ODeduct: [0, [Validators.required]]
   }
 
   public fbGroup: FormGroup = this.fb.group(this.form_Controls);
@@ -44,20 +49,20 @@ export class WorkComponent implements OnInit {
   public inputValidators: Function = InputValidators;
   // Input Validators Error
   public errorValidators: object = ErrorValidators;
-
+  // Stand Data List
+  public standList$: Observable<Array<Stand>> | Observable<[]>;
   // Timezone
   public getTimezoneOffset: number = (new Date()).getTimezoneOffset() * 60000;
-  // Date Time
-  public start_Minute: string = (new Date(Date.now() - this.getTimezoneOffset)).toISOString().slice(0, -8);
-  public end_Minute: string = this.start_Minute;
-  public dateTime: string = this.start_Minute;
-  public bTotal: Array<string> = ['',''];
-  public oTotal: Array<string> = ['',''];
-
+  // DateTime
+  public dateTime: string = (new Date(Date.now() - this.getTimezoneOffset)).toISOString().slice(0, -8);
+  // Minutes Total Title
+  public minutesTotalTitle: Map<string, string> = new Map<string, string>([['w_BTotal','0'], ['w_OTotal','0']]);
+    
   constructor(
     private loadingService: LoadingService,
     private loginService: LoginService,
     private workHoursService: WorkHoursService,
+    private standService: StandService,
     private fb: FormBuilder,
     private modalService: ModalService,
     private alertService: AlertService,
@@ -77,6 +82,7 @@ export class WorkComponent implements OnInit {
     this.result_Data = [];
     this.result_List = [];
     this.read();
+    this.standList$ = this.standService.read();
   }
 
   ngAfterViewInit(): void {
@@ -105,8 +111,9 @@ export class WorkComponent implements OnInit {
       {
         this.fbGroup.reset(
           {
-            w_BMinute: '0',
-            w_OMinute: '0',
+            w_JobNumber: '4138',
+            w_BMinute: ',,',
+            w_OMinute: ',,',
             w_Time: this.dateTime
           }
         );
@@ -117,7 +124,6 @@ export class WorkComponent implements OnInit {
         // this.end_bMinute = '';
         // this.bTotal = [];
         // this.oTotal = [];
-
       }
       // else
       // {
@@ -132,51 +138,50 @@ export class WorkComponent implements OnInit {
   }
 
   // User Profile
-  user_Profile(employee: Employee[]): void {
+  user_Profile(): void {
 
     this.user = { jNumber: '', name: '', lv: 1 };
 
     let user_Session: User | null = this.loginService.read_User_SessionStorage();
 
-    if (user_Session != null) {
-      const userData = employee.find((item: Employee, index: number) => item.e_JobNumber === user_Session!.jNumber);
-
-      if (userData != undefined) {
-        this.loginService.create_User_SessionStorage(userData);
-
-        this.user = {
-          jNumber: userData.e_JobNumber,
-          name: userData.e_Name,
-          lv: userData.e_Lv
-        }
-      }
-      else {
-        this.loginService.logout();
-      }
+    if (user_Session != null)
+    {
+        this.user = user_Session;
+    }
+    else
+    {
+      this.loginService.logout();
     }
   }
 
   // Create
   create(fg: FormGroup): void {
-    this.workHoursService.create(fg.value)
-      .subscribe(
-        {
-          next: (res: boolean) => {
-            if (res) {
-              this.read();
+    if(this.fb_Value['w_BMinute'].value.length > 40 || this.fb_Value['w_OMinute'].value.length > 40)
+    {
+      this.workHoursService.create(fg.value)
+        .subscribe(
+          {
+            next: (res: boolean) => {
+              if (res) {
+                this.read();
+              }
+              else {
+                this.alertService.set_Alert(22);
+              }
+            },
+            error: (err) => {
+              this.alertService.set_Alert(23);
+            },
+            complete: () => {
+              this.modalService.set_modalMDForm(['hide', 'create']);
             }
-            else {
-              this.alertService.set_Alert(22);
-            }
-          },
-          error: (err) => {
-            this.alertService.set_Alert(23);
-          },
-          complete: () => {
-            this.modalService.set_modalMDForm(['hide', 'create']);
           }
-        }
-      );
+        );
+    }
+    else
+    {
+      this.alertService.set_Alert('工時不可為0');
+    }
   }
 
   // Read
@@ -185,7 +190,8 @@ export class WorkComponent implements OnInit {
       .subscribe(
         {
           next: (res: WorkHours[]) => {
-            if (res.length) {
+            if (res.length)
+            {                           
               this.result_Data = res;
               this.result_List = res;
             }
@@ -217,50 +223,33 @@ export class WorkComponent implements OnInit {
 
   // Update
   update(fg: FormGroup): void {
-    this.workHoursService.create(fg.value)
-      .subscribe(
-        {
-          next: (res: boolean) => {
-            if (res) {
-              this.read();
+    if(this.fb_Value['w_BMinute'].value.length > 40 || this.fb_Value['w_OMinute'].value.length > 40)
+    {
+      this.workHoursService.create(fg.value)
+        .subscribe(
+          {
+            next: (res: boolean) => {
+              if (res) {
+                this.read();
+              }
+              else
+              {
+                this.alertService.set_Alert(32);
+              }
+            },
+            error: (err) => {
+              this.alertService.set_Alert(33);
+            },
+            complete: () => {
+              this.modalService.set_modalMDForm(['hide', 'update']);
             }
-            else {
-              this.alertService.set_Alert(22);
-            }
-          },
-          error: (err) => {
-            this.alertService.set_Alert(23);
-          },
-          complete: () => {
-            this.modalService.set_modalMDForm(['hide', 'create']);
           }
-        }
-      );
-
-    // this.workHoursService.update(fg.value)
-    // .subscribe(
-    //   {
-    //     next: (res: boolean) => {
-    //       if(res)
-    //       {
-    //         this.read();
-    //         this.modalService.set_modalMDForm(['hide', 'update']);
-    //       }
-    //       else
-    //       {
-    //         this.alertService.set_Alert(32);
-    //       }
-
-    //       // this.stateView.next({loading: false, error: false});
-    //     },
-    //     error: (err) => {
-    //       this.alertService.set_Alert(33);
-    //     },
-    //     complete: () => {
-    //       // this.stateView.next({loading: false, error: false});
-    //     }
-    //   }
-    // )
+        );
+    }
+    else
+    {
+      this.alertService.set_Alert('工時不可為 0');
+    }
   }
 
   // Delete
@@ -285,51 +274,31 @@ export class WorkComponent implements OnInit {
   }
 
   // choose
-  choose(item: WorkHours): void {
-    this.fbGroup.patchValue(item);    
+  choose(item: WorkHours): void {    
+    this.fbGroup.patchValue(item);
+    this.minutesTotalTitle.set('w_BTotal', item.w_BMinute);
+    this.minutesTotalTitle.set('w_OTotal', item.w_OTotal);
     // Update Modal FormGroup
     this.modalService.set_FormGroup(this.fbGroup);
   }
 
-  // DateTimePick Chekc Value
+  // DateTimePick Value Chekc
   onValue_Check(id: string, index: number): string {
     let values: string = this.fb_Value[id].value;
-          
-    if(values.length > 19)
-    {
-      values = values.split(',')[index];
-    }   
-    return values || '';
+    return values.length > 18 ? values.split(',')[index] : '';
   }
 
   // DateTimePick Value
   onValue(id: string): string {
-    // var t = document.querySelector('#productrow');
 
-    // // Clone the new row and insert it into the table
-    // var tb = document.querySelector("tbody");
-    // var clone = document.importNode(t.content, true);'
-    // tb.appendChild(clone);
-    
-    // let templateForm = this.elementRef.nativeElement.querySelector('#form_');
-
-    //   let SbMinute = this.elementRef.nativeElement.querySelector('#EoMinute') as HTMLInputElement | null;
-    //   console.log(SbMinute);
-
-    // let EbMinute = this.elementRef.nativeElement.querySelector('#EbMinute') as HTMLInputElement | null;
-    // let SoMinute = this.elementRef.nativeElement.querySelector('#SoMinute') as HTMLInputElement | null;
-    // let EoMinute = this.elementRef.nativeElement.querySelector('#EoMinute') as HTMLInputElement | null;
-
-    // SbMinute.value = this.start_Minute;
-  
-    let values: any;
+    let values: any = '';
 
     if(this.fb_Value_Index[0])
     {      
       switch (id)
       {
         case 'SbMinute':    
-          values = this.onValue_Check('w_BMinute', 0);          
+          values = this.onValue_Check('w_BMinute', 0);        
           break;
         case 'EbMinute':
           values = this.onValue_Check('w_BMinute', 1);
@@ -360,27 +329,28 @@ export class WorkComponent implements OnInit {
     return value ? `${datetime}:00`: '';
   }
 
-  // Cheke VALUE
+  // Check VALUE
+  onDate_Check(name: string, value: string, index: number): void {    
+    
+    let choose_Value: Array<string> = this.fb_Value[name].value.split(','); 
+    choose_Value[index] = '';
+    choose_Value[2] = '0';
 
-  onDate_Check(id: string, value: string, index: number):void {
-    let choose_Value: Array<string>;
-
-    if(this.fb_Value[id].value.length)
+    if(value.length)
     {
-      choose_Value = this.fb_Value[id].value.split(',');
-
-      choose_Value[index] = '';
-
-      if(value.length)
-      {
-        choose_Value[index] = value;
-      }
-
-      if(choose_Value.toString().length > 19)
-      {
-        this.fb_Value[id].patchValue(choose_Value.toString());
-      }
+      // index  ~ 1
+      choose_Value[index] = value;
+      // Total minutes for array index 2
+      choose_Value[2] = this.dateTime_Count(choose_Value, name);
     }
+
+    // Minutes Total
+    const total: string = (name == 'w_BMinute') ? 'w_BTotal' : 'w_OTotal';
+
+    this.fb_Value[total].patchValue(choose_Value[2]);
+
+    // Update FormGroup Controls Value
+    this.fb_Value[name].patchValue(choose_Value.toString());
   }
 
   // DateTimePick Event
@@ -405,43 +375,73 @@ export class WorkComponent implements OnInit {
       case 'EoMinute':
         this.onDate_Check('w_OMinute', value, 1);
         break;
-      case 'dateTime':
+      case 'w_Time':
+
         if(value.length)
         {
-          this.fb_Value['w_Time'].patchValue(value);
+          this.fb_Value[id].patchValue(value);
         }
-
-        this.fb_Value['w_Time'].patchValue(this.start_Minute);
+        else
+        {
+          this.fb_Value[id].patchValue(this.dateTime);
+        }
         break;
     }      
   }
+
+  // DataTime Minutes Count
+  dateTime_Count(dateTime_Total: Array<string>, name: string): string {
+
+    let result: string = '0';
+    
+    if(dateTime_Total.toString().length > 43)
+    {            
+      const start: any = new Date(dateTime_Total[0]);
+      const end: any = new Date(dateTime_Total[1]);
+      const total: number = Math.abs(end-start);
+      const days: number = total / (1000 * 3600 * 24);
+      const hours: number = days * 24;
+      let minutes: number = Math.floor(hours * 60);      
+      
+      minutes = (name == 'w_BMinute') ? (minutes - this.fb_Value['w_BDeduct'].value) : (minutes - this.fb_Value['w_ODeduct'].value);
+
+      result =  (start.getTime() > end.getTime()) ? `-${minutes}` : `${minutes}`;
+    }
+
+    return result;
+  }
   
   // Minutes Total
-  minutes_Total(id: string): string {    
-
-    let times_Total: Array<string> = ['',''];
-
-    if(id == 'bMinute' && this.fb_Value['w_BMinute'].value.length == 39)
-    {
-      times_Total = this.fb_Value['w_BMinute'].value.split(',');
-    }
-    else if(id == 'oMinute' && this.fb_Value['w_OMinute'].value.length == 39)
-    {
-      times_Total = this.fb_Value['w_OMinute'].value.split(',');
-    }
+  deduct_Change(name: string): void {       
     
-    if(times_Total[0].length && times_Total[1].length)
-    {            
-      const start: any = new Date(times_Total[0]);
-      const end: any = new Date(times_Total[1]);
-      const total = Math.abs(end-start);
-      const days = total/(1000 * 3600 * 24);
-      const hours = days*24;
-      const minutes = Math.floor(hours*60);
-      return (start.getTime() > end.getTime()) ? `<font class="text-danger">-${minutes}</font>` : `${minutes}`;
+    if(this.fb_Value[name].value.length < 4)
+    {
+      return;
+    }
+  
+    // Update Deduct Total
+    let deduct: string = 'w_BDeduct';
+    
+    // Update Minutes Total
+    let minutes: string = 'w_BTotal';
+    
+    if(name == 'w_OMinute')
+    {
+      deduct = 'w_ODeduct';
+      minutes = 'w_OTotal';
     }
 
-    return '0';
+    let dateTime_Total = this.fb_Value[name].value.split(',');
+
+    // Update Minutes Total
+    dateTime_Total[2] = this.dateTime_Count(dateTime_Total, name);   
+    this.fb_Value[minutes].patchValue(dateTime_Total[2]);
+
+    // Update Deduct Total
+    dateTime_Total[3] = this.fb_Value[deduct].value;
+
+    // Update DateTime Total Value
+    this.fb_Value[name].patchValue(dateTime_Total.toString());
   }
 
   // Destroy
