@@ -14,6 +14,7 @@ const employee_routes_1 = __importDefault(require("./routes/employee.routes"));
 const path_1 = __importDefault(require("path"));
 const login_routes_1 = __importDefault(require("./routes/login.routes"));
 const work_hours_routes_1 = __importDefault(require("./routes/work-hours.routes"));
+const stand_routes_1 = __importDefault(require("./routes/stand.routes"));
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -37,6 +38,7 @@ class Server {
         this.app.use('/api/login', login_routes_1.default);
         this.app.use('/api/employee', employee_routes_1.default);
         this.app.use('/api/workHours', work_hours_routes_1.default);
+        this.app.use('/api/stand', stand_routes_1.default);
     }
     start() {
         this.app.listen(this.app.get('port'), () => {

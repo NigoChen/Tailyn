@@ -52,12 +52,9 @@ class WorkHoursController {
     read(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const sql = `SELECT *, ` +
-                `SUBSTRING_INDEX(SUBSTRING_INDEX(w_BMinute, ',', 3), ',', -1) AS w_bTotal, ` +
-                `SUBSTRING_INDEX(SUBSTRING_INDEX(w_OMinute, ',', 3), ',',-1) AS w_oTotal, ` +
-                `CONVERT(SUBSTRING_INDEX(w_BMinute, ',', -1),SIGNED) AS w_bDeduct, ` +
-                `CONVERT(SUBSTRING_INDEX(w_OMinute, ',', -1),SIGNED) AS w_oDeduct  ` +
+                `SUBSTRING_INDEX(w_BMinute, ',', -1) AS bTotal, ` +
+                `SUBSTRING_INDEX(w_OMinute, ',', -1) AS oTotal ` +
                 `FROM workhours`;
-            // `CONVERT(SUBSTRING_INDEX(w_OMinute, ',', -1),SIGNED) AS w_oDeduct  `+
             // const sql: string = `SELECT *, `+ 
             // `TIMESTAMPDIFF(MINUTE, SUBSTRING_INDEX(w_BMinute, ',', 1), SUBSTRING_INDEX(w_BMinute, ',', -2)) AS bTotal, `+
             // `TIMESTAMPDIFF(MINUTE, SUBSTRING_INDEX(w_OMinute, ',', 1), SUBSTRING_INDEX(w_OMinute, ',', -2)) AS oTotal `+
