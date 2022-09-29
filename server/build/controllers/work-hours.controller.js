@@ -51,21 +51,19 @@ class WorkHoursController {
     }
     read(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `SELECT *, ` +
-                `SUBSTRING_INDEX(SUBSTRING_INDEX(w_BMinute, ',', 3), ',', -1) AS w_BTotal, ` +
-                `SUBSTRING_INDEX(SUBSTRING_INDEX(w_OMinute, ',', 3), ',',-1) AS w_OTotal, ` +
-                `CONVERT(SUBSTRING_INDEX(w_BMinute, ',', -1),SIGNED) AS w_BDeduct, ` +
-                `CONVERT(SUBSTRING_INDEX(w_OMinute, ',', -1),SIGNED) AS w_ODeduct  ` +
-                `FROM workhours LEFT JOIN stand ON workhours.w_Stand = stand.s_Code`;
-            // `CONVERT(SUBSTRING_INDEX(w_OMinute, ',', -1),SIGNED) AS w_oDeduct  `+
-            // const sql: string = `SELECT *, `+ 
-            // `TIMESTAMPDIFF(MINUTE, SUBSTRING_INDEX(w_BMinute, ',', 1), SUBSTRING_INDEX(w_BMinute, ',', -2)) AS bTotal, `+
-            // `TIMESTAMPDIFF(MINUTE, SUBSTRING_INDEX(w_OMinute, ',', 1), SUBSTRING_INDEX(w_OMinute, ',', -2)) AS oTotal `+
-            // `FROM workhours`;
+            const sql = `SELECT w.*, ` +
+                `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_BMinute, ',', 3), ',', -1) AS w_BTotal, ` +
+                `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_OMinute, ',', 3), ',',-1) AS w_OTotal, ` +
+                `CONVERT(SUBSTRING_INDEX(w.w_BMinute, ',', -1),SIGNED) AS w_BDeduct, ` +
+                `CONVERT(SUBSTRING_INDEX(w.w_OMinute, ',', -1),SIGNED) AS w_ODeduct,  ` +
+                `s.s_Title, s.s_Code, ` +
+                `e.e_JobNumber, e.e_Name ` +
+                `FROM workhours w ` +
+                `LEFT JOIN stand s ON w.w_Stand = s.s_Code ` +
+                `LEFT JOIN employee e ON w.w_JobNumber = e.e_JobNumber`;
             yield database_1.default.then(con => {
                 return con.query(sql).then((result) => {
                     if (result.length > 0) {
-                        console.log(result);
                         res.status(200).json(result);
                     }
                     else {
@@ -120,7 +118,6 @@ class WorkHoursController {
     update(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const data = req.body;
-            console.log(data);
             // const sql: string = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}',e_Email = '${data.e_Email}',e_Lv = '${data.e_Lv}' WHERE e_Id = '${data.e_Id}' AND e_JobNumber <> '${data.e_JobNumber}'`;
             // return con.query('UPDATE employee SET ? WHERE e_Id = ?', [data, data.e_Id])
             const sql = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}', e_Email = '${data.e_Email}', e_Lv = '${data.e_Lv}' WHERE e_Id = ${data.e_Id} AND NOT EXISTS (SELECT * FROM (SELECT 1 FROM employee WHERE e_JobNumber = '${data.e_JobNumber}' AND e_Id <> '${data.e_Id}') temp);`;
@@ -143,7 +140,7 @@ class WorkHoursController {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
             yield database_1.default.then(con => {
-                return con.query('DELETE FROM employee WHERE e_Id = ?', [id])
+                return con.query('DELETE FROM workhours WHERE w_Id = ?', [id])
                     .then((result) => {
                     if (result.affectedRows > 0) {
                         res.status(200).send(true);

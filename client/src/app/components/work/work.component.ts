@@ -36,11 +36,12 @@ export class WorkComponent implements OnInit {
     w_WorkOrder: ['', [Validators.required, Validators.maxLength(30)]],
     w_Model: ['', [Validators.required, Validators.maxLength(30)]],
     w_Stand: ['', [Validators.required, Validators.maxLength(30)]],
+    w_Quantity: [1, [Validators.required, Validators.maxLength(4)]],
     w_Remark: ['', [Validators.maxLength(50)]],
     w_Time: ['', [Validators.required, Validators.maxLength(30)]],
     w_BTotal: ['0', [Validators.required]],
     w_OTotal: ['0', [Validators.required]],
-    w_BDeduct: [0, [Validators.required]],
+    w_BDeduct: [70, [Validators.required]],
     w_ODeduct: [0, [Validators.required]]
   }
 
@@ -82,6 +83,7 @@ export class WorkComponent implements OnInit {
     this.result_Data = [];
     this.result_List = [];
     this.read();
+    this.user_Profile();
     this.standList$ = this.standService.read();
   }
 
@@ -89,7 +91,7 @@ export class WorkComponent implements OnInit {
     this.modalService.set_FormControls(this.form_Controls);
     this.modalService.set_FormGroup(this.fbGroup);
     this.modalService.set_Form(this.form_);
-    this.modalService.set_User_Profile(this.user_Profile);
+    // this.modalService.set_User_Profile(this.user_Profile);
   }
 
   // FormGroup Controls Value
@@ -112,9 +114,14 @@ export class WorkComponent implements OnInit {
         this.fbGroup.reset(
           {
             w_JobNumber: '4138',
-            w_BMinute: ',,',
-            w_OMinute: ',,',
-            w_Time: this.dateTime
+            w_BMinute: ',,,',
+            w_OMinute: ',,,',
+            w_BTotal: '0',
+            w_OTotal: '0',
+            w_Quantity: 0,
+            w_BDeduct: 70,
+            w_ODeduct: 0,
+            w_Time: new Date().toISOString().slice(0, 10)
           }
         );
       }
@@ -258,11 +265,13 @@ export class WorkComponent implements OnInit {
       .subscribe(
         {
           next: (res: boolean) => {
-            if (res) {
+            if (res)
+            {
               this.read();
               this.modalService.set_modalMDForm(['hide', 'delete']);
             }
-            else {
+            else
+            {
               this.alertService.set_Alert(42);
             }
           },
@@ -344,10 +353,20 @@ export class WorkComponent implements OnInit {
       choose_Value[2] = this.dateTime_Count(choose_Value, name);
     }
 
-    // Minutes Total
-    const total: string = (name == 'w_BMinute') ? 'w_BTotal' : 'w_OTotal';
+    // Update Deduct Total
+    let deduct: string = 'w_BDeduct';
 
-    this.fb_Value[total].patchValue(choose_Value[2]);
+    // Update Minutes Total
+    let minutes: string = 'w_BTotal';
+    
+    if(name == 'w_OMinute')
+    {
+      deduct = 'w_ODeduct';
+      minutes = 'w_OTotal';
+    }
+    
+    this.fb_Value[minutes].patchValue(choose_Value[2]);
+    choose_Value[3] = this.fb_Value[deduct].value;
 
     // Update FormGroup Controls Value
     this.fb_Value[name].patchValue(choose_Value.toString());
@@ -393,8 +412,8 @@ export class WorkComponent implements OnInit {
   dateTime_Count(dateTime_Total: Array<string>, name: string): string {
 
     let result: string = '0';
-    
-    if(dateTime_Total.toString().length > 43)
+
+    if(dateTime_Total.toString().length > 42)
     {            
       const start: any = new Date(dateTime_Total[0]);
       const end: any = new Date(dateTime_Total[1]);
@@ -414,10 +433,10 @@ export class WorkComponent implements OnInit {
   // Minutes Total
   deduct_Change(name: string): void {       
     
-    if(this.fb_Value[name].value.length < 4)
-    {
-      return;
-    }
+    // if(this.fb_Value[name].value.length < 4)
+    // {
+    //   return;
+    // }
   
     // Update Deduct Total
     let deduct: string = 'w_BDeduct';

@@ -46,25 +46,21 @@ class WorkHoursController
 
     public async read(req: Request, res: Response): Promise<void>
     {
-        const sql: string = `SELECT *, `+ 
-        `SUBSTRING_INDEX(SUBSTRING_INDEX(w_BMinute, ',', 3), ',', -1) AS w_BTotal, `+
-        `SUBSTRING_INDEX(SUBSTRING_INDEX(w_OMinute, ',', 3), ',',-1) AS w_OTotal, `+
-        `CONVERT(SUBSTRING_INDEX(w_BMinute, ',', -1),SIGNED) AS w_BDeduct, `+
-        `CONVERT(SUBSTRING_INDEX(w_OMinute, ',', -1),SIGNED) AS w_ODeduct  `+
-        `FROM workhours LEFT JOIN stand ON workhours.w_Stand = stand.s_Code`;
-        // `CONVERT(SUBSTRING_INDEX(w_OMinute, ',', -1),SIGNED) AS w_oDeduct  `+
-        // const sql: string = `SELECT *, `+ 
-        // `TIMESTAMPDIFF(MINUTE, SUBSTRING_INDEX(w_BMinute, ',', 1), SUBSTRING_INDEX(w_BMinute, ',', -2)) AS bTotal, `+
-        // `TIMESTAMPDIFF(MINUTE, SUBSTRING_INDEX(w_OMinute, ',', 1), SUBSTRING_INDEX(w_OMinute, ',', -2)) AS oTotal `+
-        // `FROM workhours`;
+        const sql: string = `SELECT w.*, `+ 
+        `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_BMinute, ',', 3), ',', -1) AS w_BTotal, `+
+        `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_OMinute, ',', 3), ',',-1) AS w_OTotal, `+
+        `CONVERT(SUBSTRING_INDEX(w.w_BMinute, ',', -1),SIGNED) AS w_BDeduct, `+
+        `CONVERT(SUBSTRING_INDEX(w.w_OMinute, ',', -1),SIGNED) AS w_ODeduct,  `+
+        `s.s_Title, s.s_Code, `+
+        `e.e_JobNumber, e.e_Name `+
+        `FROM workhours w `+
+        `LEFT JOIN stand s ON w.w_Stand = s.s_Code `+
+        `LEFT JOIN employee e ON w.w_JobNumber = e.e_JobNumber`;
 
         await pool.then(con => {
             return con.query(sql).then((result: Array<Object>) => {
                 if(result.length > 0)
-                {
-
-                    console.log(result);
-                    
+                {                    
                     res.status(200).json(result);
                 }
                 else
@@ -127,10 +123,7 @@ class WorkHoursController
 
     public async update(req: Request, res: Response): Promise<void>
     {
-        const data: Employee = req.body;
-
-        console.log(data);
-        
+        const data: Employee = req.body;        
         // const sql: string = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}',e_Email = '${data.e_Email}',e_Lv = '${data.e_Lv}' WHERE e_Id = '${data.e_Id}' AND e_JobNumber <> '${data.e_JobNumber}'`;
         // return con.query('UPDATE employee SET ? WHERE e_Id = ?', [data, data.e_Id])
         const sql: string = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}', e_Email = '${data.e_Email}', e_Lv = '${data.e_Lv}' WHERE e_Id = ${data.e_Id} AND NOT EXISTS (SELECT * FROM (SELECT 1 FROM employee WHERE e_JobNumber = '${data.e_JobNumber}' AND e_Id <> '${data.e_Id}') temp);`;
@@ -153,11 +146,11 @@ class WorkHoursController
 
     public async delete(req: Request, res: Response): Promise<void>
     {
-        const id:string = req.params.id;
+        const id: string = req.params.id;
 
         await pool.then(con => {
-            return con.query('DELETE FROM employee WHERE e_Id = ?', [id])
-            .then((result:any) => {
+            return con.query('DELETE FROM workhours WHERE w_Id = ?', [id])
+            .then((result: any) => {
                 if(result.affectedRows > 0)
                 {
                     res.status(200).send(true);

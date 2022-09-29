@@ -6,10 +6,11 @@ export interface WorkHours {
     w_WorkOrder: string;
     w_Model: string;
     w_Stand: string;
+    w_Quantity: number;
     w_Remark?: string;
     w_Time: Date;
-    w_bTotal: string;
-    w_oTotal: string;
-    w_bDeduct: number;
-    w_oDeduct: number;
+    w_BTotal: string;
+    w_OTotal: string;
+    w_BDeduct: number;
+    w_ODeduct: number;
 }
