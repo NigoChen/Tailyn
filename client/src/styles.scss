@@ -1,51 +1,103 @@
 /* Importing Bootstrap SCSS file. */
 @import "~bootstrap-icons/font/bootstrap-icons.css";
 @import "~bootstrap/scss/bootstrap";
-
+/*** root ***/
 :root
 {
   --red-color: red;
   --white-color: white;
 }
+/*** all ***/
 *
 {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
-body {
-  // font-size: .875rem;
+/*** body ***/
+body
+{
+  font-size: .875rem;
 }
+/*** html ***/
+html
+{
+  overflow-x: hidden;
+  scroll-padding-top: 7rem;
+  scroll-behavior: smooth;
+}
+html::-webkit-scrollbar
+{
+  width: .6rem;
+}
+html::-webkit-scrollbar-track
+{
+  background-color: transparent;
+}
+html::-webkit-scrollbar-thumb
+{
+  background-color: rgba(200, 0, 0, .5);
+  border-radius: 5rem;
+}
+/*** Table Scrollbar ***/
+.table-scrollbar
+{
+  overflow-y: hidden;
+  scroll-padding-top: 7rem;
+  scroll-behavior: smooth;
+}
+.table-scrollbar::-webkit-scrollbar
+{
+  height: .4rem;
+}
+.table-scrollbar::-webkit-scrollbar-track
+{
+  background-color: transparent;
+}
+.table-scrollbar::-webkit-scrollbar-thumb
+{
+  background-color: rgba(200, 0, 0, 1);
+  border-radius: 5rem;
+}
+/*** input-group-prepend ***/
 .input-group-prepend span {
   cursor: pointer;
 }
-.feather {
-  width: 16px;
-  height: 16px;
-  vertical-align: text-bottom;
-}
-@media (max-width: 767.98px) {
-  .sidebar {
-    top: 5rem;
-  }
-}
-
-.sidebar-sticky {
-  position: relative;
-  top: 0;
-  height: calc(100vh - 48px);
-  padding-top: .5rem;
-  overflow-x: hidden;
-  overflow-y: auto;
-  /* Scrollable contents if viewport is shorter than content. */
-}
-
-@supports ((position: -webkit-sticky) or (position: sticky)) {
+/*** @supports ***/
+@supports ((position: -webkit-sticky) or (position: sticky))
+{
   .sidebar-sticky {
     position: -webkit-sticky;
     position: sticky;
   }
+}
+
+/*** @media only screen ***/
+@media (max-width: 575.99px)
+{
+  table
+  {
+    font-size: .6rem; // 10px
+  }
+}
+@media (min-width: 576px) and (max-width: 767.99px)
+{
+
+}
+@media (min-width: 768px) and (max-width: 991.99px)
+{
+  .sidebar
+  {
+    top: 5rem;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199.99px)
+{
+
+}
+@media (min-width: 1200px)
+{
+
 }
 
 /*

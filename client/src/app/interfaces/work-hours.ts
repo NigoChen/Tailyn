@@ -3,11 +3,11 @@ export interface WorkHours {
     w_JobNumber: string;
     w_BMinute: string;
     w_OMinute?: string;
-    w_WorkOrder: string;
-    w_Model: string;
-    w_Stand: string;
-    w_Quantity: number;
-    w_Remark?: string;
+    w_WorkOrder: Array<string>;
+    w_Model: Array<string>;
+    w_Stand: Array<string>;
+    w_Quantity: Array<string>;
+    w_Remark?: Array<string>;
     w_Time: Date;
     w_BTotal: string;
     w_OTotal: string;

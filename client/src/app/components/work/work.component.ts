@@ -1,11 +1,10 @@
-import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, HostListener, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { WorkHours } from 'src/app/interfaces/work-hours';
 import { LoadingService } from 'src/app/services/loading.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
 import { User } from 'src/app/interfaces/user';
-import { Employee } from 'src/app/interfaces/employee';
 import { LoginService } from 'src/app/services/login.service';
 import { AlertService } from 'src/app/services/alert.service';
 import { WorkHoursService } from 'src/app/services/work-hours.service';
@@ -13,11 +12,13 @@ import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { StandService } from 'src/app/services/stand.service';
 import { Observable } from 'rxjs';
 import { Stand } from 'src/app/interfaces/stand';
+import { SplitePipe } from 'src/app/pipes/splite.pipe';
 
 @Component({
   selector: 'app-work',
   templateUrl: './work.component.html',
-  styleUrls: ['./work.component.scss']
+  styleUrls: ['./work.component.scss'],
+  providers: [ SplitePipe ]
 })
 export class WorkComponent implements OnInit {
   // Form
@@ -27,24 +28,24 @@ export class WorkComponent implements OnInit {
   public result_List: WorkHours[];
   // User
   public user: User;
-  // Form Controls
+  // FormGroup Object
   public form_Controls: object = {
     w_Id: [''],
-    w_JobNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{3,5}$/)]],
-    w_BMinute: ['', [Validators.required, Validators.maxLength(40)]],
-    w_OMinute: ['', [Validators.required, Validators.maxLength(40)]],
-    w_WorkOrder: ['', [Validators.required, Validators.maxLength(30)]],
-    w_Model: ['', [Validators.required, Validators.maxLength(30)]],
-    w_Stand: ['', [Validators.required, Validators.maxLength(30)]],
-    w_Quantity: [1, [Validators.required, Validators.maxLength(4)]],
-    w_Remark: ['', [Validators.maxLength(50)]],
-    w_Time: ['', [Validators.required, Validators.maxLength(30)]],
+    w_JobNumber: ['', [Validators.required]],
+    w_BMinute: ['', [Validators.maxLength(50)]],
+    w_OMinute: ['', [Validators.maxLength(50)]],
+    w_WorkOrder: new FormArray([new FormControl('', [Validators.required, Validators.maxLength(20)])]),
+    w_Model: new FormArray([new FormControl('', [Validators.required, Validators.maxLength(20)])]),
+    w_Stand: new FormArray([new FormControl('', [Validators.required, Validators.maxLength(10)])]),
+    w_Quantity: new FormArray([new FormControl(1, [Validators.required, Validators.maxLength(4)])]),
+    w_Remark: new FormArray([new FormControl('', [Validators.required, Validators.maxLength(50)])]),
+    w_Time: ['', [Validators.required, Validators.maxLength(20)]],
     w_BTotal: ['0', [Validators.required]],
     w_OTotal: ['0', [Validators.required]],
     w_BDeduct: [70, [Validators.required]],
     w_ODeduct: [0, [Validators.required]]
   }
-
+  // FormGroup
   public fbGroup: FormGroup = this.fb.group(this.form_Controls);
   // Input Validators blur
   public inputValidators: Function = InputValidators;
@@ -84,7 +85,7 @@ export class WorkComponent implements OnInit {
     this.result_List = [];
     this.read();
     this.user_Profile();
-    this.standList$ = this.standService.read();
+    this.standList$ = this.standService.read();    
   }
 
   ngAfterViewInit(): void {
@@ -104,44 +105,54 @@ export class WorkComponent implements OnInit {
     return Object.values(this.fbGroup.value) || '';
   }
 
-  // FormGroup Reset
-  reset_FormGroup(value: Array<string>): void {
-
-    if(value[0] == 'show')
+  // Add / Remove FormArray
+  reset_FormArray(index: number): void {
+    if(index)
     {
-      if (value[1] == 'create')
+      (<FormArray>this.fb_Value['w_WorkOrder']).removeAt(index);
+      (<FormArray>this.fb_Value['w_Model']).removeAt(index);
+      (<FormArray>this.fb_Value['w_Stand']).removeAt(index);
+      (<FormArray>this.fb_Value['w_Quantity']).removeAt(index);
+      (<FormArray>this.fb_Value['w_Remark']).removeAt(index);
+    }
+    else if(this.fb_Value['w_WorkOrder'].value.length < 5)
+    {
+      (<FormArray>this.fb_Value['w_WorkOrder']).push(new FormControl('', [Validators.required, Validators.maxLength(20)]));
+      (<FormArray>this.fb_Value['w_Model']).push(new FormControl('', [Validators.required, Validators.maxLength(20)]));
+      (<FormArray>this.fb_Value['w_Stand']).push(new FormControl('', [Validators.required, Validators.maxLength(10)]));
+      (<FormArray>this.fb_Value['w_Quantity']).push(new FormControl('', [Validators.required, Validators.maxLength(4)]));
+      (<FormArray>this.fb_Value['w_Remark']).push(new FormControl('', [Validators.required, Validators.maxLength(50)]));
+    }
+    Reset_Validators(this.fbGroup, index);
+  }
+
+  // FormGroup Reset
+  reset_FormGroup(value: Array<string>): void {    
+    // if(value[0] == 'show')
+    // {
+      if(value[1] == 'create')
       {
         this.fbGroup.reset(
           {
-            w_JobNumber: '4138',
+            w_Id: '',
+            w_JobNumber: this.user.jNumber,
             w_BMinute: ',,,',
             w_OMinute: ',,,',
             w_BTotal: '0',
             w_OTotal: '0',
-            w_Quantity: 0,
             w_BDeduct: 70,
             w_ODeduct: 0,
             w_Time: new Date().toISOString().slice(0, 10)
           }
         );
-      }
-      else
-      {
-        // this.start_bMinute = '';
-        // this.end_bMinute = '';
-        // this.bTotal = [];
-        // this.oTotal = [];
-      }
-      // else
-      // {
-      //   this.fbGroup.get('e_PassWord').setValidators(null);
-      //   this.fb_Value['e_PassWord'].updateValueAndValidity();
-      //   this.fb_Value['e_ConfirmPassword'].setValidators(null);
-      //   this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
-      // }
-    }
 
-    Reset_Validators(this.fbGroup);
+        // Reset FormArray Value
+        this.reset_FormArray_Val();
+      }
+
+      // Reset ErrorValidators Object
+      Reset_Validators(this.fbGroup);
+    // }    
   }
 
   // User Profile
@@ -151,8 +162,8 @@ export class WorkComponent implements OnInit {
 
     let user_Session: User | null = this.loginService.read_User_SessionStorage();
 
-    if (user_Session != null)
-    {
+    if (user_Session)
+    {      
         this.user = user_Session;
     }
     else
@@ -163,6 +174,7 @@ export class WorkComponent implements OnInit {
 
   // Create
   create(fg: FormGroup): void {
+    
     if(this.fb_Value['w_BMinute'].value.length > 40 || this.fb_Value['w_OMinute'].value.length > 40)
     {
       this.workHoursService.create(fg.value)
@@ -283,12 +295,63 @@ export class WorkComponent implements OnInit {
   }
 
   // choose
-  choose(item: WorkHours): void {    
-    this.fbGroup.patchValue(item);
+  choose(item: WorkHours): void { 
+    this.fbGroup.patchValue({
+      w_Id: item.w_Id,
+      w_JobNumber: item.w_JobNumber,
+      w_BMinute: item.w_BMinute,
+      w_OMinute: item.w_OMinute,
+      w_Time: new Date(item.w_Time).toISOString().slice(0, 10),
+      w_BTotal: item.w_BTotal,
+      w_OTotal: item.w_OTotal,
+      w_BDeduct: item.w_BDeduct,
+      w_ODeduct: item.w_ODeduct
+    });
+
     this.minutesTotalTitle.set('w_BTotal', item.w_BMinute);
     this.minutesTotalTitle.set('w_OTotal', item.w_OTotal);
+    
+    // FormArray Value
+    this.set_FormArray_Val(item);
+
     // Update Modal FormGroup
     this.modalService.set_FormGroup(this.fbGroup);
+  }
+
+  // Update FormArray Value
+  set_FormArray_Val(item: any): void {  
+
+    const array_Name: Array<string> = ['w_WorkOrder','w_Model','w_Stand','w_Quantity','w_Remark'];
+
+    for(const name of array_Name)
+    {      
+      const formArray: FormArray = new FormArray([]);
+      const validators: Validators = this.fb_Value[name].get('0').validator;
+
+      for(const val of item[name].split(','))
+      {      
+        formArray.push(new FormControl(val, validators));
+      }
+
+      this.fbGroup.setControl(name, formArray);
+    }
+  }
+
+  // Reset FormArray Value
+  reset_FormArray_Val(): void {  
+
+    const array_Name: Array<string> = ['w_WorkOrder','w_Model','w_Stand','w_Quantity','w_Remark'];
+
+    for(const name of array_Name)
+    {      
+      const formArray: FormArray = new FormArray([]);
+
+      const validators: Validators = this.fb_Value[name].get('0').validator;
+
+      formArray.push(new FormControl('', validators));
+
+      this.fbGroup.setControl(name, formArray);
+    }
   }
 
   // DateTimePick Value Chekc
@@ -398,11 +461,11 @@ export class WorkComponent implements OnInit {
 
         if(value.length)
         {
-          this.fb_Value[id].patchValue(value);
+          this.fb_Value[id].patchValue(event.value);
         }
         else
         {
-          this.fb_Value[id].patchValue(this.dateTime);
+          this.fb_Value[id].patchValue(new Date().toISOString().slice(0, 10));
         }
         break;
     }      
@@ -466,5 +529,18 @@ export class WorkComponent implements OnInit {
   // Destroy
   ngOnDestroy(): void {
     this.modalService.set_FormGroup(null);
+  }
+
+  // mouse click 
+  @HostListener('mouseup', ['$event']) onClick($event) {
+
+    this.modalService.set_modalMDForm(['hide', 'create']);
+
+    // console.info('Click event fired', $event);
+    // if($event.which === 2)
+    // {
+
+    //   console.info('Middle mouse button clicked');
+    // }
   }
 }

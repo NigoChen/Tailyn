@@ -20,6 +20,7 @@ import { ContentHeaderComponent } from './content-header/content-header.componen
 import { FooterComponent } from './footer/footer.component';
 import { WorkHoursService } from '../services/work-hours.service';
 import { StandService } from '../services/stand.service';
+import { SplitePipe } from '../pipes/splite.pipe';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { StandService } from '../services/stand.service';
     FooterComponent,
     ContentHeaderComponent,
     HeaderComponent,
+    SplitePipe
   ],
   imports: [
     CommonModule,

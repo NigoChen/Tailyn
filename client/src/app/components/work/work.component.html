@@ -5,9 +5,8 @@
 <!-- /Form -->
 
 <!-- Table -->
-<div class="table-responsive">
-  <table class="table table-bordered table-sm">
-    <!-- <table class="table table-striped"> -->
+<div class="table-responsive table-scrollbar">
+  <table class="table table-bordered table-sm table-hover">
     <thead class="thead-dark">
       <tr>
         <th scope="col">工號</th>
@@ -21,22 +20,36 @@
         <th scope="col">時間</th>
       </tr>
     </thead>
-    <tbody>
-      <tr *ngFor="let item of result_List; let i = index"
-        [ngClass]="{'text-light bg-secondary': item?.w_Id == fb_Value_Index[0]}" (click)="choose(item)">
-        <td>{{ item.w_JobNumber }} {{ item.e_Name }}</td>
-        <td class="text-truncate" [class.text-danger]="item.w_BTotal < 0">
-          {{ item.w_BTotal }}分 | 已扣除{{ item.w_BDeduct }}
+    <tbody *ngFor="let item of result_List; let i = index" [ngClass]="{'table-dark': item?.w_Id == fb_Value_Index[0]}"
+      (click)="choose(item)">
+      <tr *ngFor="let val of item.w_WorkOrder.split(','); let y = index">
+        <td *ngIf="!y" [attr.rowspan]="y" align="center" style="vertical-align: middle;">
+          <span *ngIf="!y">
+            {{ item.w_JobNumber }} {{ item.e_Name }}
+          </span>
         </td>
-        <td class="text-truncate" [class.text-danger]="item.w_OTotal < 0">
-          {{ item.w_OTotal }}分 | 已扣除{{ item.w_ODeduct }}
+        <td *ngIf="!y" [attr.rowspan]="y" [ngClass]="[item.w_BTotal < 0 ? 'text-danger':'text-truncate']" align="center"
+          style="vertical-align: middle;">
+          <span *ngIf="!y">
+            {{ item.w_BTotal }}分 | 已扣除{{ item.w_BDeduct }}
+          </span>
         </td>
-        <td>{{ item.w_WorkOrder }}</td>
-        <td>{{ item.w_Model }}</td>
-        <td>{{ item.w_Stand }} {{item.s_Title}}</td>
-        <td>{{ item.w_Quantity }}</td>
-        <td>{{ item.w_Remark }}</td>
-        <td>{{ item.w_Time | date: 'yyyy-MM-dd HH:mm' }}</td>
+        <td *ngIf="!y" [attr.rowspan]="y" [ngClass]="[item.w_OTotal < 0 ? 'text-danger':'text-truncate']" align="center"
+          style="vertical-align: middle;">
+          <span *ngIf="!y">
+            {{ item.w_OTotal }}分 | 已扣除{{ item.w_ODeduct }}
+          </span>
+        </td>
+        <td>{{ item.w_WorkOrder | splite:y }}</td>
+        <td>{{ item.w_Model | splite:y }}</td>
+        <td>{{ item.w_Stand | splite:y }} {{item.s_Title}}</td>
+        <td>{{ item.w_Quantity | splite:y }}</td>
+        <td>{{ item.w_Remark | splite:y }}</td>
+        <td *ngIf="!y" [attr.rowspan]="y" align="center" style="vertical-align: middle;">
+          <span *ngIf="!y">
+            {{ item.w_Time | date: 'yyyy-MM-dd' }}
+          </span>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -46,86 +59,84 @@
 <ng-template #form_>
   <!-- Form -->
   <form [formGroup]="fbGroup" #form="ngForm">
-    <div class="form-row">
+    <div class="form-row pb-1">
       <!-- JobNumber -->
-      <div class="form-group col text-center">
-        <label for="jobNumber" *ngIf="!errorValidators['w_JobNumber'].length; else jobNumber">工號</label>
-
-        <ng-template #jobNumber>
-          <label for="jobNumber" class="text-danger">{{ errorValidators['w_JobNumber'] }}</label>
-        </ng-template>
-
-        <div class="input-group input-group-sm mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="basic-addon1">{{ user.name }}</span>
-          </div>
-          <input type="text" id="jobNumber" class="form-control form-control-sm" formControlName="w_JobNumber"
-            placeholder="工號" readonly>
+      <div class="input-group input-group-sm col">
+        <div class="input-group-prepend">
+          <span class="input-group-text p-1">工號</span>
+        </div>
+        <input type="text" class="form-control form-control-sm text-center" [value]="fb_Value['w_JobNumber'].value"
+          readonly>
+      </div>
+      <!-- Name -->
+      <div class="input-group input-group-sm col">
+        <div class="input-group-prepend">
+          <span class="input-group-text p-1">姓名</span>
+        </div>
+        <input type="text" class="form-control form-control-sm text-center" [value]="user.name" readonly>
+      </div>
+      <!-- DateTime -->
+      <div class="input-group input-group-sm col">
+        <input type="date" id="w_Time" class="form-control form-control-sm text-center"
+          [value]="fb_Value['w_Time'].value" (input)="onDate($event.target)">
+        <div class="input-group-append">
+          <span class="input-group-text p-1" [class.text-danger]="errorValidators['w_Time'].length">
+            {{ errorValidators['w_Time'].length ? errorValidators['w_Time'] : "日期" }}
+          </span>
         </div>
       </div>
-
-      <!-- DateTime -->
-      <div class="form-group col text-center">
-        <label for="w_Time" *ngIf="!errorValidators['w_Time'].length; else model">日期</label>
-
-        <ng-template #model>
-          <label for="w_Time" class="text-danger">{{ errorValidators['w_Time'] }}</label>
-        </ng-template>
-
-        <input type="date" id="w_Time" class="form-control form-control-sm" [value]="fb_Value['w_Time'].value"
-          (input)="onDate($event.target)">
-      </div>
-
     </div>
 
     <!-- BMinute -->
-    <div class="form-row border border-dark mb-1">
+    <div class="form-row border border-dark mb-1 pt-1 pb-1">
       <!-- BDeduct -->
-      <div class="input-group input-group-sm col-md-12 mb-0 d-inline-flex d-flex justify-content-center mt-1">
-        <div class="input-group-prepend">
-
-          <span class="input-group-text bg-white">
-            一般工時
-          </span>
+      <div class="input-group input-group-sm col-md-12 mb-0 d-inline-flex d-flex justify-content-center">
+        <div class="input-group-prepend mb-1">
+          <span class="input-group-text bg-white">一般工時</span>
+          <!-- Clock Icon -->
           <i class="bi bi-clock input-group-text ml-1 mr-1 bg-white"></i>
 
-          <span class="input-group-text font-weight-bold mr-1" [class.text-danger]="fb_Value['w_BTotal'].value < 0">{{
-            fb_Value['w_BTotal'].value }}</span>
+          <span class="input-group-text font-weight-bold mr-1"
+            [class.text-danger]="fb_Value['w_BTotal'].value < 0 && errorValidators['w_BTotal'].length">
+            {{ fb_Value['w_BTotal'].value }}
+          </span>
           <span class="input-group-text font-weight-bold">-</span>
         </div>
 
-        <input type="number" id="oDeduct" class="form-control form-control-sm col-2" step="5" min="0" max="100"
+        <input type="number" id="bDeduct" class="form-control form-control-sm col-2" step="5" min="0" max="100"
           formControlName="w_BDeduct" (input)="deduct_Change('w_BMinute')">
       </div>
-
       <!-- BMinute Start -->
-      <div class="form-group col-md-6 text-center">
-        <label for="SbMinute">開始</label>
-        <input type="datetime-local" id="SbMinute" step="3600" class="form-control form-control-sm datetime-font-size"
+      <div class="input-group input-group-sm col-md-6">
+        <div class="input-group-prepend">
+          <span class="input-group-text p-1">開始</span>
+        </div>
+        <input type="datetime-local" id="SbMinute" step="3600" class="form-control form-control-sm"
           [value]="onValue('SbMinute')" (input)="onDate($event.target)">
       </div>
-
       <!-- BMinute End -->
-      <div class="form-group col-md-6 text-center">
-        <label for="EbMinute">結束</label>
-        <input type="datetime-local" id="EbMinute" step="3600" class="form-control form-control-sm datetime-font-size"
+      <div class="input-group input-group-sm col-md-6">
+        <input type="datetime-local" id="EbMinute" step="3600" class="form-control form-control-sm "
           [value]="onValue('EbMinute')" (input)="onDate($event.target)">
+        <div class="input-group-append">
+          <span class="input-group-text p-1">結束</span>
+        </div>
       </div>
     </div>
 
     <!-- OMinute -->
-    <div class="form-row border border-dark mb-1">
+    <div class="form-row border border-dark mb-1 pt-1 pb-1">
       <!-- ODeduct -->
-      <div class="input-group input-group-sm col-md-12 mb-0 d-inline-flex d-flex justify-content-center mt-1">
-        <div class="input-group-prepend">
-
-          <span class="input-group-text bg-white">
-            加班工時
-          </span>
+      <div class="input-group input-group-sm col-md-12 mb-0 d-inline-flex d-flex justify-content-center">
+        <div class="input-group-prepend mb-1">
+          <span class="input-group-text bg-white">加班工時</span>
+          <!-- Clock Icon -->
           <i class="bi bi-clock input-group-text ml-1 mr-1 bg-white"></i>
 
-          <span class="input-group-text font-weight-bold mr-1" [class.text-danger]="fb_Value['w_OTotal'].value < 0">{{
-            fb_Value['w_OTotal'].value }}</span>
+          <span class="input-group-text font-weight-bold mr-1"
+            [class.text-danger]="fb_Value['w_OTotal'].value < 0 && errorValidators['w_OTotal'].length">
+            {{ fb_Value['w_OTotal'].value }}
+          </span>
           <span class="input-group-text font-weight-bold">-</span>
         </div>
 
@@ -134,121 +145,85 @@
       </div>
 
       <!-- OMinute Start -->
-      <div class="form-group col-md-6 text-center">
-        <label for="SoMinute">開始</label>
-        <input type="datetime-local" id="SoMinute" step="3600" class="form-control form-control-sm datetime-font-size"
+      <div class="input-group input-group-sm col-md-6">
+        <div class="input-group-prepend">
+          <span class="input-group-text p-1">開始</span>
+        </div>
+        <input type="datetime-local" id="SoMinute" step="3600" class="form-control form-control-sm"
           [value]="onValue('SoMinute')" (input)="onDate($event.target)">
       </div>
 
       <!-- OMinute End -->
-      <div class="form-group col-md-6 text-center">
-        <label for="EoMinute">結束</label>
-        <input type="datetime-local" id="EoMinute" step="3600" class="form-control form-control-sm datetime-font-size"
+      <div class="input-group input-group-sm col-md-6">
+        <input type="datetime-local" id="EoMinute" step="3600" class="form-control form-control-sm "
           [value]="onValue('EoMinute')" (input)="onDate($event.target)">
+        <div class="input-group-append">
+          <span class="input-group-text p-1">結束</span>
+        </div>
       </div>
     </div>
 
-    <div class="form-row">
-      <!-- stand -->
-      <div class="form-group col text-center">
-        <label for="stand" *ngIf="!errorValidators['w_Stand'].length; else stand">站別</label>
-
-        <ng-template #stand>
-          <label for="stand" class="text-danger">{{ errorValidators['w_Stand'] }}</label>
-        </ng-template>
-
-        <input class="form-control form-control-sm" formControlName="w_Stand" list="standtOptions" id="stand"
-          placeholder="站別" (blur)="inputValidators(fbGroup, 'w_Stand')">
-
-        <datalist id="standtOptions">
-          <option *ngFor="let item of standList$ | async; index as i" [value]="item.s_Code"> {{item.s_Title}}
-        </datalist>
+    <!-- FormArray -->
+    <div class="form-row border border-dark mb-1"
+      *ngFor="let val of [].constructor(fb_Value['w_WorkOrder'].value.length) let i = index">
+      <div class="form-row col-12 position-relative">
+        <!-- Icon Button -->
+        <i [ngClass]="['bi text-info h6 position-absolute', i>0 ? 'text-danger bi-dash-square' : 'text-info bi-plus-square']"
+          [title]="i>0 ? '刪除':'新增'" style="top: 5px; right:5px; cursor: pointer; z-index: 999;"
+          (click)="reset_FormArray(i)">
+        </i>
+        <!-- workOrder -->
+        <div class="form-group col text-center mb-1" formArrayName="w_WorkOrder">
+          <label [class.text-danger]="errorValidators['w_WorkOrder'][i].length && true">
+            {{ errorValidators['w_WorkOrder'][i].length && fb_Value['w_WorkOrder'].get(''+i).touched ?
+            errorValidators['w_WorkOrder'][i] : "工單" }}
+          </label>
+          <input type="text" class="form-control form-control-sm" [formControlName]="i" placeholder="工單"
+            (blur)="inputValidators(fbGroup, 'w_WorkOrder', i)">
+        </div>
+        <!-- Model -->
+        <div class="form-group col text-center mb-1" formArrayName="w_Model">
+          <label [class.text-danger]="errorValidators['w_Model'][i].length && true">
+            {{ errorValidators['w_Model'][i].length && fb_Value['w_WorkOrder'].get(''+i).touched ?
+            errorValidators['w_Model'][i] : "機種" }}
+          </label>
+          <input type="text" class="form-control form-control-sm" [formControlName]="i" placeholder="機種"
+            (blur)="inputValidators(fbGroup, 'w_Model', i)">
+        </div>
+        <!-- Stand -->
+        <div class="form-group col text-center mb-1" formArrayName="w_Stand">
+          <label [class.text-danger]="errorValidators['w_Stand'][i].length && true">
+            {{ errorValidators['w_Stand'][i].length && fb_Value['w_WorkOrder'].get(''+i).touched ?
+            errorValidators['w_Stand'][i] : "站別" }}
+          </label>
+          <input class="form-control form-control-sm" [formControlName]="i" [attr.list]="'standtOptions'+i" id="stand"
+            placeholder="站別" (blur)="inputValidators(fbGroup, 'w_Stand', i)">
+          <datalist [id]="'standtOptions'+i">
+            <option *ngFor="let item of standList$ | async; index as i" [value]="item.s_Code"> {{item.s_Title}}
+          </datalist>
+        </div>
       </div>
 
-      <!-- workOrder -->
-      <div class="form-group col text-center">
-        <label for="workOrder" *ngIf="!errorValidators['w_WorkOrder'].length; else workOrder">工單</label>
+      <div class="form-row col-12">
+        <!-- Quantity -->
+        <div class="form-group col-2 text-center mb-1" formArrayName="w_Quantity">
+          <label [class.text-danger]="errorValidators['w_Quantity'][i].length && true">
+            {{ errorValidators['w_Quantity'][i].length ? errorValidators['w_Quantity'][i] : "數量" }}
+          </label>
+          <input type="number" class="form-control form-control-sm" step="1" min="0" max="999" [formControlName]="i"
+            (blur)="inputValidators(fbGroup, 'w_Quantity', i)">
+        </div>
 
-        <ng-template #workOrder>
-          <label for="workOrder" class="text-danger">{{ errorValidators['w_WorkOrder'] }}</label>
-        </ng-template>
-
-        <input type="text" id="workOrder" class="form-control form-control-sm" formControlName="w_WorkOrder"
-          placeholder="工單" (blur)="inputValidators(fbGroup, 'w_WorkOrder')">
-      </div>
-
-      <!-- Model -->
-      <div class="form-group col text-center">
-        <label for="model" *ngIf="!errorValidators['w_Model'].length; else model">機種</label>
-
-        <ng-template #model>
-          <label for="model" class="text-danger">{{ errorValidators['w_Model'] }}</label>
-        </ng-template>
-
-        <input type="text" id="model" class="form-control form-control-sm" formControlName="w_Model" placeholder="機種"
-          (blur)="inputValidators(fbGroup, 'w_Model')">
-      </div>
-    </div>
-
-    <div class="form-row">
-      <!-- Quantity -->
-      <div class="form-group col-2 text-center">
-        <label for="quantity" *ngIf="!errorValidators['w_Remark'].length; else quantity">數量</label>
-
-        <ng-template #quantity>
-          <label for="quantity" class="text-danger">{{ errorValidators['w_Quantity'] }}</label>
-        </ng-template>
-
-        <input type="number" id="quantity" class="form-control form-control-sm" step="1" min="0" max="999"
-          formControlName="w_Quantity">
-      </div>
-
-      <!-- Remark -->
-      <div class="form-group col text-center">
-        <label for="remark" *ngIf="!errorValidators['w_Remark'].length; else remark">備註</label>
-
-        <ng-template #remark>
-          <label for="remark" class="text-danger">{{ errorValidators['w_Remark'] }}</label>
-        </ng-template>
-
-        <input type="text" id="remark" class="form-control form-control-sm" formControlName="w_Remark" placeholder="備註"
-          (blur)="inputValidators(fbGroup, 'w_Remark')">
+        <!-- Remark -->
+        <div class="form-group col-10 text-center mb-1" formArrayName="w_Remark">
+          <label [class.text-danger]="errorValidators['w_Remark'][i].length && true">
+            {{ errorValidators['w_Remark'][i] ? errorValidators['w_Remark'][i] : "備註" }}
+          </label>
+          <input type="text" class="form-control form-control-sm" [formControlName]="i" placeholder="備註"
+            (blur)="inputValidators(fbGroup, 'w_Remark', i)">
+        </div>
       </div>
     </div>
   </form>
   <!-- /Form -->
 </ng-template>
-
-<!-- Level -->
-<!-- <div class="form-group row">
-      <label for="workOrder" class="col-3 col-form-label">權限</label>
-      <div class="col">
-        <select id="workOrder" class="form-control text-center custom-select" formControlName="w_WorkOrder">
-          <option value="1" selected>
-            普通
-          </option>
-        </select>
-      </div>
-    </div> -->
-
-
-<!-- <input id="dateTime" class="form-control" placeholder="yyyy-mm-dd" (dateSelect)="onDate($event)"
-            ngbDatepicker #dp="ngbDatepicker">
-          <button class="btn btn-outline-secondary" (click)="dp.toggle()" type="button">
-            <i class="bi bi-calendar-check"></i>
-          </button> -->
-
-<!-- <input type="time" id="appt" class="form-control"
-       min="09:00" max="18:00"> -->
-
-<!-- <input type="datetime-local" id="birthdaytime" class="form-control" [formControl]="fb_Value['w_Time']"
-  (input)="onDate($event.target.value)"> -->
-
-<!-- <ngb-timepicker [(ngModel)]="times" [hourStep]="1" [minuteStep]="1" [secondStep]="1" [seconds]="false"
-  [meridian]="false" [size]="'small'" [spinners]="true" [readonlyInputs]="false">
-</ngb-timepicker>
-<hr>
-<pre>Selected time: {{times | json}}</pre>
-
-
-<ngb-datepicker #dp [(ngModel)]="model"></ngb-datepicker> -->

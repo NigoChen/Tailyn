@@ -15,7 +15,7 @@ import { ErrorInterceptor } from '../helps/error.interceptor';
   declarations: [
     LoadingComponent,    
     AlertComponent,
-    AlertsDirective
+    AlertsDirective,
   ],
   imports: [
     CommonModule,
@@ -23,7 +23,7 @@ import { ErrorInterceptor } from '../helps/error.interceptor';
     ReactiveFormsModule,
     // HttpClientModule,
     FormsModule,
-    BootstrapModule
+    BootstrapModule,
   ],
   exports: [
     NgbModule,
@@ -33,7 +33,7 @@ import { ErrorInterceptor } from '../helps/error.interceptor';
     BootstrapModule,
     LoadingComponent,
     AlertComponent,
-    AlertsDirective
+    AlertsDirective,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
