@@ -8,8 +8,8 @@
 <div class="table-responsive table-scrollbar">
   <table class="table table-bordered table-sm table-hover">
     <thead class="thead-dark">
-      <tr>
-        <th scope="col">工號</th>
+      <tr align="center">
+        <th scope="col">工號/姓名</th>
         <th scope="col">一般工時</th>
         <th scope="col">加班工時</th>
         <th scope="col">工單</th>
@@ -20,21 +20,21 @@
         <th scope="col">時間</th>
       </tr>
     </thead>
-    <tbody *ngFor="let item of result_List; let i = index" [ngClass]="{'table-dark': item?.w_Id == fb_Value_Index[0]}"
-      (click)="choose(item)">
-      <tr *ngFor="let val of item.w_WorkOrder.split(','); let y = index">
-        <td *ngIf="!y" [attr.rowspan]="y" align="center" style="vertical-align: middle;">
+    <tbody *ngFor="let item of result_List; let i = index"
+      [ngClass]="{'text-light bg-secondary': item?.w_Id == fb_Value_Index[0]}" (click)="choose(item)">
+      <tr align="center" *ngFor="let val of item.w_WorkOrder.split(','); let y = index">
+        <td *ngIf="!y" [attr.rowspan]="y" style="vertical-align: middle;">
           <span *ngIf="!y">
             {{ item.w_JobNumber }} {{ item.e_Name }}
           </span>
         </td>
-        <td *ngIf="!y" [attr.rowspan]="y" [ngClass]="[item.w_BTotal < 0 ? 'text-danger':'text-truncate']" align="center"
+        <td *ngIf="!y" [attr.rowspan]="y" [ngClass]="[item.w_BTotal < 0 ? 'text-danger':'text-truncate']"
           style="vertical-align: middle;">
           <span *ngIf="!y">
             {{ item.w_BTotal }}分 | 已扣除{{ item.w_BDeduct }}
           </span>
         </td>
-        <td *ngIf="!y" [attr.rowspan]="y" [ngClass]="[item.w_OTotal < 0 ? 'text-danger':'text-truncate']" align="center"
+        <td *ngIf="!y" [attr.rowspan]="y" [ngClass]="[item.w_OTotal < 0 ? 'text-danger':'text-truncate']"
           style="vertical-align: middle;">
           <span *ngIf="!y">
             {{ item.w_OTotal }}分 | 已扣除{{ item.w_ODeduct }}
@@ -44,10 +44,19 @@
         <td>{{ item.w_Model | splite:y }}</td>
         <td>{{ item.w_Stand | splite:y }} {{item.s_Title}}</td>
         <td>{{ item.w_Quantity | splite:y }}</td>
-        <td>{{ item.w_Remark | splite:y }}</td>
-        <td *ngIf="!y" [attr.rowspan]="y" align="center" style="vertical-align: middle;">
+        <td>
+          <p *ngIf="item.w_Remark.length > 10; else w_Remark">
+            {{ (item.w_Remark | slice:0:10)+'..' }}
+          </p>
+          <ng-template #w_Remark>
+            <p>
+              {{ item.w_Remark }}
+            </p>
+          </ng-template>
+        </td>
+        <td *ngIf="!y" [attr.rowspan]="y" style="vertical-align: middle;">
           <span *ngIf="!y">
-            {{ item.w_Time | date: 'yyyy-MM-dd' }}
+            {{ item.w_Date | date: 'yyyy-MM-dd' }}
           </span>
         </td>
       </tr>
@@ -55,6 +64,14 @@
   </table>
 </div>
 <!-- /Table -->
+
+<!-- Pagination -->
+<div class="d-flex justify-content-center pagination pagination-sm">
+  <ngb-pagination [collectionSize]="result_Data.length" [(page)]="page" [pageSize]="pageSize"
+    (pageChange)="refreshResult_List()">
+  </ngb-pagination>
+</div>
+<!-- /Pagination -->
 
 <ng-template #form_>
   <!-- Form -->
@@ -75,13 +92,13 @@
         </div>
         <input type="text" class="form-control form-control-sm text-center" [value]="user.name" readonly>
       </div>
-      <!-- DateTime -->
+      <!-- Date -->
       <div class="input-group input-group-sm col">
-        <input type="date" id="w_Time" class="form-control form-control-sm text-center"
-          [value]="fb_Value['w_Time'].value" (input)="onDate($event.target)">
+        <input type="date" id="w_Date" class="form-control form-control-sm text-center"
+          [value]="fb_Value['w_Date'].value" (input)="onDate($event.target)">
         <div class="input-group-append">
-          <span class="input-group-text p-1" [class.text-danger]="errorValidators['w_Time'].length">
-            {{ errorValidators['w_Time'].length ? errorValidators['w_Time'] : "日期" }}
+          <span class="input-group-text p-1" [class.text-danger]="errorValidators['w_Date'].length">
+            {{ errorValidators['w_Date'].length ? errorValidators['w_Date'] : "日期" }}
           </span>
         </div>
       </div>
@@ -97,7 +114,7 @@
           <i class="bi bi-clock input-group-text ml-1 mr-1 bg-white"></i>
 
           <span class="input-group-text font-weight-bold mr-1"
-            [class.text-danger]="fb_Value['w_BTotal'].value < 0 && errorValidators['w_BTotal'].length">
+            [class.text-danger]="fb_Value['w_BTotal'].value < 0 || errorValidators['w_BTotal'].length">
             {{ fb_Value['w_BTotal'].value }}
           </span>
           <span class="input-group-text font-weight-bold">-</span>
@@ -108,16 +125,16 @@
       </div>
       <!-- BMinute Start -->
       <div class="input-group input-group-sm col-md-6">
+        <input type="datetime-local" id="SbMinute" step="3600" [min]="dateTime_Min" [max]="dateTime_Max"
+          class="form-control form-control-sm" [value]="onValue('SbMinute')" (input)="onDate($event.target)">
         <div class="input-group-prepend">
           <span class="input-group-text p-1">開始</span>
         </div>
-        <input type="datetime-local" id="SbMinute" step="3600" class="form-control form-control-sm"
-          [value]="onValue('SbMinute')" (input)="onDate($event.target)">
       </div>
       <!-- BMinute End -->
       <div class="input-group input-group-sm col-md-6">
-        <input type="datetime-local" id="EbMinute" step="3600" class="form-control form-control-sm "
-          [value]="onValue('EbMinute')" (input)="onDate($event.target)">
+        <input type="datetime-local" id="EbMinute" step="3600" [min]="dateTime_Min" [max]="dateTime_Max"
+          class="form-control form-control-sm" [value]="onValue('EbMinute')" (input)="onDate($event.target)">
         <div class="input-group-append">
           <span class="input-group-text p-1">結束</span>
         </div>
@@ -134,7 +151,7 @@
           <i class="bi bi-clock input-group-text ml-1 mr-1 bg-white"></i>
 
           <span class="input-group-text font-weight-bold mr-1"
-            [class.text-danger]="fb_Value['w_OTotal'].value < 0 && errorValidators['w_OTotal'].length">
+            [class.text-danger]="fb_Value['w_OTotal'].value < 0 || errorValidators['w_OTotal'].length">
             {{ fb_Value['w_OTotal'].value }}
           </span>
           <span class="input-group-text font-weight-bold">-</span>
@@ -146,17 +163,17 @@
 
       <!-- OMinute Start -->
       <div class="input-group input-group-sm col-md-6">
+        <input type="datetime-local" id="SoMinute" step="3600" [min]="dateTime_Min" [max]="dateTime_Max"
+          class="form-control form-control-sm" [value]="onValue('SoMinute')" (input)="onDate($event.target)">
         <div class="input-group-prepend">
           <span class="input-group-text p-1">開始</span>
         </div>
-        <input type="datetime-local" id="SoMinute" step="3600" class="form-control form-control-sm"
-          [value]="onValue('SoMinute')" (input)="onDate($event.target)">
       </div>
 
       <!-- OMinute End -->
       <div class="input-group input-group-sm col-md-6">
-        <input type="datetime-local" id="EoMinute" step="3600" class="form-control form-control-sm "
-          [value]="onValue('EoMinute')" (input)="onDate($event.target)">
+        <input type="datetime-local" id="EoMinute" step="3600" [min]="dateTime_Min" [max]="dateTime_Max"
+          class="form-control form-control-sm" [value]="onValue('EoMinute')" (input)="onDate($event.target)">
         <div class="input-group-append">
           <span class="input-group-text p-1">結束</span>
         </div>
@@ -196,11 +213,17 @@
             {{ errorValidators['w_Stand'][i].length && fb_Value['w_WorkOrder'].get(''+i).touched ?
             errorValidators['w_Stand'][i] : "站別" }}
           </label>
-          <input class="form-control form-control-sm" [formControlName]="i" [attr.list]="'standtOptions'+i" id="stand"
-            placeholder="站別" (blur)="inputValidators(fbGroup, 'w_Stand', i)">
-          <datalist [id]="'standtOptions'+i">
-            <option *ngFor="let item of standList$ | async; index as i" [value]="item.s_Code"> {{item.s_Title}}
-          </datalist>
+          <!-- <input class="form-control form-control-sm" [formControlName]="i" [attr.list]="'standtOptions'+i" id="stand"
+          placeholder="站別" (blur)="inputValidators(fbGroup, 'w_Stand', i)">
+        <datalist [id]="'standtOptions'+i">
+          <option *ngFor="let item of standList$ | async; index as i" [value]="item.s_Code"> {{item.s_Title}}
+        </datalist> -->
+          <select id="lv" class="form-control text-center custom-select" [formControlName]="i"
+            (blur)="inputValidators(fbGroup, 'w_Stand', i)">
+            <option *ngFor="let item of standList$ | async; index as i" [value]="item.s_Code">
+              {{item.s_Code}} {{item.s_Title}}
+            </option>
+          </select>
         </div>
       </div>
 
@@ -210,10 +233,9 @@
           <label [class.text-danger]="errorValidators['w_Quantity'][i].length && true">
             {{ errorValidators['w_Quantity'][i].length ? errorValidators['w_Quantity'][i] : "數量" }}
           </label>
-          <input type="number" class="form-control form-control-sm" step="1" min="0" max="999" [formControlName]="i"
-            (blur)="inputValidators(fbGroup, 'w_Quantity', i)">
+          <input type="number" class="form-control form-control-sm text-center" step="1" min="0" max="999"
+            [formControlName]="i" (blur)="inputValidators(fbGroup, 'w_Quantity', i)">
         </div>
-
         <!-- Remark -->
         <div class="form-group col-10 text-center mb-1" formArrayName="w_Remark">
           <label [class.text-danger]="errorValidators['w_Remark'][i].length && true">

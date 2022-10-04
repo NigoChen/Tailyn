@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Employee } from 'src/app/interfaces/employee';
 import { User } from 'src/app/interfaces/user';
@@ -14,7 +14,7 @@ export class ContentHeaderComponent implements OnInit {
   // User
   public user: User;
   public fbGroup: FormGroup;
-  public searchText: string;
+   searchText: string;
   // Delay Time
   public delayTime: boolean;
 
@@ -32,7 +32,7 @@ export class ContentHeaderComponent implements OnInit {
     this.searchText = '';
     this.user_Profile();
     this.delayTime = true;
-    this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);    
+    this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);  
   }
 
   ngAfterViewInit(): void {}
@@ -112,5 +112,23 @@ export class ContentHeaderComponent implements OnInit {
   // Delete
   delete(): void {
     this.modalService.set_modalSM(true);
+  }
+  
+  // Check FormGroup Value
+  get check_Value(): boolean {
+    if(this.fb_Value_Index[0])
+    {
+      for (const [key, val] of Object.entries(this.fbGroup.value))
+      {
+        if(val != null)
+        {          
+          if(val != '' && (val == this.user.jNumber) || this.user.lv == 3)
+          {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 }

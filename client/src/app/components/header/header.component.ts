@@ -10,6 +10,7 @@ export class HeaderComponent implements OnInit {
   
   public sideBar_Value: boolean = false;
   public navbarCollapsed: boolean = false;
+  public sideBar_Show: boolean = false;
 
   constructor() {}
 

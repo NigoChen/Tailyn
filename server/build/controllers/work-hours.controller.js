@@ -21,18 +21,19 @@ class WorkHoursController {
             const w_Id = data.w_Id || 0;
             const w_JobNumber = data.w_JobNumber;
             const w_BMinute = data.w_BMinute;
-            const w_OMinute = data.w_OMinute || 0;
+            const w_OMinute = data.w_OMinute;
             const w_WorkOrder = data.w_WorkOrder;
             const w_Model = data.w_Model;
             const w_Stand = data.w_Stand;
-            const w_Remark = data.w_Remark || '';
-            const w_Time = data.w_Time;
-            const sql = `REPLACE INTO workhours(w_Id, w_JobNumber, w_BMinute, w_OMinute, w_WorkOrder, w_Model, w_Stand, w_Remark, w_Time)` +
+            const w_Quantity = data.w_Quantity;
+            const w_Remark = data.w_Remark;
+            const w_Date = data.w_Date;
+            const sql = `REPLACE INTO workhours(w_Id, w_JobNumber, w_BMinute, w_OMinute, w_WorkOrder, w_Model, w_Stand, w_Quantity, w_Remark, w_Date)` +
                 ` VALUES ` +
-                `(${w_Id}, '${w_JobNumber}', '${w_BMinute}', '${w_OMinute}', '${w_WorkOrder}', '${w_Model}', '${w_Stand}', '${w_Remark}', '${w_Time}')`;
-            // const sql: string = `REPLACE INTO workhours(w_JobNumber, w_BMinute, w_OMinute, w_OMinute, w_WorkOrder, w_Model, w_Stand, w_Remark, w_Time) `+
+                `(${w_Id}, '${w_JobNumber}', '${w_BMinute}', '${w_OMinute}', '${w_WorkOrder}', '${w_Model}', '${w_Stand}', '${w_Quantity}', '${w_Remark}', '${w_Date}')`;
+            // const sql: string = `REPLACE INTO workhours(w_JobNumber, w_BMinute, w_OMinute, w_OMinute, w_WorkOrder, w_Model, w_Stand, w_Remark, w_Date) `+
             //                    `SELECT * FROM (SELECT '${w_JobNumber}' AS w_JobNumber, '${w_BMinute}' AS w_BMinute,`+
-            //                    `'${w_OMinute}' AS w_OMinute, '${w_WorkOrder}' AS w_WorkOrder, '${w_Model}' AS w_Model, '${w_Stand}' AS w_Stand, '${w_Remark}' AS w_Remark, '${w_Time}' AS w_Time) AS new_value `+
+            //                    `'${w_OMinute}' AS w_OMinute, '${w_WorkOrder}' AS w_WorkOrder, '${w_Model}' AS w_Model, '${w_Stand}' AS w_Stand, '${w_Remark}' AS w_Remark, '${w_Date}' AS w_Date) AS new_value `+
             //                    `WHERE NOT EXISTS (SELECT w_JobNumber, FROM employee WHERE e_JobNumber = '${jNumber}') LIMIT 1`;
             yield database_1.default.then(con => {
                 return con.query(sql).then((result) => {

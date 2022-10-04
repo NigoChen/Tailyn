@@ -3,7 +3,7 @@
   <!-- Header -->
   <div class="modal-header">
     <!-- Alert -->
-    <ngb-alert *ngIf="alerts.status" class="modal-title text-center w-100 p-0" [type]="alerts.type"
+    <ngb-alert *ngIf="alerts.status" class="modal-title w-100 d-flex justify-content-center pt-3 pb-0" [type]="alerts.type"
       (click)="alerts.status = !alerts.status" animation="true" [dismissible]="true">
       <p>{{ alerts.message }}</p>
     </ngb-alert>
@@ -30,7 +30,7 @@
   <!-- Header -->
   <div class="modal-header">
     <!-- Alert -->
-    <ngb-alert *ngIf="alerts.status" class="modal-title text-center w-100 p-0" [type]="alerts.type"
+    <ngb-alert *ngIf="alerts.status" class="modal-title w-100 d-flex justify-content-center pt-3 pb-0" [type]="alerts.type"
       (click)="alerts.status = !alerts.status" animation="true" [dismissible]="true">
       <p>{{ alerts.message }}</p>
     </ngb-alert>

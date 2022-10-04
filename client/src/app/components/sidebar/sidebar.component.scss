@@ -7,9 +7,9 @@
 {
     color: black;
 }
-
-.header_DropMenu button::after {
-    content:"\A";
+.header_DropMenu button::after
+{
+    content: "\A";
     border-style: solid;
     border-width: 5px 10px 5px 0;
     border-color: transparent red transparent transparent;
@@ -19,12 +19,11 @@
     right: -5%;
     top: 40%;
 }
-.header_DropMenu button:hover::after {
+.header_DropMenu button:hover::after
+{
     opacity: .8;
-    right:25%;
+    right: 25%;
 }
-
-
 .nav-item .nav-link
 {
     position: relative;
@@ -42,8 +41,44 @@
     opacity: 0;
     transition: .5s;
 }
+
 .nav-item .nav-link:hover::before
 {
     bottom: 8px;
-    opacity: .8;    
+    opacity: .8;
+}
+
+/*** @media only screen ***/
+@media (max-width: 767.99px)
+{
+    .sidebar {
+        font-size: 1rem;
+        font-weight: bold;
+        padding-top: 1.8em;
+        padding-bottom: 1.8em;
+        position: relative !important;
+        display: flex !important;
+        width: 100vw !important;
+        justify-content: center !important;
+        align-items: center;
+        background-color: #343a40;
+    }
+    .sidebar ul:nth-child(1) { // ul
+        display: flex !important;
+        flex-direction: row;
+        justify-content: center;
+    }
+    .sidebar ul:nth-child(1) li { // ul
+        margin: 5px;
+        width: 100px;
+    }
+    .sidebar ul:nth-child(2) { // ul
+        position: fixed;
+        z-index: 9999;
+        top: 1.2%;
+        right: 10%;
+    }
+    .sidebar ul:nth-child(2) li > div > div{ // ul
+        border: white solid 1px;
+    }
 }

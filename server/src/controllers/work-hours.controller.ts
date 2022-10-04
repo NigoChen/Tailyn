@@ -11,20 +11,21 @@ class WorkHoursController
         const w_Id: any            = data.w_Id || 0;
         const w_JobNumber: string  = data.w_JobNumber;
         const w_BMinute: string    = data.w_BMinute;
-        const w_OMinute: any       = data.w_OMinute || 0;
+        const w_OMinute: any       = data.w_OMinute;
         const w_WorkOrder: string  = data.w_WorkOrder;
         const w_Model: string      = data.w_Model;
         const w_Stand: string      = data.w_Stand;
-        const w_Remark: any        = data.w_Remark || '';
-        const w_Time: Date         = data.w_Time;        
+        const w_Quantity: string   = data.w_Quantity;
+        const w_Remark: any        = data.w_Remark;
+        const w_Date: Date         = data.w_Date;                
 
-        const sql: string = `REPLACE INTO workhours(w_Id, w_JobNumber, w_BMinute, w_OMinute, w_WorkOrder, w_Model, w_Stand, w_Remark, w_Time)`+
+        const sql: string = `REPLACE INTO workhours(w_Id, w_JobNumber, w_BMinute, w_OMinute, w_WorkOrder, w_Model, w_Stand, w_Quantity, w_Remark, w_Date)`+
                             ` VALUES `+
-                            `(${w_Id}, '${w_JobNumber}', '${w_BMinute}', '${w_OMinute}', '${w_WorkOrder}', '${w_Model}', '${w_Stand}', '${w_Remark}', '${w_Time}')`;
+                            `(${w_Id}, '${w_JobNumber}', '${w_BMinute}', '${w_OMinute}', '${w_WorkOrder}', '${w_Model}', '${w_Stand}', '${w_Quantity}', '${w_Remark}', '${w_Date}')`;
                             
-        // const sql: string = `REPLACE INTO workhours(w_JobNumber, w_BMinute, w_OMinute, w_OMinute, w_WorkOrder, w_Model, w_Stand, w_Remark, w_Time) `+
+        // const sql: string = `REPLACE INTO workhours(w_JobNumber, w_BMinute, w_OMinute, w_OMinute, w_WorkOrder, w_Model, w_Stand, w_Remark, w_Date) `+
         //                    `SELECT * FROM (SELECT '${w_JobNumber}' AS w_JobNumber, '${w_BMinute}' AS w_BMinute,`+
-        //                    `'${w_OMinute}' AS w_OMinute, '${w_WorkOrder}' AS w_WorkOrder, '${w_Model}' AS w_Model, '${w_Stand}' AS w_Stand, '${w_Remark}' AS w_Remark, '${w_Time}' AS w_Time) AS new_value `+
+        //                    `'${w_OMinute}' AS w_OMinute, '${w_WorkOrder}' AS w_WorkOrder, '${w_Model}' AS w_Model, '${w_Stand}' AS w_Stand, '${w_Remark}' AS w_Remark, '${w_Date}' AS w_Date) AS new_value `+
         //                    `WHERE NOT EXISTS (SELECT w_JobNumber, FROM employee WHERE e_JobNumber = '${jNumber}') LIMIT 1`;
         
         await pool.then(con => {
@@ -195,6 +196,5 @@ class WorkHoursController
         }
     }
 }
-
 
 export const workHoursController = new WorkHoursController();

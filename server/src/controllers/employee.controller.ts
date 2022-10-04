@@ -8,15 +8,17 @@ class EmployeeController
 {
     public async create(req: Request, res: Response): Promise<void>
     {        
-        const data: Employee = req.body;
-        const name: string = data.e_Name;
-        const email: string = data.e_Email;
-        const jNumber: string = data.e_JobNumber;
-        const passWord: string = md5_PassWord(data.e_PassWord);
-        const lv: number = data.e_Lv;
+        const data: Employee    = req.body;
+        const jNumber: string   = data.e_JobNumber;
+        const name: string      = data.e_Name;
+        const passWord: string  = md5_PassWord(data.e_PassWord);
+        const email: string     = data.e_Email;
+        const date: string      = data.e_Date;
+        const lv: number        = data.e_Lv;
+        const recycle: string   = data.e_Recycle;
 
-        const sql: string = `INSERT INTO employee(e_JobNumber, e_Name, e_PassWord, e_Email, e_Lv) `+
-                           `SELECT * FROM (SELECT '${jNumber}' AS e_JobNumber, '${name}' AS e_Name, '${passWord}' AS e_PassWord, '${email}' AS e_Email, '${lv}' AS e_Lv) AS new_value `+
+        const sql: string = `INSERT INTO employee(e_JobNumber, e_Name, e_PassWord, e_Email, e_Date, e_Lv, e_Recycle) `+
+                           `SELECT * FROM (SELECT '${jNumber}' AS e_JobNumber, '${name}' AS e_Name, '${passWord}' AS e_PassWord, '${email}' AS e_Email, '${date}' AS e_Date, '${lv}' AS e_Lv, '${recycle}' AS e_Recycle) AS new_value `+
                            `WHERE NOT EXISTS (SELECT e_JobNumber FROM employee WHERE e_JobNumber = '${jNumber}') LIMIT 1`;
         
         await pool.then(con => {
@@ -132,13 +134,11 @@ class EmployeeController
 
     public async update(req: Request, res: Response): Promise<void>
     {
-        const data: Employee = req.body;
-
-        console.log(data);
-        
+        const data: Employee = req.body;        
         // const sql: string = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}',e_Email = '${data.e_Email}',e_Lv = '${data.e_Lv}' WHERE e_Id = '${data.e_Id}' AND e_JobNumber <> '${data.e_JobNumber}'`;
         // return con.query('UPDATE employee SET ? WHERE e_Id = ?', [data, data.e_Id])
-        const sql: string = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}', e_Email = '${data.e_Email}', e_Lv = '${data.e_Lv}' WHERE e_Id = ${data.e_Id} AND NOT EXISTS (SELECT * FROM (SELECT 1 FROM employee WHERE e_JobNumber = '${data.e_JobNumber}' AND e_Id <> '${data.e_Id}') temp);`;
+        const sql: string = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}', e_Email = '${data.e_Email}', e_Date = '${data.e_Date}', e_Lv = '${data.e_Lv}', e_Recycle = '${data.e_Recycle}' `+
+                            `WHERE e_Id = ${data.e_Id} AND NOT EXISTS (SELECT * FROM (SELECT 1 FROM employee WHERE e_JobNumber = '${data.e_JobNumber}' AND e_Id <> '${data.e_Id}') temp);`;
         await pool.then(con => {
             return con.query(sql).then((result: any) => {
                 if (result.affectedRows > 0)

@@ -6,36 +6,52 @@
 
 <!-- Table -->
 <div class="table-responsive table-scrollbar">
-  <table class="table table-bordered table-sm">
-    
+  <table class="table table-bordered table-sm table-hover">
     <!-- <table class="table table-striped"> -->
     <thead class="thead-dark">
-      <tr>
+      <tr align="center">
         <th scope="col">#</th>
         <th scope="col">姓名</th>
         <th scope="col">信箱</th>
         <th scope="col">工號</th>
         <th scope="col">權限</th>
+        <th scope="col">年資</th>
       </tr>
     </thead>
     <tbody>
       <!-- <tr *ngFor="let item of result_Async$ | async; index as i" [ngClass]="{'text-light bg-dark': item?.e_Id == fb_Value['e_Id'].value}" (click)="choose(item)"> -->
-      <tr *ngFor="let item of result_List; let i = index"
+      <tr align="center" *ngFor="let item of result_List; let i = index"
         [ngClass]="{'text-light bg-secondary': item?.e_Id == fb_Value_Index[0]}" (click)="choose(item)">
-        <td>
-          {{ i+1 }}
-        </td>
+        <td>{{ i+1 }}</td>
         <td>{{ item.e_Name }}</td>
         <td>{{ item.e_Email }}</td>
         <td>{{ item.e_JobNumber }}</td>
         <td>
           <ngb-rating [rate]="item.e_Lv" readonly="true" class="h6"></ngb-rating>
         </td>
+        <td>
+          <span>
+            {{ item.e_Date | splite:2 }}年
+          </span>
+          /
+          <span>
+            {{ item.e_Date | splite:3 }}月
+          </span>
+
+        </td>
       </tr>
     </tbody>
   </table>
 </div>
 <!-- /Table -->
+
+<!-- Pagination -->
+<div class="d-flex justify-content-center pagination pagination-sm">
+  <ngb-pagination [collectionSize]="result_Data.length" [(page)]="page" [pageSize]="pageSize"
+    (pageChange)="refreshResult_List()">
+  </ngb-pagination>
+</div>
+<!-- /Pagination -->
 
 <ng-template #form_>
   <!-- Form -->
@@ -152,8 +168,39 @@
           </option>
         </select>
       </div>
+
+    </div>
+    <!-- Date Start-->
+    <div class="form-group row" formArrayName="e_Date">
+      <label for="Sdate" class="col-3 col-form-label"
+        *ngIf="!errorValidators['e_Date'][0].length; else Sdate">入職</label>
+
+      <ng-template #Sdate>
+        <label for="Sdate" class="col-3 col-form-label text-danger">{{ errorValidators['e_Date'][0] }}</label>
+      </ng-template>
+
+      <div class="col">
+        <input type="date" id="Sdate" class="form-control" formControlName="0" (input)="onDate($event.target)"
+          (blur)="inputValidators(fbGroup, 'e_Date', 0)">
+        <!-- <input type="datetime-local" id="SbMinute" step="3600" [min]="dateTime_Min" [max]="dateTime_Max"
+          class="form-control form-control-sm" [value]="onValue('SbMinute')" (input)="onDate($event.target)"> -->
+      </div>
     </div>
 
+    <!-- Date End-->
+    <div class="form-group row" formArrayName="e_Date">
+      <label for="Edate" class="col-3 col-form-label"
+        *ngIf="!errorValidators['e_Date'][0].length; else Edate">入職</label>
+
+      <ng-template #Edate>
+        <label for="Edate" class="col-3 col-form-label text-danger">{{ errorValidators['e_Date'][1] }}</label>
+      </ng-template>
+
+      <div class="col">
+        <input type="date" id="Edate" class="form-control" formControlName="1" (input)="onDate($event.target)"
+          (blur)="inputValidators(fbGroup, 'e_Date', 1)">
+      </div>
+    </div>
     <!-- <div class="mb-2">
       <label for="dateOfBirth">權限</label>
       <div class="input-group">

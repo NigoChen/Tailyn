@@ -1,5 +1,6 @@
-import { Component, ComponentFactoryResolver, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { SlicePipe } from '@angular/common';
+import { Component, ComponentFactoryResolver, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbRatingConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { Employee } from 'src/app/interfaces/employee';
@@ -15,7 +16,7 @@ import { ModalService } from 'src/app/services/modal.service';
 @Component({
   selector: 'app-employee',
   templateUrl: './employee.component.html',
-  styleUrls: ['./employee.component.scss']
+  styleUrls: ['./employee.component.scss'],
 })
 export class EmployeeComponent implements OnInit {
   // Form
@@ -30,11 +31,13 @@ export class EmployeeComponent implements OnInit {
   public form_Controls: object = {
     e_Id: [''],
     e_Name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\u4e00-\u9fa5]{2,10}$/)]],
-    e_JobNumber: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{3,5}$/)]],
+    e_JobNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{3,5}$/)]],
     e_PassWord: ['', [Validators.required, Validators.pattern(/^[\d\W\a-zA-Z]{3,30}$/)]],
     e_ConfirmPassword: ['', [Validators.required]],
     e_Email: ['', [Validators.required, Validators.maxLength(30), Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/)]],
-    e_Lv: ['1', [Validators.required, Validators.maxLength(1)]]
+    e_Date: new FormArray([new FormControl('')]),
+    e_Lv: ['1', [Validators.required, Validators.maxLength(1)]],
+    e_Recycle: ['0']
   }
 
   // e_ConfirmPassword: [
@@ -56,11 +59,13 @@ export class EmployeeComponent implements OnInit {
       validators: [passwordMatchValidator]
     }
   );
-
   // Input Validators blur
   public inputValidators: Function = InputValidators;
   // Input Validators Error
   public errorValidators: object = ErrorValidators;
+  // Pagination
+  public page = 1;
+  public pageSize = 10;
 
   constructor(
     private loadingService: LoadingService,
@@ -94,11 +99,7 @@ export class EmployeeComponent implements OnInit {
     this.modalService.set_Form(this.form_);            
     this.modalService.set_User_Profile(this.user_Profile);   
   }
-
-  // ngAfterViewChecked(): void {
-  //   console.log(this.form_);
-  // }
-
+  
   // FormGroup Controls Value
   get fb_Value(): { [key: string]: AbstractControl} {
     return this.fbGroup.controls;
@@ -112,11 +113,18 @@ export class EmployeeComponent implements OnInit {
   // FormGroup Reset
   reset_FormGroup(value: Array<string>): void {  
 
-    if(value[0] == 'show')
-    {
+    // if(value[0] == 'show')
+    // {
       if(value[1] == 'create')
       {
-        this.fbGroup.reset({e_Lv: '1'});
+        this.fbGroup.reset(
+          {
+            e_Lv: '1',
+            e_Recycle: '0',
+          }
+        );     
+        // Reset FormArray
+        this.reset_FormArray_Val();
       }
       else
       {
@@ -125,8 +133,7 @@ export class EmployeeComponent implements OnInit {
         this.fb_Value['e_ConfirmPassword'].setValidators(null);
         this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
       }
-    }
-
+    // }    
     Reset_Validators(this.fbGroup);
   }
 
@@ -159,8 +166,7 @@ export class EmployeeComponent implements OnInit {
   }
   
   // Create
-  create(fg: FormGroup): void {
-
+  create(fg: FormGroup): void {    
     this.employeeService.create(fg.value)
     .subscribe(
       {
@@ -168,6 +174,7 @@ export class EmployeeComponent implements OnInit {
           if(res)
           {
             this.read();
+            this.modalService.set_modalMDForm(['hide', 'create']);
           }
           else
           {
@@ -178,7 +185,6 @@ export class EmployeeComponent implements OnInit {
           this.alertService.set_Alert(23);
         },
         complete: () => {
-          this.modalService.set_modalMDForm(['hide', 'create']);
         }
       }
     );
@@ -198,6 +204,7 @@ export class EmployeeComponent implements OnInit {
             this.result_Data = res;
             this.result_List = res;
             this.user_Profile(res);
+            this.table_List_Sort();
           }
         },
         error: (err) => {
@@ -210,22 +217,46 @@ export class EmployeeComponent implements OnInit {
     );
   }
   
-  // Refresh
-  refresh(): void {}
-
   // Search
   // search(searchText: HTMLInputElement): void {
   search(searchText: string): void {
+    this.result_List = this.result_Data.filter(res => {      
+      const term = searchText.toLowerCase();
+      return res.e_JobNumber.toLowerCase().includes(term)
+          || res.e_Email?.toLowerCase().includes(term)
+          || res.e_Name.toLowerCase().includes(term);
+          // || this.decimalPipe.transform(res.w_Time).includes(term);
+    });
+    // this.result_List = [];
 
-    this.result_List = [];
+    // for (const [objKey, obj] of Object.entries(this.result_Data))
+    // {    
+    //   for (const [key, val] of Object.entries(obj))
+    //   {
+    //     if(key != 'e_Id' && key != 'e_PassWord' && key != 'e_Lv' && key != 'e_Recycle')
+    //     {
+    //       if (val.includes(searchText))
+    //       {
+    //         this.result_List.push(this.result_Data[objKey]);
+    //         break;
+    //       }
+    //     }
+    //   }
+    // } 
+  }
 
-    for (let i = 0; i < this.result_Data.length; i++)
-    {
-      if (this.result_Data[i]['e_JobNumber'].includes(searchText) || this.result_Data[i]['e_Name'].includes(searchText))
-      {
-        this.result_List.push(this.result_Data[i]);
-      }
-    }    
+  // Pagination
+  refreshResult_List() {
+    this.result_List = this.result_Data
+    .map((country, i) => ({id: i + 1, ...country}))
+    .slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
+  }
+
+  // Table Short
+  table_List_Sort(name: string = 'w_Id', isAsc: boolean = false): void {    
+    this.result_List.sort((a:any, b:any) => {     
+      return (a[name] < b[name] ? -1 : 1) * (isAsc ? 1 : -1);
+    });    
   }
 
   // Update
@@ -243,8 +274,6 @@ export class EmployeeComponent implements OnInit {
           {
             this.alertService.set_Alert(32);
           }
-
-          // this.stateView.next({loading: false, error: false});
         },
         error: (err) => {
           this.alertService.set_Alert(33);
@@ -283,7 +312,6 @@ export class EmployeeComponent implements OnInit {
 
   // choose
   choose(item: Employee): void {
-
     this.fbGroup.patchValue({
       e_Id: item.e_Id,
       e_Name: item.e_Name,
@@ -292,16 +320,139 @@ export class EmployeeComponent implements OnInit {
       e_Lv: item.e_Lv
     });
 
+    // Set e_Date Value
+    this.set_FormArray_Val(item.e_Date); 
+    // Update Modal FormGroup
+    this.modalService.set_FormGroup(this.fbGroup);
+
     // @Input() control: AbstractControl;
     // let listOfAllValidationRules = this.control.getValidators().push(validateZipFn(countryCode)]);
     // this.control.setValidators(listOfAllValidationRules);
+  }
 
-    // Update Modal FormGroup
-    this.modalService.set_FormGroup(this.fbGroup);
+  // Update FormArray Value
+  set_FormArray_Val(item: string): void {  
+    if(item.length > 10)
+    {
+      item.split(',').forEach((v, i) => {
+        this.fb_Value['e_Date'].get(''+i).patchValue(v);
+      });
+    }
+    else
+    {
+      this.reset_FormArray_Val();
+    }
+  }
+
+  // Reset FormArray Value
+  reset_FormArray_Val(): void {  
+    const today: string = new Date().toISOString().slice(0, 10);
+    const validators: Validators = this.fb_Value['e_Date'].get('0').validator;      
+
+    this.fbGroup.setControl('e_Date', this.fb.array([
+      new FormControl(today, validators),
+      new FormControl(today, validators),
+      new FormControl('0', validators),
+      new FormControl('0', validators)
+    ]));
+  }
+
+  // DateTimePick Value Chekc
+  onValue_Check(id: string, index: number): string {
+    let values: string = this.fb_Value[id].value;
+    return values.length > 18 ? values.split(',')[index] : '';
+  }
+
+  // DateTimePick Value
+  onValue(id: string): string {
+
+    let values: any = '';
+
+    if(this.fb_Value_Index[0])
+    {      
+      if(id == 'Sdate')
+      {
+        values = this.onValue_Check('Sdate', 0); 
+      }
+      else
+      {
+        values = this.onValue_Check('Edate', 1); 
+      }
+    }
+    else
+    {
+      // Default DateTime
+      const today: string = new Date().toISOString().slice(0, 10);
+      values = this.datetim_Replace(today);
+      this.onDate_Check('e_Date', values, 0);
+      this.onDate_Check('e_Date', values, 1);
+    }
+    
+    if(values.length == 19)
+    {
+      values = values.replace(' ', 'T');
+      // substring skip second value
+      return values.substring(0, 16);
+    }
+
+    return values;
+  }
+
+  // DateTime Replace Value
+  datetim_Replace(value: string): string {
+    const timestamp = value.replace('T', ' ');
+    let datetime = timestamp.replace('/','-');
+    return value ? datetime : '';
+  }
+
+  // Check VALUE
+  onDate_Check(name: string, value: string, index: number): void {    
+        
+    let choose_Value: Array<string> = this.fb_Value[name].value;
+
+    if(value.length)
+    {
+      // Date Index
+      choose_Value[index] = value;
+      // Total minutes for array index 2
+      choose_Value = this.dateTime_Count(choose_Value);
+    }    
+
+    // Update FormGroup Controls Value
+    for(let i=0; i<choose_Value.length; i++)
+    {      
+      this.fb_Value['e_Date'].get(''+i).patchValue(choose_Value[i]);
+    }        
+  }
+
+  // DateTimePick Event
+  onDate(event: HTMLInputElement): void {
+    const id: string = event.id;
+    const index: number = id == 'Sdate' ? 0 : 1;
+    const value: string = this.datetim_Replace(event.value);    
+    this.onDate_Check('e_Date', value, index);
+  }
+
+  // DataTime Minutes Count
+  dateTime_Count(data: Array<string>): Array<string> {           
+      const start: any    = new Date(data[0]);
+      const end: any      = new Date(data[1]);
+      const total: number = Math.abs(end-start);      
+      const year: number  = total / (1000 * 3600 * 24 * 365);
+      const month: number = year * 10;
+      // const day: string   = (total / (1000 * 3600 * 24)).toString(); // milliseconds * (secs * mins) * hours       
+      data[2] = year.toString().split('.')[0];
+      data[3] = month.toFixed();      
+      return data;
   }
 
   // Destroy
   ngOnDestroy(): void {
     this.modalService.set_FormGroup(null);    
+  }
+
+  // mouse click 
+  @HostListener('mouseup', ['$event']) onClick($event) {
+    this.reset_FormGroup(['hide', 'create']);    
   }
 }

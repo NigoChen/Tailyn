@@ -27,28 +27,30 @@ export const Reset_Validators = (fbGroup: FormGroup, index: any = null): void =>
 			const fbArray: FormArray = <FormArray>fbGroup.controls[key];
 
 			if(fbArray.controls instanceof Array)
-			{								
+			{				
 				if(index == null && ErrorValidators[key] == undefined && fbArray.length == 1)
 				{		
 					ErrorValidators[key] = [''];					
 				}
 				else
 				{			
-					if(fbArray.length > ErrorValidators[key].length)
+					if(fbArray.length == 1)
+					{						
+						ErrorValidators[key] = [''];					
+					}
+					else if(fbArray.length > ErrorValidators[key].length)
 					{
-						ErrorValidators[key].push('');
+						for(let i=0; i<fbArray.length; i++)
+						{
+							ErrorValidators[key].push('');
+						}
 					}
 					else if(index)
 					{
 						ErrorValidators[key].splice(index, 1);						
 					}
-					else
-					{						
-						ErrorValidators[key] = [''];					
-					}
 				}
 			}
-			
 		}
 		else
 		{
@@ -102,22 +104,33 @@ export const InputValidators = (fbGroup: FormGroup, key: string = '', index: num
 			// {				
 			// 	fbArray.controls.forEach((c, i) => {
 
-					const errorKey: ValidationErrors = fbArray.controls[index].errors; 
-					
-					ErrorValidators[key][index] = '';
-					
-					if(errorKey)
-					{                        
-						if(errorKey.required)
-						{
-							ErrorValidators[key][index] = '未輸入';
-						}
-		
-						if(errorKey.pattern)
-						{
-							ErrorValidators[key][index] = '格式錯';
-						}
+				// Replace , value
+				const values: string = fbArray.controls[index].value.toString();
+				const dates: any = new Date(values);
+
+				if(!(dates instanceof Date))
+				{
+					const replaceVal: string = values.replace(/[\-\_\,\][\!\|\~\`\(\)\#\@\%\-\+\=\/\'\$\%\^\&\*\{\}\:\;\"\L\<\>\?\\]/g, '');
+					fbArray.controls[index].patchValue(replaceVal);
+				}				
+
+				// Error Key
+				const errorKey: ValidationErrors = fbArray.controls[index].errors; 
+				
+				ErrorValidators[key][index] = '';
+				
+				if(errorKey)
+				{                        
+					if(errorKey.required)
+					{
+						ErrorValidators[key][index] = '未輸入';
 					}
+	
+					if(errorKey.pattern)
+					{
+						ErrorValidators[key][index] = '格式錯';
+					}
+				}
 				// });		
 		}
 	}
