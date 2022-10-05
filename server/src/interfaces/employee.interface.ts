@@ -6,5 +6,4 @@ export interface Employee {
     e_PassWord: string;
     e_Lv: number;
     e_Date: string;
-    e_Recycle: string;
 }

@@ -4,7 +4,10 @@ nav > strong
     transition: all .5s ease-in-out;
     margin-left: 10px;
     text-transform: uppercase;
+    text-align: center;
+    width: 100px;
 }
+/*** menu button ***/
 .menu-btn
 {
     display: none;
@@ -40,35 +43,24 @@ nav > strong
 {
     transform: translateY(-10px);
 }
-
 .menu-btn-burger::after
 {
     transform: translateY(10px);
 }
-
 .menu-btn.open .menu-btn-burger
 {
     transform: translateX(-50px);
     background-color: transparent;
 }
-
 .menu-btn.open .menu-btn-burger::before
 {
     transform: rotate(45deg) translate(35px, -35px);
 }
-
 .menu-btn.open .menu-btn-burger::after
 {
     transform: rotate(-45deg) translate(35px, 35px);
 }
-
 /*** @media only screen ***/
-@media (max-width: 575.99px)
-{
-
-}
-@media (min-width: 576px) and (max-width: 767.99px)
-{}
 @media (max-width: 767.99px)
 {
     nav
@@ -77,10 +69,8 @@ nav > strong
     }
     nav > strong
     {
-        font-size: 1.5rem;
-        width: 100px;
+        font-size: 1.2rem;
         margin-bottom: 4px;
-        text-align: center;
     //     text-shadow:-2px 4px 0 rgb(121, 121, 121),
     //     1px 1px 0 rgb(121, 121, 121),
     //    1px -1px 0 rgb(121, 121, 121),
@@ -105,7 +95,7 @@ nav > strong
     // }
     app-sidebar
     {
-        border-width: 5px 5px 30px 5px;
+        border-width: 5px 0px 30px 0px;
         border-style: solid;
         border-color: rgba($color: #d2d2d2, $alpha: .5);
         display: flex;
@@ -131,18 +121,22 @@ nav > strong
     }
 
 }
-@media (min-width: 768px) and (max-width: 991.99px)
-{
-//   .sidebar
-//   {
-//     top: 5rem;
-//   }
-}
-@media (min-width: 992px) and (max-width: 1199.99px)
-{
+// @media (max-width: 575.99px)
+// {
 
-}
-@media (min-width: 1200px)
-{
+// }
+// @media (min-width: 768px) and (max-width: 991.99px)
+// {
+// //   .sidebar
+// //   {
+// //     top: 5rem;
+// //   }
+// }
+// @media (min-width: 992px) and (max-width: 1199.99px)
+// {
 
-}
+// }
+// @media (min-width: 1200px)
+// {
+
+// }

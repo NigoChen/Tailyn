@@ -3,6 +3,7 @@ import { AbstractControl, FormGroup } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { AlertsDirective } from 'src/app/directives/alerts.directive';
 import { Alert } from 'src/app/interfaces/alert';
+import { Modal } from 'src/app/interfaces/modal';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
 import { AlertService } from 'src/app/services/alert.service';
 import { EmployeeService } from 'src/app/services/employee.service';
@@ -17,21 +18,14 @@ import { ModalService } from 'src/app/services/modal.service';
 })
 export class ModalComponent {
 
-  // @Input() fbGroup: FormGroup;
-  // @Input() errorValidators: object = ErrorValidators;
-  // @Input() inputValidators: Function = InputValidators;
-  
   public form: TemplateRef<any>;
   public fbGroup: FormGroup;
   public errorValidators: object = ErrorValidators;
   public alerts: Alert;
-  times = {hour: 15, minute: 58};
 
   // Modal 
   @ViewChild('modalForm') public modalForm: ElementRef<HTMLInputElement>;
   @ViewChild('modalSM') public modalSM: ElementRef<HTMLInputElement>;
-  // Alert
-  // @ViewChild(AlertsDirective) alerts: AlertsDirective;
 
   constructor(
     private ngbModal: NgbModal,
@@ -57,27 +51,23 @@ export class ModalComponent {
     }
 
   ngOnInit(): void {
-    this.modalService.get_modalMDForm().subscribe((res: Array<string>) => {
-
-      if(res[0] == 'show')
+    this.modalService.get_modal().subscribe((res: Modal) => {
+      if(res.show)
       {
-        this.ngbModal.open(this.modalForm, {backdropClass: 'light-blue-backdrop', size: 'md', windowClass:'modal-holder'});
+        if(res.status != 'delete')
+        {
+          this.ngbModal.open(this.modalForm, {backdropClass: 'light-blue-backdrop', size: res.size, windowClass:'modal-holder'});
+        }
+        else
+        {
+          this.ngbModal.open(this.modalSM, {backdropClass: 'light-blue-backdrop', size: 'sm', windowClass:'modal-holder'});
+        }
       }
       else
       {
         this.close();
       }
     });
-    
-    this.modalService.get_modalSM().subscribe(res => {
-      if(res)
-      {
-        this.ngbModal.open(this.modalSM, {backdropClass: 'light-blue-backdrop', size: 'sm', windowClass:'modal-holder'});
-      }
-      else
-      {
-        this.close();
-      }});
     this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
     this.modalService.get_Form().subscribe(res => this.form = res);
     this.alertService.get_Alert().subscribe(res => this.alerts = res);

@@ -26,9 +26,8 @@ class EmployeeController {
             const email = data.e_Email;
             const date = data.e_Date;
             const lv = data.e_Lv;
-            const recycle = data.e_Recycle;
-            const sql = `INSERT INTO employee(e_JobNumber, e_Name, e_PassWord, e_Email, e_Date, e_Lv, e_Recycle) ` +
-                `SELECT * FROM (SELECT '${jNumber}' AS e_JobNumber, '${name}' AS e_Name, '${passWord}' AS e_PassWord, '${email}' AS e_Email, '${date}' AS e_Date, '${lv}' AS e_Lv, '${recycle}' AS e_Recycle) AS new_value ` +
+            const sql = `INSERT INTO employee(e_JobNumber, e_Name, e_PassWord, e_Email, e_Date, e_Lv) ` +
+                `SELECT * FROM (SELECT '${jNumber}' AS e_JobNumber, '${name}' AS e_Name, '${passWord}' AS e_PassWord, '${email}' AS e_Email, '${date}' AS e_Date, '${lv}' AS e_Lv) AS new_value ` +
                 `WHERE NOT EXISTS (SELECT e_JobNumber FROM employee WHERE e_JobNumber = '${jNumber}') LIMIT 1`;
             yield database_1.default.then(con => {
                 return con.query(sql).then((result) => {
@@ -128,7 +127,7 @@ class EmployeeController {
             const data = req.body;
             // const sql: string = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}',e_Email = '${data.e_Email}',e_Lv = '${data.e_Lv}' WHERE e_Id = '${data.e_Id}' AND e_JobNumber <> '${data.e_JobNumber}'`;
             // return con.query('UPDATE employee SET ? WHERE e_Id = ?', [data, data.e_Id])
-            const sql = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}', e_Email = '${data.e_Email}', e_Date = '${data.e_Date}', e_Lv = '${data.e_Lv}', e_Recycle = '${data.e_Recycle}' ` +
+            const sql = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}', e_Email = '${data.e_Email}', e_Date = '${data.e_Date}', e_Lv = '${data.e_Lv}' ` +
                 `WHERE e_Id = ${data.e_Id} AND NOT EXISTS (SELECT * FROM (SELECT 1 FROM employee WHERE e_JobNumber = '${data.e_JobNumber}' AND e_Id <> '${data.e_Id}') temp);`;
             yield database_1.default.then(con => {
                 return con.query(sql).then((result) => {

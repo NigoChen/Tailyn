@@ -40,6 +40,35 @@ html::-webkit-scrollbar-thumb
   background-color: rgba(200, 0, 0, .5);
   border-radius: 5rem;
 }
+/*** Table Selected ***/
+tbody.table-selected tr,
+tbody.table-selected td
+{
+  cursor: pointer;
+  border: 2px solid var(--dark-color) !important;
+  border-collapse: collapse !important;
+}
+/*** Table Suspension Style ***/
+table td.suspension 
+{
+  position: relative;
+}
+table td.suspension::before 
+{
+  content: '';
+  position: absolute;
+  z-index: 99;
+  width: 90vw;
+  height: 1px;
+  top: 50%;
+  background-color: var(--red-color);
+  transform: rotate(1deg);
+}
+/*** Table middle ***/
+.table-middle
+{
+  vertical-align: middle !important;
+}
 /*** Table Scrollbar ***/
 .table-scrollbar
 {
@@ -57,12 +86,30 @@ html::-webkit-scrollbar-thumb
 }
 .table-scrollbar::-webkit-scrollbar-thumb
 {
-  background-color: rgba(200, 0, 0, 1);
+  background-color: rgba(172, 12, 12, 0.5);
   border-radius: 5rem;
 }
 /*** input-group-prepend ***/
 .input-group-prepend span {
   cursor: pointer;
+}
+/*** pagination ***/
+.pagination .page-item .page-link
+{
+  font-size: 18px !important;
+}
+.pagination .page-link:focus {
+  box-shadow: unset !important;
+}
+.pagination .page-item.active .page-link
+{
+  border-color: var(--red-color) !important;
+}
+.pagination .page-link
+{
+  border: var(--white-color) 2px solid;
+  background-color: var(--dark-color) !important;
+  color: var(--white-color) !important;
 }
 /*** @supports ***/
 @supports ((position: -webkit-sticky) or (position: sticky))
@@ -76,30 +123,40 @@ html::-webkit-scrollbar-thumb
 /*** @media only screen ***/
 @media (max-width: 575.99px)
 {
+  /*** table ***/
   table
   {
     font-size: .6rem; // 10px
   }
+  /*** pagination ***/
+  .pagination .page-item .page-link
+  {
+    font-size: 12px !important;
+  }
 }
 @media (min-width: 576px) and (max-width: 767.99px)
 {
-
-}
-@media (min-width: 768px) and (max-width: 991.99px)
-{
-  .sidebar
+  /*** pagination ***/
+  .pagination .page-item .page-link
   {
-    top: 5rem;
+    font-size: 14px !important;
   }
 }
-@media (min-width: 992px) and (max-width: 1199.99px)
-{
+// @media (min-width: 768px) and (max-width: 991.99px)
+// {
+//   .sidebar
+//   {
+//     top: 5rem;
+//   }
+// }
+// @media (min-width: 992px) and (max-width: 1199.99px)
+// {
 
-}
-@media (min-width: 1200px)
-{
+// }
+// @media (min-width: 1200px)
+// {
 
-}
+// }
 
 /*
 * Navbar

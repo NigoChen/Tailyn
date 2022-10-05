@@ -17,8 +17,8 @@
   </div>
   <!-- Footer -->
   <div class="modal-footer d-flex justify-content-between">
-    <button type="button" class="btn btn-outline-secondary" (click)="close()">取消</button>
-    <button type="button" class="btn btn-outline-dark" (click)="save()"
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="close()">取消</button>
+    <button type="button" class="btn btn-outline-dark btn-sm" (click)="save()"
       [disabled]="!fbGroup.valid">確定</button>
   </div>
   <!-- /Footer -->
@@ -50,9 +50,9 @@
   </div>
   <!-- Footer -->
   <div class="modal-footer d-flex justify-content-between">
-    <button type="button" class="btn btn-outline-secondary" (click)="close()">取消</button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="close()">取消</button>
     <!-- <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('Cross click')">取消</button> -->
-    <button type="submit" class="btn btn-outline-danger" (click)="delete()" [disabled]="!fb_Value_Index[0]">確定</button>
+    <button type="submit" class="btn btn-outline-danger btn-sm" (click)="delete()" [disabled]="!fb_Value_Index[0]">確定</button>
   </div>
   <!-- /Footer -->
 </ng-template>

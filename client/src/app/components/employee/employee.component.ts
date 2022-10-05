@@ -1,9 +1,9 @@
-import { SlicePipe } from '@angular/common';
-import { Component, ComponentFactoryResolver, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, ComponentFactoryResolver, ElementRef, EventEmitter, HostListener, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbRatingConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { Employee } from 'src/app/interfaces/employee';
+import { Modal } from 'src/app/interfaces/modal';
 import { User } from 'src/app/interfaces/user';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
 import { passwordMatchValidator } from 'src/app/methods/password-Match-Validator';
@@ -35,11 +35,9 @@ export class EmployeeComponent implements OnInit {
     e_PassWord: ['', [Validators.required, Validators.pattern(/^[\d\W\a-zA-Z]{3,30}$/)]],
     e_ConfirmPassword: ['', [Validators.required]],
     e_Email: ['', [Validators.required, Validators.maxLength(30), Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/)]],
-    e_Date: new FormArray([new FormControl('')]),
-    e_Lv: ['1', [Validators.required, Validators.maxLength(1)]],
-    e_Recycle: ['0']
+    e_Date: this.fb.array([this.fb.control('', Validators.required)]),
+    e_Lv: ['', [Validators.required, Validators.maxLength(1)]]
   }
-
   // e_ConfirmPassword: [
   //   '', 
   //   {
@@ -78,16 +76,18 @@ export class EmployeeComponent implements OnInit {
     {
       ngbRatingConfig.max = 3;
       ngbRatingConfig.readonly = true;
-      this.modalService.get_modalMDForm().subscribe(res => this.reset_FormGroup(res));
+      this.modalService.get_modal().subscribe((res: Modal) => this.reset_FormGroup(res.status));
       this.modalService.get_Search().subscribe(res => this.search(res));
       this.modalService.get_Create().subscribe(res => this.create(res));
       this.modalService.get_Read().subscribe(res => this.read());
       this.modalService.get_Update().subscribe(res => this.update(res));
       this.modalService.get_Delete().subscribe(res => this.delete(res));
+      this.modalService.get_User_Profile().subscribe((res: User) => this.user = res);
     }
 
   ngOnInit(): void {
     Reset_Validators(this.fbGroup);
+    this.reset_FormArray_Val();
     this.result_Data = [];
     this.result_List = [];
     this.read();
@@ -97,7 +97,6 @@ export class EmployeeComponent implements OnInit {
     this.modalService.set_FormControls(this.form_Controls);
     this.modalService.set_FormGroup(this.fbGroup);
     this.modalService.set_Form(this.form_);            
-    this.modalService.set_User_Profile(this.user_Profile);   
   }
   
   // FormGroup Controls Value
@@ -111,40 +110,33 @@ export class EmployeeComponent implements OnInit {
   }
 
   // FormGroup Reset
-  reset_FormGroup(value: Array<string>): void {  
-
-    // if(value[0] == 'show')
-    // {
-      if(value[1] == 'create')
-      {
-        this.fbGroup.reset(
-          {
-            e_Lv: '1',
-            e_Recycle: '0',
-          }
-        );     
-        // Reset FormArray
-        this.reset_FormArray_Val();
-      }
-      else
-      {
-        this.fbGroup.get('e_PassWord').setValidators(null);
-        this.fb_Value['e_PassWord'].updateValueAndValidity();
-        this.fb_Value['e_ConfirmPassword'].setValidators(null);
-        this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
-      }
-    // }    
+  reset_FormGroup(status: string): void {     
+    if(status == 'create')
+    {
+      this.fbGroup.reset(
+        {
+          e_Lv: '1'
+        }
+      );     
+      // Reset FormArray
+      this.reset_FormArray_Val();        
+    }
+    else
+    {
+      this.fbGroup.get('e_PassWord').setValidators(null);
+      this.fb_Value['e_PassWord'].updateValueAndValidity();
+      this.fb_Value['e_ConfirmPassword'].setValidators(null);
+      this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
+    }
     Reset_Validators(this.fbGroup);
   }
 
   // User Profile
   user_Profile(employee: Employee[]): void {
 
-    this.user = { jNumber: '', name: '', lv: 1};
-
     let user_Session: User | null = this.loginService.read_User_SessionStorage();
-  
-    if(user_Session != null)
+    
+    if(user_Session)
     {
       const userData = employee.find((item: Employee, index: number) => item.e_JobNumber === user_Session!.jNumber);      
 
@@ -152,11 +144,11 @@ export class EmployeeComponent implements OnInit {
       {  
         this.loginService.create_User_SessionStorage(userData);
         
-        this.user = {
+        this.modalService.set_User_Profile({
           jNumber: userData.e_JobNumber,
           name: userData.e_Name,
           lv: userData.e_Lv
-        }
+        });   
       }
       else
       {
@@ -174,7 +166,7 @@ export class EmployeeComponent implements OnInit {
           if(res)
           {
             this.read();
-            this.modalService.set_modalMDForm(['hide', 'create']);
+            this.modalService.set_modal({show: false});
           }
           else
           {
@@ -205,6 +197,7 @@ export class EmployeeComponent implements OnInit {
             this.result_List = res;
             this.user_Profile(res);
             this.table_List_Sort();
+            this.refreshResult_List();
           }
         },
         error: (err) => {
@@ -233,7 +226,7 @@ export class EmployeeComponent implements OnInit {
     // {    
     //   for (const [key, val] of Object.entries(obj))
     //   {
-    //     if(key != 'e_Id' && key != 'e_PassWord' && key != 'e_Lv' && key != 'e_Recycle')
+    //     if(key != 'e_Id' && key != 'e_PassWord' && key != 'e_Lv' &&)
     //     {
     //       if (val.includes(searchText))
     //       {
@@ -268,7 +261,7 @@ export class EmployeeComponent implements OnInit {
           if(res)
           {
             this.read();
-            this.modalService.set_modalMDForm(['hide', 'update']);
+            this.modalService.set_modal({show: false});
           }
           else
           {
@@ -294,7 +287,7 @@ export class EmployeeComponent implements OnInit {
           if(res)
           {      
             this.read();
-            this.modalService.set_modalMDForm(['hide', 'delete']);
+            this.modalService.set_modal({show: false});
           }
           else
           {
@@ -331,29 +324,29 @@ export class EmployeeComponent implements OnInit {
   }
 
   // Update FormArray Value
-  set_FormArray_Val(item: string): void {  
-    if(item.length > 10)
+  set_FormArray_Val(item: string = ''): void {  
+    const dataArray: Array<string> = item.split(',');
+        
+    if(dataArray.length == 4)
     {
-      item.split(',').forEach((v, i) => {
-        this.fb_Value['e_Date'].get(''+i).patchValue(v);
-      });
-    }
-    else
-    {
-      this.reset_FormArray_Val();
+      const validators: Validators = this.fb_Value['e_Date'].get('0').validator;      
+      const isDisabled: boolean = (this.user.lv == 3 && this.fb_Value_Index[0]) ?  false : true;
+      this.fb_Value['e_Date'].get('0').reset({value: dataArray[0], disabled: isDisabled},validators);
+      this.fb_Value['e_Date'].get('1').reset({value: dataArray[1], disabled: isDisabled},validators);
+      this.fb_Value['e_Date'].get('2').reset(dataArray[2],validators);
+      this.fb_Value['e_Date'].get('3').reset(dataArray[3],validators);
     }
   }
 
   // Reset FormArray Value
   reset_FormArray_Val(): void {  
     const today: string = new Date().toISOString().slice(0, 10);
-    const validators: Validators = this.fb_Value['e_Date'].get('0').validator;      
-
+    const validators: Validators = this.fb_Value['e_Date'].get('0').validator;    
     this.fbGroup.setControl('e_Date', this.fb.array([
-      new FormControl(today, validators),
-      new FormControl(today, validators),
-      new FormControl('0', validators),
-      new FormControl('0', validators)
+      this.fb.control(today, validators),
+      this.fb.control(today, validators),
+      this.fb.control('0', validators),
+      this.fb.control('0', validators)
     ]));
   }
 
@@ -409,6 +402,9 @@ export class EmployeeComponent implements OnInit {
   onDate_Check(name: string, value: string, index: number): void {    
         
     let choose_Value: Array<string> = this.fb_Value[name].value;
+    choose_Value[index] = '';
+    choose_Value[2] = '0';
+    choose_Value[3] = '0';
 
     if(value.length)
     {
@@ -416,7 +412,7 @@ export class EmployeeComponent implements OnInit {
       choose_Value[index] = value;
       // Total minutes for array index 2
       choose_Value = this.dateTime_Count(choose_Value);
-    }    
+    }
 
     // Update FormGroup Controls Value
     for(let i=0; i<choose_Value.length; i++)
@@ -428,7 +424,7 @@ export class EmployeeComponent implements OnInit {
   // DateTimePick Event
   onDate(event: HTMLInputElement): void {
     const id: string = event.id;
-    const index: number = id == 'Sdate' ? 0 : 1;
+    const index: number = id == 'Sdate' ? 0 : 1;    
     const value: string = this.datetim_Replace(event.value);    
     this.onDate_Check('e_Date', value, index);
   }
@@ -453,6 +449,10 @@ export class EmployeeComponent implements OnInit {
 
   // mouse click 
   @HostListener('mouseup', ['$event']) onClick($event) {
-    this.reset_FormGroup(['hide', 'create']);    
+
+    if(this.fb_Value_Index[0])
+    {
+      // this.reset_FormGroup(['hide', 'create']);    
+    }
   }
 }

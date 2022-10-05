@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 import { Stand } from 'src/app/interfaces/stand';
 import { SplitePipe } from 'src/app/pipes/splite.pipe';
 import { DecimalPipe } from '@angular/common';
+import { Modal } from 'src/app/interfaces/modal';
 
 @Component({
   selector: 'app-work',
@@ -76,7 +77,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
     private elementRef: ElementRef,
     private decimalPipe: DecimalPipe)
     {
-      this.modalService.get_modalMDForm().subscribe(res => this.reset_FormGroup(res));
+      this.modalService.get_modal().subscribe((res: Modal) => this.reset_FormGroup(res.status));
       this.modalService.get_Search().subscribe(res => this.search(res));
       this.modalService.get_Create().subscribe(res => this.create(res));
       this.modalService.get_Read().subscribe(res => this.read());
@@ -131,29 +132,27 @@ export class WorkComponent implements OnInit, AfterViewInit {
   }
 
   // FormGroup Reset
-  reset_FormGroup(value: Array<string>): void {    
-    // if(value[0] == 'show')
-    // {
-      if(value[1] == 'create')
-      {
-        this.fbGroup.reset(
-          {
-            w_JobNumber: this.user.jNumber,
-            w_BMinute: ',,,',
-            w_OMinute: ',,,',
-            w_BTotal: '0',
-            w_OTotal: '0',
-            w_BDeduct: 70,
-            w_ODeduct: 0,
-            w_Date: new Date().toISOString().slice(0, 10)
-          }
-        );                
-        // Reset FormArray Value
-        this.reset_FormArray_Val();
-      }
-      // Reset ErrorValidators Object
-      Reset_Validators(this.fbGroup);
-    // }    inputValidators
+  reset_FormGroup(status: string): void {    
+
+    if(status == 'create')
+    {
+      this.fbGroup.reset(
+        {
+          w_JobNumber: this.user.jNumber,
+          w_BMinute: ',,,',
+          w_OMinute: ',,,',
+          w_BTotal: '0',
+          w_OTotal: '0',
+          w_BDeduct: 70,
+          w_ODeduct: 0,
+          w_Date: new Date().toISOString().slice(0, 10)
+        }
+      );                
+      // Reset FormArray Value
+      this.reset_FormArray_Val();
+    }
+    // Reset ErrorValidators Object
+    Reset_Validators(this.fbGroup);
   }
 
   // User Profile
@@ -175,22 +174,19 @@ export class WorkComponent implements OnInit, AfterViewInit {
 
   // Create
   create(fg: FormGroup): void {
-    
-    const bMinutes: number = this.fb_Value['w_BMinute'].value.length;
-    const oMinutes: number = this.fb_Value['w_OMinute'].value.length;
-    const bTotalInt: number = parseInt(this.fb_Value['w_BTotal'].value);
-    const oTotalInt: number = parseInt(this.fb_Value['w_OTotal'].value);
-    
-    if((bMinutes > 40 && bTotalInt > -1) || (oMinutes > 40 && oTotalInt > -1))
+    if(this.check_Minutes_TotalInt)
     {
       this.workHoursService.create(fg.value)
         .subscribe(
           {
             next: (res: boolean) => {
-              if (res) {
+              if(res)
+              {
                 this.read();
+                this.modalService.set_modal({show: false});
               }
-              else {
+              else
+              {
                 this.alertService.set_Alert(22);
               }
             },
@@ -198,7 +194,6 @@ export class WorkComponent implements OnInit, AfterViewInit {
               this.alertService.set_Alert(23);
             },
             complete: () => {
-              this.modalService.set_modalMDForm(['hide', 'create']);
             }
           }
         );
@@ -220,6 +215,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
               this.result_Data = res;
               this.result_List = res;
               this.table_List_Sort();
+              this.refreshResult_List();
             }
           },
           error: (err) => {
@@ -231,9 +227,6 @@ export class WorkComponent implements OnInit, AfterViewInit {
         }
       );
   }
-
-  // Refresh
-  refresh(): void { }
 
   // Search
   search(searchText: string): void {
@@ -268,20 +261,16 @@ export class WorkComponent implements OnInit, AfterViewInit {
 
   // Update
   update(fg: FormGroup): void {
-
-    const bMinutes: number = this.fb_Value['w_BMinute'].value.length;
-    const oMinutes: number = this.fb_Value['w_OMinute'].value.length;
-    const bTotalInt: number = parseInt(this.fb_Value['w_BTotal'].value);
-    const oTotalInt: number = parseInt(this.fb_Value['w_OTotal'].value);
-
-    if((bMinutes > 40 && bTotalInt > -1) || (oMinutes > 40 && oTotalInt > -1))
+    if(this.check_Minutes_TotalInt)
     {
       this.workHoursService.create(fg.value)
         .subscribe(
           {
             next: (res: boolean) => {
-              if (res) {
+              if (res)
+              {
                 this.read();
+                this.modalService.set_modal({show: false});
               }
               else
               {
@@ -292,7 +281,6 @@ export class WorkComponent implements OnInit, AfterViewInit {
               this.alertService.set_Alert(33);
             },
             complete: () => {
-              this.modalService.set_modalMDForm(['hide', 'update']);
             }
           }
         );
@@ -312,7 +300,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
             if (res)
             {
               this.read();
-              this.modalService.set_modalMDForm(['hide', 'delete']);
+              this.modalService.set_modal({show: false});
             }
             else
             {
@@ -342,7 +330,6 @@ export class WorkComponent implements OnInit, AfterViewInit {
 
     // FormArray Value
     this.set_FormArray_Val(item);
-
     // Update Modal FormGroup
     this.modalService.set_FormGroup(this.fbGroup);    
   }
@@ -375,47 +362,18 @@ export class WorkComponent implements OnInit, AfterViewInit {
 
         if(key == 'w_Stand')
         {
-          this.fbGroup.setControl(key,
-            this.fb.array([this.fb.control('40',validators)])
-          );
+          this.fbGroup.setControl(key, this.fb.array([this.fb.control('40',validators)]));
         }
         else if(key == 'w_Quantity')
         {
-          this.fbGroup.setControl(key,
-            this.fb.array([this.fb.control(1,validators)])
-          );
+          this.fbGroup.setControl(key, this.fb.array([this.fb.control(1,validators)]));
         }
         else
         {
-          this.fbGroup.setControl(key,
-            this.fb.array([this.fb.control('',validators)])
-          );
+          this.fbGroup.setControl(key, this.fb.array([this.fb.control('',validators)]));
         }
       }
     });
-    // const array_Name: Array<string> = ['w_WorkOrder','w_Model','w_Stand','w_Quantity','w_Remark'];
-
-    // for(const name of array_Name)
-    // {      
-    //   const formArray: FormArray = new FormArray([]);
-
-    //   const validators: Validators = this.fb_Value[name].get('0').validator;
-
-    //   if(name == 'w_Stand')
-    //   {
-    //     formArray.push(new FormControl('40', validators));
-    //   }
-    //   else if(name == 'w_Quantity')
-    //   {
-    //     formArray.push(new FormControl(1, validators));
-    //   }
-    //   else
-    //   {
-    //     formArray.push(new FormControl('', validators));
-    //   }
-
-    //   this.fbGroup.setControl(name, formArray);
-    // }
   }
 
   // DateTimePick Value Chekc
@@ -592,6 +550,15 @@ export class WorkComponent implements OnInit, AfterViewInit {
     this.fb_Value[name].patchValue(dateTime_Total.toString());
   }
 
+  // Check DateTime Value
+  get check_Minutes_TotalInt(): boolean {
+    const bMinutes: number = this.fb_Value['w_BMinute'].value.length;
+    const oMinutes: number = this.fb_Value['w_OMinute'].value.length;
+    const bTotalInt: number = parseInt(this.fb_Value['w_BTotal'].value);
+    const oTotalInt: number = parseInt(this.fb_Value['w_OTotal'].value);
+    return (bMinutes > 40 && bTotalInt > -1) || (oMinutes > 40 && oTotalInt > -1) ? true : false;
+  }
+
   // Destroy
   ngOnDestroy(): void {
     this.modalService.set_FormGroup(null);
@@ -599,7 +566,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
 
   // mouse click 
   @HostListener('mouseup', ['$event']) onClick($event) {
-    this.reset_FormGroup(['hide', 'create']);
+    this.reset_FormGroup('close');
 
     // this.modalService.set_modalMDForm(['hide', 'create']);
 

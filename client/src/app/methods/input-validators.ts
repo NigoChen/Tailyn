@@ -23,7 +23,7 @@ export const Reset_Validators = (fbGroup: FormGroup, index: any = null): void =>
 	Object.keys(fbGroup.controls).forEach((key: any, i: number) => {
 
 		if(fbGroup.controls[key] instanceof FormArray)
-		{
+		{			
 			const fbArray: FormArray = <FormArray>fbGroup.controls[key];
 
 			if(fbArray.controls instanceof Array)

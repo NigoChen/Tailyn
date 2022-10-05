@@ -1,14 +1,15 @@
 import { Injectable, TemplateRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
+import { Modal } from '../interfaces/modal';
+import { User } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ModalService {
 
-  private modalMDForm: Subject<Array<string>>;
-  private modalSM: Subject<boolean>;
+  private modal: Subject<Modal>;
   private formControls: Subject<object>;
   private fbGroup: Subject<FormGroup>;
   private form: Subject<TemplateRef<any>>;
@@ -17,38 +18,29 @@ export class ModalService {
   private read: Subject<boolean>;
   private delete: Subject<number>;
   private search: Subject<string>;
-  private user_Profile: Subject<Function>;
+  private user_Profile: Subject<User>;
 
   constructor() {
-    this.modalMDForm = new Subject<Array<string>>();
-    this.modalSM = new Subject<boolean>();
+    this.modal = new Subject<Modal>();
     this.formControls = new Subject<object>();
     this.fbGroup = new Subject<FormGroup>();
-    this.form = new Subject<TemplateRef<any>>();
+    this.form = new Subject<TemplateRef<HTMLElement>>();
     this.update = new Subject<FormGroup>();
     this.create = new Subject<FormGroup>();
     this.read = new Subject<boolean>();
     this.delete = new Subject<number>();
     this.search = new Subject<string>();
-    this.user_Profile = new Subject<Function>();
+    this.user_Profile = new Subject<User>();
   }
 
-  public get_modalMDForm(): Observable<Array<string>> {
-    return this.modalMDForm.asObservable();
+  public get_modal(): Observable<Modal> {
+    return this.modal.asObservable();
   }
 
-  public set_modalMDForm(value: Array<string>): void {
-    this.modalMDForm.next(value);
+  public set_modal(value: Modal): void {
+    this.modal.next(value);
   }
-
-  public get_modalSM(): Observable<boolean> {
-    return this.modalSM.asObservable();
-  }
-
-  public set_modalSM(value: boolean): void {
-    this.modalSM.next(value);
-  }
-
+  
   // Get FormControls
   public get_FormControls(): Observable<object> {    
     return this.formControls.asObservable();
@@ -130,12 +122,12 @@ export class ModalService {
   }
   
   // Get Read
-  public get_User_Profile(): Observable<Function> {    
+  public get_User_Profile(): Observable<User> {    
     return this.user_Profile.asObservable();
   }
 
   // Set Read
-  public set_User_Profile(func: Function): void {    
-    this.user_Profile.next(func);
+  public set_User_Profile(user: User): void {    
+    this.user_Profile.next(user);
   }
 }

@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Employee } from 'src/app/interfaces/employee';
 import { User } from 'src/app/interfaces/user';
-import { LoginService } from 'src/app/services/login.service';
 import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
@@ -13,8 +11,10 @@ import { ModalService } from 'src/app/services/modal.service';
 export class ContentHeaderComponent implements OnInit {
   // User
   public user: User;
+  // FormGroup
   public fbGroup: FormGroup;
-   searchText: string;
+  // Input Search Text 
+  public searchText: string;
   // Delay Time
   public delayTime: boolean;
 
@@ -24,15 +24,15 @@ export class ContentHeaderComponent implements OnInit {
   // @Input() fb_Value_:  { [key: string]: AbstractControl};
 
   constructor(
-    private loginService: LoginService,
-    private modalService: ModalService,
-    ){}
+    private modalService: ModalService
+    ){
+      this.modalService.get_User_Profile().subscribe((res: User) => this.user = res);
+      this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res); 
+    }
 
   ngOnInit(): void {
     this.searchText = '';
-    this.user_Profile();
     this.delayTime = true;
-    this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);  
   }
 
   ngAfterViewInit(): void {}
@@ -45,53 +45,14 @@ export class ContentHeaderComponent implements OnInit {
     return Object.values(this.fbGroup.value) || '';
   }
 
-  // User Profile
-  user_Profile(employee: Employee[] = []): void {
-
-    this.user = { jNumber: '', name: '', lv: 1};
-
-    let user_Session: User | null = this.loginService.read_User_SessionStorage();
-  
-    if(user_Session != null)
-    {
-      if(employee.length)
-      {
-        const userData = employee.find((item: Employee, index: number) => item.e_JobNumber === user_Session!.jNumber);      
-      
-        if(userData != undefined)
-        {  
-          this.loginService.create_User_SessionStorage(userData);
-          
-          this.user = {
-            jNumber: userData.e_JobNumber,
-            name: userData.e_Name,
-            lv: userData.e_Lv
-          }
-        }
-        else
-        {
-          this.loginService.logout();
-        }
-      }
-      else
-      {
-        this.user = user_Session;
-      }
-    }
-    else
-    {
-      this.loginService.logout();
-    }
-  }
-  
   // Create
   create(): void {
-    this.modalService.set_modalMDForm(['show', 'create']);
+    this.modalService.set_modal({status: 'create', show: true, size: 'md'});
   }
 
   // Update
   update(): void {
-    this.modalService.set_modalMDForm(['show', 'update']);
+    this.modalService.set_modal({status: 'update', show: true, size: 'md'});
   }
   
   // Read
@@ -111,7 +72,7 @@ export class ContentHeaderComponent implements OnInit {
 
   // Delete
   delete(): void {
-    this.modalService.set_modalSM(true);
+    this.modalService.set_modal({status: 'delete', show: true, size: 'sm'});
   }
   
   // Check FormGroup Value
