@@ -1,93 +1,121 @@
 <div class="d-flex sidebar">
-    <ul class="nav px-1">
-        <li class="nav-item text-nowrap">
-            <a class="nav-link" routerLink="/" title="首頁">
-                <i class="bi bi-house-door-fill"></i>
-                首頁
-            </a>
-        </li>
-        <li class="nav-item text-nowrap">
-            <a class="nav-link" routerLink="Work" routerLinkActive="text-danger font-weight-bold" title="工時">
-                <i class="bi bi-calculator-fill"></i>
-                工時
-            </a>
-        </li>
-        <li class="nav-item text-nowrap">
-            <a class="nav-link" routerLink="Repair" routerLinkActive="text-danger font-weight-bold" title="維修">
-                <i class="bi bi-hammer"></i>
-                維修
-            </a>
-        </li>
-        <li class="nav-item text-nowrap">
-            <a class="nav-link" routerLink="Employee" routerLinkActive="text-danger font-weight-bold" title="員工">
-                <i class="bi bi-file-earmark-person"></i>
-                員工
-            </a>
-        </li>
-    </ul>
-    <ul class="nav px-3">
-        <li class="nav-item text-nowrap">
-            <div ngbDropdown class="d-inline-block" display="dynamic">
-                <a class="nav-link text-white" id="dropdownBasic1" ngbDropdownToggle>
-                    <i class="bi bi-person-circle"></i>
-                    <span class="p-1">{{ user.jNumber }}</span>
-                </a>
-                <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="shadow header_DropMenu bg-dark">
-                    <button ngbDropdownItem class="text-center mb-3" (click)="update()">{{ user.name }}</button>
-                    <button ngbDropdownItem class="text-center" (click)="logout()">登出</button>
-                </div>
-            </div>
-        </li>
-    </ul>
+  <ul class="nav px-1">
+    <li class="nav-item text-nowrap">
+      <a class="nav-link" routerLink="/" title="首頁">
+        <i class="bi bi-house-door-fill"></i>
+        首頁
+      </a>
+    </li>
+    <li class="nav-item text-nowrap">
+      <a class="nav-link" routerLink="Work" routerLinkActive="text-danger font-weight-bold" title="工時">
+        <i class="bi bi-calculator-fill"></i>
+        工時
+      </a>
+    </li>
+    <li class="nav-item text-nowrap">
+      <a class="nav-link" routerLink="Repair" routerLinkActive="text-danger font-weight-bold" title="維修">
+        <i class="bi bi-hammer"></i>
+        維修
+      </a>
+    </li>
+    <li class="nav-item text-nowrap">
+      <a class="nav-link" routerLink="Employee" routerLinkActive="text-danger font-weight-bold" title="員工">
+        <i class="bi bi-file-earmark-person"></i>
+        員工
+      </a>
+    </li>
+  </ul>
+  <ul class="nav px-3">
+    <li class="nav-item text-nowrap">
+      <div ngbDropdown class="d-inline-block" display="dynamic">
+        <a class="nav-link text-white" id="dropdownBasic1" ngbDropdownToggle>
+          <i class="bi bi-person-circle"></i>
+          <span class="p-1">{{ user.e_JobNumber }}</span>
+        </a>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="shadow header_DropMenu bg-dark">
+          <button ngbDropdownItem class="text-center mb-3" (click)="show_Modal()">{{ user.e_Name }}</button>
+          <button ngbDropdownItem class="text-center" (click)="logout()">登出</button>
+        </div>
+      </div>
+    </li>
+  </ul>
 </div>
 
 <ng-template #form_>
+
+</ng-template>
+
+
+<!-- Modal Form -->
+<ng-template #modalForm let-modal>
+  <!-- Header -->
+  <div class="modal-header" *ngIf="alerts">
+    <!-- Alert -->
+    <ngb-alert *ngIf="alerts.status" class="modal-title w-100 d-flex justify-content-center pt-3 pb-0"
+      [type]="alerts.type" (click)="alerts.status = !alerts.status" animation="true" [dismissible]="true">
+      <p>{{ alerts.message }}</p>
+    </ngb-alert>
+    <!-- /Alert -->
+  </div>
+  <!-- /Header -->
+  <div class="modal-body">
     <!-- Form -->
     <form [formGroup]="fbGroup" #form="ngForm">
       <!-- Name -->
       <div class="form-group row">
-        <label for="name" class="col-3 col-form-label" *ngIf="!errorValidators['e_Name'].length; else e_Name">姓名</label>
-  
+        <label for="name" class="col-3 col-form-label text-center pl-1 pr-1"
+          *ngIf="!errorValidators['e_Name'].length; else e_Name">姓名</label>
+
         <ng-template #e_Name>
-          <label for="name" class="col-3 col-form-label text-danger">{{ errorValidators['e_Name'] }}</label>
+          <label for="name" class="col-3 col-form-label text-center text-danger pl-1 pr-1">{{ errorValidators['e_Name']
+            }}</label>
         </ng-template>
-  
-        <div class="col">
+
+        <div class="col pl-2 pr-1">
           <input type="text" id="name" class="form-control" formControlName="e_Name" placeholder="姓名"
             (blur)="inputValidators(fbGroup, 'e_Name')">
         </div>
       </div>
-  
+
       <!-- Job Number -->
       <div class="form-group row">
-        <label for="jobNumber" class="col-3 col-form-label"
+        <label for="jobNumber" class="col-3 col-form-label text-center pl-1 pr-1"
           *ngIf="!errorValidators['e_JobNumber'].length; else e_JobNumber">工號</label>
-  
+
         <ng-template #e_JobNumber>
-          <label for="jobNumber" class="col-3 col-form-label text-danger">{{ errorValidators['e_JobNumber']
+          <label for="jobNumber" class="col-3 col-form-label text-center text-danger pl-1 pr-1">{{
+            errorValidators['e_JobNumber']
             }}</label>
         </ng-template>
-  
-        <div class="col">
-          <input type="text" id="jobNumber" class="form-control" formControlName="e_JobNumber" placeholder="工號"
-            (blur)="inputValidators(fbGroup, 'e_JobNumber')" [readonly]="user.lv < 3">
+
+        <div class="col pl-2 pr-1">
+          <div class="form-control border-0" *ngIf="this.fb_Value['e_JobNumber'].disabled; else jobNumber">
+            {{ this.fb_Value['e_JobNumber'].value }}
+          </div>
+
+          <ng-template #jobNumber>
+            <input type="text" id="jobNumber" class="form-control" formControlName="e_JobNumber" placeholder="工號"
+              (blur)="inputValidators(fbGroup, 'e_JobNumber')" [readonly]="user.e_Lv < 3">
+          </ng-template>
         </div>
       </div>
-  
+
       <!-- Password -->
       <div class="form-group row">
-        <label for="passWord" class="col-3 col-form-label"
+        <label for="passWord" class="col-3 col-form-label text-center pl-1 pr-1"
           *ngIf="!errorValidators['e_PassWord'].length; else e_PassWord">密碼</label>
-  
+
         <ng-template #e_PassWord>
-          <label for="passWord" class="col-3 col-form-label text-danger">{{ errorValidators['e_PassWord'] }}</label>
+          <label for="passWord" class="col-3 col-form-label text-center text-danger pl-1 pr-1">{{
+            errorValidators['e_PassWord']
+            }}</label>
         </ng-template>
-  
-        <div class="col" [class.pr-1]="!fb_Value_Index[0]">
+
+        <div class="col pl-2 pr-1">
           <div class="input-group input-group-md">
             <input type="password" id="passWord" class="form-control" formControlName="e_PassWord" placeholder="密碼"
               (blur)="inputValidators(fbGroup, 'e_PassWord')" autocomplete="false" #passWord_Type>
-  
+
             <div class="input-group-prepend">
               <span class="input-group-text"
                 (click)="passWord_Type.type == 'text' ? passWord_Type.type = 'password': passWord_Type.type = 'text'">
@@ -96,94 +124,95 @@
             </div>
           </div>
         </div>
-  
-        <ng-container *ngIf="!fb_Value_Index[0]">
-          <!-- ConfirmPassword -->
-          <div class="col pl-1">
-            <div class="input-group input-group-md">
-              <input type="password" class="form-control" formControlName="e_ConfirmPassword" placeholder="確認密碼"
-                (blur)="inputValidators(fbGroup, 'e_ConfirmPassword')" autocomplete="false" #e_ConfirmPassword_Type>
-  
-              <div class="input-group-prepend">
-                <span class="input-group-text"
-                  (click)="e_ConfirmPassword_Type.type == 'text' ? e_ConfirmPassword_Type.type = 'password': e_ConfirmPassword_Type.type = 'text'">
-                  <i
-                    [ngClass]="{'bi bi-eye-slash-fill': e_ConfirmPassword_Type.type != 'password', 'bi bi-eye-fill': e_ConfirmPassword_Type.type == 'password', 'text-danger': errorValidators['e_ConfirmPassword'].length}"></i>
-                </span>
-              </div>
-            </div>
-          </div>
-        </ng-container>
       </div>
-  
+
       <!-- Email -->
       <div class="form-group row">
-        <label for="email" class="col-3 col-form-label"
+        <label for="email" class="col-3 col-form-label text-center pl-1 pr-1"
           *ngIf="!errorValidators['e_Email'].length; else e_Email">信箱</label>
-  
+
         <ng-template #e_Email>
-          <label for="email" class="col-3 col-form-label text-danger">{{ errorValidators['e_Email']
+          <label for="email" class="col-3 col-form-label text-center text-danger pl-1 pr-1">{{
+            errorValidators['e_Email']
             }}</label>
         </ng-template>
-  
-        <div class="col">
+
+        <div class="col pl-2 pr-1">
           <input type="email" id="email" class="form-control" formControlName="e_Email" placeholder="信箱"
             (blur)="inputValidators(fbGroup, 'e_Email')">
         </div>
       </div>
-  
+
       <!-- Level -->
       <div class="form-group row">
-        <label for="lv" class="col-3 col-form-label">權限</label>
-        <div class="col-3">
+        <label for="lv" class="col-3 col-form-label text-center pl-1 pr-1">權限</label>
+        <div [ngClass]="[this.fb_Value['e_Lv'].disabled ? 'col':'col-3']"
+          *ngIf="this.fb_Value['e_Date'].disabled; else Lv">
           <ngb-rating [rate]="fb_Value['e_Lv'].value" readonly="true" class="h4"></ngb-rating>
         </div>
-        <div class="col-6">
-          <select id="lv" class="form-control text-center custom-select" formControlName="e_Lv">
-            <ng-container *ngIf="user.lv == 3">
-              <option value="0" [selected]="fb_Value['e_Lv'].value == 0">
-                停權
+
+        <ng-template #Lv>
+          <div class="col-6 pl-2 pr-1">
+            <select id="lv" class="form-control text-center custom-select" formControlName="e_Lv">
+              <ng-container *ngIf="user.e_Lv == 3">
+                <option value="0" [selected]="fb_Value['e_Lv'].value == 0">
+                  停權
+                </option>
+              </ng-container>
+              <option value="1" [selected]="fb_Value['e_Lv'].value == 1">
+                普通
               </option>
-            </ng-container>
-            <option value="1" [selected]="fb_Value['e_Lv'].value == 1">
-              普通
-            </option>
-            <option value="2" [selected]="fb_Value['e_Lv'].value == 2">
-              中級
-            </option>
-            <ng-container *ngIf="user.lv == 3">
-              <option value="3" [selected]="fb_Value['e_Lv'].value == 3">
-                高級
+              <option value="2" [selected]="fb_Value['e_Lv'].value == 2">
+                中級
               </option>
-            </ng-container>
-          </select>
-        </div>
-  
+              <ng-container *ngIf="user.e_Lv == 3">
+                <option value="3" [selected]="fb_Value['e_Lv'].value == 3">
+                  高級
+                </option>
+              </ng-container>
+            </select>
+          </div>
+        </ng-template>
       </div>
       <!-- Date Start-->
       <div class="form-group row" formArrayName="e_Date">
-        <label for="Sdate" class="col-3 col-form-label">入職</label>
-        <div class="col">
-          <input type="date" id="Sdate" class="form-control" formControlName="0" (input)="onDate($event.target)"
-            (blur)="inputValidators(fbGroup, 'e_Date', 0)">
+        <label for="Sdate" class="col-3 col-form-label text-center pl-1 pr-1">入職</label>
+        <div class="col pl-2 pr-1">
+          <div class="form-control border-0" *ngIf="this.fb_Value['e_Date'].disabled; else Sdate">
+            {{ this.fb_Value['e_Date'].get('0').value }}
+          </div>
+
+          <ng-template #Sdate>
+            <input type="date" id="Sdate" class="form-control" formControlName="0" (input)="onDate($event.target)"
+              (blur)="inputValidators(fbGroup, 'e_Date', 0)">
+          </ng-template>
         </div>
       </div>
-  
+
       <!-- Date End-->
       <div class="form-group row" formArrayName="e_Date">
-        <label for="Edate" class="col-3 col-form-label">在職</label>
-        <div class="col">
-          <input type="date" id="Edate" class="form-control" formControlName="1" (input)="onDate($event.target)"
-            (blur)="inputValidators(fbGroup, 'e_Date', 1)">
+        <label for="Edate" class="col-3 col-form-label text-center pl-1 pr-1">在職</label>
+        <div class="col pl-2 pr-1">
+
+          <div class="form-control border-0" *ngIf="this.fb_Value['e_Date'].disabled; else Edate">
+            {{ this.fb_Value['e_Date'].get('1').value }}
+          </div>
+
+          <ng-template #Edate>
+            <input type="date" id="Edate" class="form-control" formControlName="1" (input)="onDate($event.target)"
+              (blur)="inputValidators(fbGroup, 'e_Date', 1)">
+          </ng-template>
         </div>
       </div>
-      <!-- <div class="mb-2">
-        <label for="dateOfBirth">權限</label>
-        <div class="input-group">
-          <input id="dateOfBirth" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker">
-          <button class="btn btn-outline-secondary calendar" (click)="dp.toggle()" type="button"></button>
-        </div>
-      </div> -->
     </form>
     <!-- /Form -->
-  </ng-template>
+  </div>
+  <!-- Footer -->
+  <div class="modal-footer d-flex justify-content-between">
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="close()">取消</button>
+    <button type="button" [ngClass]="['btn btn-sm', fb_Value_Index[0] ? 'btn-outline-warning':'btn-outline-info']"
+      (click)="update()" [disabled]="!fbGroup.valid">確定</button>
+  </div>
+  <!-- /Footer -->
+</ng-template>
+<!-- /Modal Form -->

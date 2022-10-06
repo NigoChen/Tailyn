@@ -1,7 +1,7 @@
 <!-- Modal Form -->
 <ng-template #modalForm let-modal>
   <!-- Header -->
-  <div class="modal-header">
+  <div class="modal-header" *ngIf="alerts">
     <!-- Alert -->
     <ngb-alert *ngIf="alerts.status" class="modal-title w-100 d-flex justify-content-center pt-3 pb-0" [type]="alerts.type"
       (click)="alerts.status = !alerts.status" animation="true" [dismissible]="true">
@@ -18,7 +18,7 @@
   <!-- Footer -->
   <div class="modal-footer d-flex justify-content-between">
     <button type="button" class="btn btn-outline-secondary btn-sm" (click)="close()">取消</button>
-    <button type="button" class="btn btn-outline-dark btn-sm" (click)="save()"
+    <button type="button" [ngClass]="['btn btn-sm', fb_Value_Index[0] ? 'btn-outline-warning':'btn-outline-info']" (click)="fbGroup.valid && save()"
       [disabled]="!fbGroup.valid">確定</button>
   </div>
   <!-- /Footer -->
@@ -28,7 +28,7 @@
 <!-- Modal SM -->
 <ng-template #modalSM let-modal>
   <!-- Header -->
-  <div class="modal-header">
+  <div class="modal-header" *ngIf="alerts">
     <!-- Alert -->
     <ngb-alert *ngIf="alerts.status" class="modal-title w-100 d-flex justify-content-center pt-3 pb-0" [type]="alerts.type"
       (click)="alerts.status = !alerts.status" animation="true" [dismissible]="true">

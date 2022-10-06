@@ -20,7 +20,7 @@
     </thead>
     <tbody>
     <tbody *ngFor="let item of result_List; let i = index"
-      [ngClass]="{'table-selected': item?.e_Id == fb_Value_Index[0]}" (click)="user.lv == 3 && choose(item)">
+      [ngClass]="{'table-selected': item?.e_Id == fb_Value_Index[0]}" (click)="choose(item)">
       <!-- <tr *ngFor="let item of result_Async$ | async; index as i" [ngClass]="{'text-light bg-dark': item?.e_Id == fb_Value['e_Id'].value}" (click)="choose(item)"> -->
       <tr>
         <td [class.suspension]="item.e_Lv == '0'">{{ i+1 }}</td>
@@ -81,7 +81,7 @@
 
       <div class="col">
         <input type="text" id="jobNumber" class="form-control" formControlName="e_JobNumber" placeholder="工號"
-          (blur)="inputValidators(fbGroup, 'e_JobNumber')" [readonly]="user.lv < 3">
+          (blur)="inputValidators(fbGroup, 'e_JobNumber')">
       </div>
     </div>
 
@@ -152,25 +152,20 @@
       </div>
       <div class="col-6">
         <select id="lv" class="form-control text-center custom-select" formControlName="e_Lv">
-          <ng-container *ngIf="user.lv == 3">
-            <option value="0" [selected]="fb_Value['e_Lv'].value == 0">
-              停權
-            </option>
-          </ng-container>
+          <option value="0" [selected]="fb_Value['e_Lv'].value == 0">
+            停權
+          </option>
           <option value="1" [selected]="fb_Value['e_Lv'].value == 1">
             普通
           </option>
           <option value="2" [selected]="fb_Value['e_Lv'].value == 2">
             中級
           </option>
-          <ng-container *ngIf="user.lv == 3">
-            <option value="3" [selected]="fb_Value['e_Lv'].value == 3">
-              高級
-            </option>
-          </ng-container>
+          <option value="3" [selected]="fb_Value['e_Lv'].value == 3">
+            高級
+          </option>
         </select>
       </div>
-
     </div>
     <!-- Date Start-->
     <div class="form-group row" formArrayName="e_Date">

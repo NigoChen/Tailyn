@@ -1,10 +1,11 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Event, NavigationEnd, NavigationStart, Router } from '@angular/router';
-import { NgbRatingConfig } from '@ng-bootstrap/ng-bootstrap';
-import { User } from 'src/app/interfaces/user';
-import { ErrorValidators, InputValidators } from 'src/app/methods/input-validators';
-import { passwordMatchValidator } from 'src/app/methods/password-Match-Validator';
+import { NgbModal, NgbRatingConfig } from '@ng-bootstrap/ng-bootstrap';
+import { Alert } from 'selenium-webdriver';
+import { Alerts } from 'src/app/interfaces/alerts';
+import { Employee } from 'src/app/interfaces/employee';
+import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
 import { AlertService } from 'src/app/services/alert.service';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { LoadingService } from 'src/app/services/loading.service';
@@ -20,53 +21,37 @@ export class SidebarComponent implements OnInit {
   // Form
   @ViewChild('form_') form_: TemplateRef<HTMLElement>;
   // User
-  public user: User;
+  public user: Employee;
   // Form Controls
   public form_Controls: object = {
     e_Id: [''],
     e_Name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\u4e00-\u9fa5]{2,10}$/)]],
     e_JobNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{3,5}$/)]],
-    e_PassWord: ['', [Validators.required, Validators.pattern(/^[\d\W\a-zA-Z]{3,30}$/)]],
-    e_ConfirmPassword: ['', [Validators.required]],
+    e_PassWord: [''],
     e_Email: ['', [Validators.required, Validators.maxLength(30), Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/)]],
     e_Date: this.fb.array([this.fb.control('', Validators.required)]),
     e_Lv: ['', [Validators.required, Validators.maxLength(1)]]
   }
-
-  // e_ConfirmPassword: [
-  //   '', 
-  //   {
-  //     Validators:[
-  //       Validators.required
-  //     ],
-  //     updateOn: 'blur',
-  //     validators: [passwordMatchValidator]
-  //   },
-    
-  // ],
   // FormGroup
-  public fbGroup: FormGroup = this.fb.group(
-      this.form_Controls,
-    {
-      updateOn: 'blur',
-      validators: [passwordMatchValidator]
-    }
-  );
+  public fbGroup: FormGroup = this.fb.group(this.form_Controls);
   // Input Validators blur
   public inputValidators: Function = InputValidators;
   // Input Validators Error
   public errorValidators: object = ErrorValidators;
+  // Aert
+  public alerts: Alerts;
+  // Modal 
+  @ViewChild('modalForm') public modalForm: ElementRef<HTMLInputElement>;
 
   constructor(
     private loginService: LoginService,
-    private loadingService: LoadingService,
-    private employeeService: EmployeeService, 
     private fb: FormBuilder,
-    private modalService: ModalService,
+    private employeeService: EmployeeService,
     private alertService: AlertService,
     private ngbRatingConfig: NgbRatingConfig,
     private router: Router,
-    private elementRef: ElementRef)
+    private elementRef: ElementRef,
+    private ngbModal: NgbModal)
     {
       ngbRatingConfig.max = 3;
       ngbRatingConfig.readonly = true;
@@ -74,10 +59,16 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.user_Profile();
-    
+    Reset_Validators(this.fbGroup);
+    this.alertService.get_Alert().subscribe(res => {this.alerts = res});
   }
 
   ngAfterViewInit() {
+    this.menu_Link_Style();
+  }
+
+  // Menu Link Style
+  menu_Link_Style(): void {
     let navLink = this.elementRef.nativeElement.querySelectorAll('.nav-link')[0];
     
     // Page Reload Check Url
@@ -122,10 +113,6 @@ export class SidebarComponent implements OnInit {
     //     console.log(data);
         
     // });
-
-    this.modalService.set_FormControls(this.form_Controls);
-    this.modalService.set_FormGroup(this.fbGroup);
-    this.modalService.set_Form(this.form_);       
   }
 
   // FormGroup Controls Value
@@ -139,9 +126,8 @@ export class SidebarComponent implements OnInit {
   }
   // User Profile
   user_Profile(): void {
-
-    let user_Session: User | null = this.loginService.read_User_SessionStorage();
-
+    let user_Session: Employee | null = this.loginService.read_User_SessionStorage();
+    
     if (user_Session != null)
     {
         this.user = user_Session;
@@ -153,51 +139,89 @@ export class SidebarComponent implements OnInit {
   }
   
   // Update
-  update(): void {
-    this.modalService.set_modal({status: 'update', show: true, size: 'md'});
+  show_Modal(): void { 
+    this.set_FormGroup_Val();
+    this.ngbModal.open(this.modalForm, {backdropClass: 'light-blue-backdrop', size: 'sm', windowClass:'modal-holder'});
   }
 
+  update(): void {    
+    this.employeeService.update(this.fbGroup.value)
+    .subscribe(
+      {
+        next: (res: boolean) => {
+          if(res)
+          {            
+            const dateString: string = this.fb_Value['e_Date'].value.toString();
+            this.fbGroup.setControl('e_Date',this.fb.control(dateString));            
+            this.loginService.create_User_SessionStorage(this.fbGroup.value);
+            this.close();
+          }
+          else
+          {
+            this.alertService.set_Alert(32);
+          }
+        },
+        error: (err) => {          
+          this.alertService.set_Alert(33);
+        },
+        complete: () => {          
+          this.alertService.clear_Alert();
+          this.user = this.loginService.read_User_SessionStorage();          
+        }
+      }
+    )
+  }
 
-  // choose(item: Employee): void {
-  //   this.fbGroup.patchValue({
-  //     e_Id: item.e_Id,
-  //     e_Name: item.e_Name,
-  //     e_JobNumber: item.e_JobNumber,
-  //     e_Email: item.e_Email,
-  //     e_Lv: item.e_Lv
-  //   });
+  close(): void {
+    this.ngbModal.dismissAll();
+    this.alertService.clear_Alert();
+  }
 
-  //   // Set e_Date Value
-  //   this.set_FormArray_Val(item.e_Date); 
-  //   // Update Modal FormGroup
-  //   this.modalService.set_FormGroup(this.fbGroup);
-  // }
+  // FormGroup Reset
+  reset_FormGroup(status: string): void {     
+    if(status == 'update')
+    {
+      this.fb_Value['e_PassWord'].setValidators(null);
+      this.fb_Value['e_PassWord'].updateValueAndValidity();
+      this.fb_Value['e_ConfirmPassword'].setValidators(null);
+      this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
+    }
+    Reset_Validators(this.fbGroup);
+  }
 
   // Update FormArray Value
-  set_FormArray_Val(item: string = ''): void {  
-    const dataArray: Array<string> = item.split(',');
+  set_FormGroup_Val(): void { 
+    // User SessionStorage         
+    const user:Employee = this.loginService.read_User_SessionStorage();
+    // Reset FormGroup
+    this.fbGroup.patchValue({
+      e_Id: user.e_Id,
+      e_Name: user.e_Name,
+      e_Email: user.e_Email,
+      e_PassWord: user.e_PassWord
+    });
+    // Disabled
+    const isDisabled: boolean = this.user.e_Lv == 3 ? false : true;
+    // e_Lv
+    const lv_validators: Validators = this.fb_Value['e_Lv'].validator;      
+    this.fbGroup.setControl('e_Lv', this.fb.control({value: user.e_Lv, disabled: isDisabled},lv_validators));
+    // e_JobNumber
+    const job_validators: Validators = this.fb_Value['e_JobNumber'].validator;      
+    this.fbGroup.setControl('e_JobNumber', this.fb.control({value: user.e_JobNumber, disabled: isDisabled},job_validators));
+    // Date Value
+    const dataArray: Array<string> = user.e_Date.split(',');
         
     if(dataArray.length == 4)
     {
-      const validators: Validators = this.fb_Value['e_Date'].get('0').validator;      
-      const isDisabled: boolean = (this.user.lv == 3 && this.fb_Value_Index[0]) ?  false : true;
-      this.fb_Value['e_Date'].get('0').reset({value: dataArray[0], disabled: isDisabled},validators);
-      this.fb_Value['e_Date'].get('1').reset({value: dataArray[1], disabled: isDisabled},validators);
-      this.fb_Value['e_Date'].get('2').reset(dataArray[2],validators);
-      this.fb_Value['e_Date'].get('3').reset(dataArray[3],validators);
-    }
-  }
+      const date_validators: Validators = this.fb_Value['e_Date'].get('0').validator;      
 
-  // Reset FormArray Value
-  reset_FormArray_Val(): void {  
-    const today: string = new Date().toISOString().slice(0, 10);
-    const validators: Validators = this.fb_Value['e_Date'].get('0').validator;    
-    this.fbGroup.setControl('e_Date', this.fb.array([
-      this.fb.control(today, validators),
-      this.fb.control(today, validators),
-      this.fb.control('0', validators),
-      this.fb.control('0', validators)
-    ]));
+      this.fbGroup.setControl('e_Date', this.fb.array([
+        this.fb.control({value: dataArray[0], disabled: isDisabled},date_validators),
+        this.fb.control({value: dataArray[1], disabled: isDisabled},date_validators),
+        this.fb.control({value: dataArray[2], disabled: isDisabled},date_validators),
+        this.fb.control({value: dataArray[3], disabled: isDisabled},date_validators),
+      ]));   
+    }    
   }
 
   // DateTimePick Value Chekc
@@ -280,13 +304,12 @@ export class SidebarComponent implements OnInit {
   }
 
   // DataTime Minutes Count
-  dateTime_Count(data: Array<string>): Array<string> {           
+  dateTime_Count(data: Array<string>): Array<string> {
       const start: any    = new Date(data[0]);
       const end: any      = new Date(data[1]);
       const total: number = Math.abs(end-start);      
       const year: number  = total / (1000 * 3600 * 24 * 365);
       const month: number = year * 10;
-      // const day: string   = (total / (1000 * 3600 * 24)).toString(); // milliseconds * (secs * mins) * hours       
       data[2] = year.toString().split('.')[0];
       data[3] = month.toFixed();      
       return data;

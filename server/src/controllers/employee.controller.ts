@@ -133,10 +133,29 @@ class EmployeeController
 
     public async update(req: Request, res: Response): Promise<void>
     {
-        const data: Employee = req.body;        
-        // const sql: string = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}',e_Email = '${data.e_Email}',e_Lv = '${data.e_Lv}' WHERE e_Id = '${data.e_Id}' AND e_JobNumber <> '${data.e_JobNumber}'`;
+        const data: Employee = req.body;
+        
+        let str: string = '';
+
+        for(const [key, value] of Object.entries(data))
+        {
+            if(value.length)
+            {
+                if(key == 'e_PassWord')
+                {
+                    str += `${key}='${md5_PassWord(value)}',`;
+                }
+                else
+                {
+                    str += `${key}='${value}',`;
+                }
+            }
+        }
+
+        str = str.replace(/,$/, ' ');        
+        
         // return con.query('UPDATE employee SET ? WHERE e_Id = ?', [data, data.e_Id])
-        const sql: string = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}', e_Email = '${data.e_Email}', e_Date = '${data.e_Date}', e_Lv = '${data.e_Lv}' `+
+        const sql: string = `UPDATE employee SET ${str}`+
                             `WHERE e_Id = ${data.e_Id} AND NOT EXISTS (SELECT * FROM (SELECT 1 FROM employee WHERE e_JobNumber = '${data.e_JobNumber}' AND e_Id <> '${data.e_Id}') temp);`;
         await pool.then(con => {
             return con.query(sql).then((result: any) => {

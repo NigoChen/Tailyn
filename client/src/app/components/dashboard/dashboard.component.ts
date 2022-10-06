@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { User } from 'src/app/interfaces/user';
+import { Employee } from 'src/app/interfaces/employee';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
 import { ModalService } from 'src/app/services/modal.service';
@@ -34,7 +34,7 @@ export class DashboardComponent implements OnInit {
 
   onActivate(event: any){ // 參數
 
-    let user_Session: User | null = this.loginService.read_User_SessionStorage();
+    let user_Session: Employee | null = this.loginService.read_User_SessionStorage();
 
     if(user_Session)
     {

@@ -4,7 +4,6 @@ import { WorkHours } from 'src/app/interfaces/work-hours';
 import { LoadingService } from 'src/app/services/loading.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
-import { User } from 'src/app/interfaces/user';
 import { LoginService } from 'src/app/services/login.service';
 import { AlertService } from 'src/app/services/alert.service';
 import { WorkHoursService } from 'src/app/services/work-hours.service';
@@ -15,6 +14,7 @@ import { Stand } from 'src/app/interfaces/stand';
 import { SplitePipe } from 'src/app/pipes/splite.pipe';
 import { DecimalPipe } from '@angular/common';
 import { Modal } from 'src/app/interfaces/modal';
+import { Employee } from 'src/app/interfaces/employee';
 
 @Component({
   selector: 'app-work',
@@ -29,7 +29,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
   public result_Data: WorkHours[];
   public result_List: WorkHours[];
   // User
-  public user: User;
+  public user: Employee;
   // FormGroup Object
   public form_Controls: object = {
     w_Id: [''],
@@ -37,10 +37,10 @@ export class WorkComponent implements OnInit, AfterViewInit {
     w_BMinute: ['', [Validators.maxLength(50)]],
     w_OMinute: ['', [Validators.maxLength(50)]],
     w_WorkOrder: new FormArray([new FormControl('', [Validators.required, Validators.maxLength(20)])]),
-    w_Model: new FormArray([new FormControl('', [Validators.required, Validators.maxLength(20)])]),
+    w_Model: new FormArray([new FormControl('', Validators.maxLength(20))]),
     w_Stand: new FormArray([new FormControl('', [Validators.required, Validators.maxLength(10)])]),
     w_Quantity: new FormArray([new FormControl(1, [Validators.required, Validators.maxLength(4)])]),
-    w_Remark: new FormArray([new FormControl('', [Validators.maxLength(40)])]),
+    w_Remark: new FormArray([new FormControl('', Validators.maxLength(40))]),
     w_Date: ['', [Validators.required, Validators.maxLength(20)]],
     w_BTotal: ['0', [Validators.required]],
     w_OTotal: ['0', [Validators.required]],
@@ -76,14 +76,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
     private calendar: NgbCalendar,
     private elementRef: ElementRef,
     private decimalPipe: DecimalPipe)
-    {
-      this.modalService.get_modal().subscribe((res: Modal) => this.reset_FormGroup(res.status));
-      this.modalService.get_Search().subscribe(res => this.search(res));
-      this.modalService.get_Create().subscribe(res => this.create(res));
-      this.modalService.get_Read().subscribe(res => this.read());
-      this.modalService.get_Update().subscribe(res => this.update(res));
-      this.modalService.get_Delete().subscribe(res => this.delete(res));
-    }
+    {}
 
   ngOnInit(): void {
     Reset_Validators(this.fbGroup);
@@ -91,13 +84,24 @@ export class WorkComponent implements OnInit, AfterViewInit {
     this.result_List = [];
     this.read();
     this.user_Profile();
-    this.standList$ = this.standService.read();       
+    this.standList$ = this.standService.read();     
+    this.modal_Service();  
   }
 
   ngAfterViewInit(): void {
     this.modalService.set_FormControls(this.form_Controls);
     this.modalService.set_FormGroup(this.fbGroup);
     this.modalService.set_Form(this.form_);
+  }
+
+  // Modal Service
+  modal_Service(): void {
+    this.modalService.get_modal().subscribe((res: Modal) => this.reset_FormGroup(res.status));
+    this.modalService.get_Search().subscribe(res => this.search(res));
+    this.modalService.get_Create().subscribe(res => this.create(res));
+    this.modalService.get_Read().subscribe(res => this.read());
+    this.modalService.get_Update().subscribe(res => this.update(res));
+    this.modalService.get_Delete().subscribe(res => this.delete(res));
   }
 
   // FormGroup Controls Value
@@ -123,22 +127,24 @@ export class WorkComponent implements OnInit, AfterViewInit {
     else if(this.fb_Value['w_WorkOrder'].value.length < 5)
     {
       (<FormArray>this.fb_Value['w_WorkOrder']).push(new FormControl('', [Validators.required, Validators.maxLength(20)]));
-      (<FormArray>this.fb_Value['w_Model']).push(new FormControl('', [Validators.required, Validators.maxLength(20)]));
+      (<FormArray>this.fb_Value['w_Model']).push(new FormControl('', Validators.maxLength(20)));
       (<FormArray>this.fb_Value['w_Stand']).push(new FormControl('40', [Validators.required, Validators.maxLength(10)]));
       (<FormArray>this.fb_Value['w_Quantity']).push(new FormControl(1, [Validators.required, Validators.maxLength(4)]));
-      (<FormArray>this.fb_Value['w_Remark']).push(new FormControl('', [Validators.required, Validators.maxLength(50)]));
+      (<FormArray>this.fb_Value['w_Remark']).push(new FormControl('ZZZ', Validators.maxLength(50)));
     }
     Reset_Validators(this.fbGroup, index);
+    
+    console.log(this.fbGroup.value);
+    
   }
 
   // FormGroup Reset
   reset_FormGroup(status: string): void {    
-
     if(status == 'create')
     {
       this.fbGroup.reset(
         {
-          w_JobNumber: this.user.jNumber,
+          w_JobNumber: this.user.e_JobNumber,
           w_BMinute: ',,,',
           w_OMinute: ',,,',
           w_BTotal: '0',
@@ -158,17 +164,11 @@ export class WorkComponent implements OnInit, AfterViewInit {
   // User Profile
   user_Profile(): void {
 
-    this.user = { jNumber: '', name: '', lv: 1 };
-
-    let user_Session: User | null = this.loginService.read_User_SessionStorage();
+    let user_Session: Employee | null = this.loginService.read_User_SessionStorage();
 
     if (user_Session)
     {      
         this.user = user_Session;
-    }
-    else
-    {
-      this.loginService.logout();
     }
   }
 
@@ -341,7 +341,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
     for(const name of array_Name)
     {      
       const formArray: FormArray = new FormArray([]);
-      const validators: Validators = this.fb_Value[name].get('0').validator;
+      const validators: Validators = this.fb_Value[name].get('0').validator;      
 
       for(const val of item[name].split(','))
       {      
@@ -368,9 +368,13 @@ export class WorkComponent implements OnInit, AfterViewInit {
         {
           this.fbGroup.setControl(key, this.fb.array([this.fb.control(1,validators)]));
         }
-        else
+        else if(key == 'w_WorkOrder')
         {
           this.fbGroup.setControl(key, this.fb.array([this.fb.control('',validators)]));
+        }
+        else
+        {
+          this.fbGroup.setControl(key, this.fb.array([this.fb.control('')]));
         }
       }
     });

@@ -1,8 +1,8 @@
 import { Injectable, TemplateRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Observable, Subject } from 'rxjs';
+import { Employee } from '../interfaces/employee';
 import { Modal } from '../interfaces/modal';
-import { User } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,7 @@ export class ModalService {
   private read: Subject<boolean>;
   private delete: Subject<number>;
   private search: Subject<string>;
-  private user_Profile: Subject<User>;
+  private user_Profile: Subject<Employee>;
 
   constructor() {
     this.modal = new Subject<Modal>();
@@ -30,7 +30,7 @@ export class ModalService {
     this.read = new Subject<boolean>();
     this.delete = new Subject<number>();
     this.search = new Subject<string>();
-    this.user_Profile = new Subject<User>();
+    this.user_Profile = new Subject<Employee>();
   }
 
   public get_modal(): Observable<Modal> {
@@ -122,12 +122,12 @@ export class ModalService {
   }
   
   // Get Read
-  public get_User_Profile(): Observable<User> {    
+  public get_User_Profile(): Observable<Employee> {    
     return this.user_Profile.asObservable();
   }
 
   // Set Read
-  public set_User_Profile(user: User): void {    
+  public set_User_Profile(user: Employee): void {    
     this.user_Profile.next(user);
   }
 }

@@ -4,7 +4,6 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Urls } from '../configs/url.config';
 import { Employee } from '../interfaces/employee';
-import { User } from '../interfaces/user';
 import { LoadingService } from './loading.service';
 
 @Injectable({
@@ -24,7 +23,7 @@ export class LoginService {
   }
 
   // Login
-  public login(user: object): Observable<boolean> {
+  public login(user: object): Observable<boolean> {    
     return this.http.post<Employee[]>(Urls.login.login, user)
       .pipe(map((res: Employee[]) => {
         if(res.length)
@@ -46,8 +45,8 @@ export class LoginService {
   // logout
   public logout(): void {
     this.loadingService.set_Dashboard_Loading(true);
-    this.delete_User_SessionStorage();
     this.delete_Time_SessionStorage();
+    this.delete_User_SessionStorage();
   }
 
   // Send Email For User
@@ -113,31 +112,25 @@ export class LoginService {
   }
   
   // Create User sessionStorage
-  public create_User_SessionStorage(employee: Employee): void {
-
-    const new_user: User = {
-      jNumber: employee.e_JobNumber,
-      name: employee.e_Name,
-      lv: employee.e_Lv
-    }    
-
-    const old_User: User | null = this.read_User_SessionStorage();
+  public create_User_SessionStorage(employee: Employee): void {    
+    const old_User: Employee | null = this.read_User_SessionStorage();
+    
+    delete employee.e_PassWord;
 
     if(old_User != null)
     {
-        if((old_User.name != new_user.name) || (old_User.lv != new_user.lv))
+        if((old_User.e_Name != employee.e_Name) || (old_User.e_Lv != employee.e_Lv))
         {
           setTimeout(() => {
             window.location.reload();
-          }, 1500);
+          }, 1200);
         }
     }
-    
-    sessionStorage.setItem('user', btoa(JSON.stringify(new_user)));
+    sessionStorage.setItem('user', btoa(JSON.stringify(employee)));
   }
 
   // Read User SessionStorage
-  public read_User_SessionStorage(): User | null {
+  public read_User_SessionStorage(): Employee | null {
     const user = sessionStorage.getItem('user');
     return user && JSON.parse(atob(user)); 
   }
@@ -147,7 +140,6 @@ export class LoginService {
     sessionStorage.removeItem('user');
     setTimeout(() => {
       window.location.reload();
-    }, 1500);
+    }, 1000);
   }
 }
-

@@ -105,10 +105,10 @@ export const InputValidators = (fbGroup: FormGroup, key: string = '', index: num
 			// 	fbArray.controls.forEach((c, i) => {
 
 				// Replace , value
-				const values: string = fbArray.controls[index].value.toString();
-				const dates: any = new Date(values);
-
-				if(!(dates instanceof Date))
+				const values: string = fbArray.controls[index].value.toString();				
+				const date_String: any = values.split('-');
+				
+				if(date_String.length > 1)
 				{
 					const replaceVal: string = values.replace(/[\-\_\,\][\!\|\~\`\(\)\#\@\%\-\+\=\/\'\$\%\^\&\*\{\}\:\;\"\L\<\>\?\\]/g, '');
 					fbArray.controls[index].patchValue(replaceVal);
@@ -125,10 +125,13 @@ export const InputValidators = (fbGroup: FormGroup, key: string = '', index: num
 					{
 						ErrorValidators[key][index] = '未輸入';
 					}
-	
-					if(errorKey.pattern)
+					else if(errorKey.pattern)
 					{
 						ErrorValidators[key][index] = '格式錯';
+					}
+					else
+					{
+						ErrorValidators[key][index] = '字過多';
 					}
 				}
 				// });		

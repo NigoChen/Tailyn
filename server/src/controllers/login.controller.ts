@@ -13,7 +13,7 @@ class LoginController
         
         data.passWord = md5_PassWord(data.passWord);
 
-        const sql: string = `SELECT e_JobNumber, e_Name, e_Lv FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}'`;
+        const sql: string = `SELECT e_Id, e_Name, e_Email, e_JobNumber, e_Lv, e_Date FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}' AND e_Lv > 0`;
 
         await pool.then(con => {
             return con.query(sql).then((result:Array<Object>) => {

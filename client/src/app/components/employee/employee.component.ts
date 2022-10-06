@@ -4,7 +4,6 @@ import { NgbRatingConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 import { Employee } from 'src/app/interfaces/employee';
 import { Modal } from 'src/app/interfaces/modal';
-import { User } from 'src/app/interfaces/user';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
 import { passwordMatchValidator } from 'src/app/methods/password-Match-Validator';
 import { AlertService } from 'src/app/services/alert.service';
@@ -26,17 +25,17 @@ export class EmployeeComponent implements OnInit {
   public result_Data: Employee[];
   public result_List: Employee[];
   // User
-  public user: User;
+  public user: Employee;
   // Form Controls
   public form_Controls: object = {
     e_Id: [''],
     e_Name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\u4e00-\u9fa5]{2,10}$/)]],
+    e_Email: ['', [Validators.required, Validators.maxLength(30), Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/)]],
     e_JobNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{3,5}$/)]],
     e_PassWord: ['', [Validators.required, Validators.pattern(/^[\d\W\a-zA-Z]{3,30}$/)]],
     e_ConfirmPassword: ['', [Validators.required]],
-    e_Email: ['', [Validators.required, Validators.maxLength(30), Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/)]],
-    e_Date: this.fb.array([this.fb.control('', Validators.required)]),
-    e_Lv: ['', [Validators.required, Validators.maxLength(1)]]
+    e_Lv: ['', [Validators.required, Validators.maxLength(1)]],
+    e_Date: this.fb.array([this.fb.control('', Validators.required)])
   }
   // e_ConfirmPassword: [
   //   '', 
@@ -82,21 +81,26 @@ export class EmployeeComponent implements OnInit {
       this.modalService.get_Read().subscribe(res => this.read());
       this.modalService.get_Update().subscribe(res => this.update(res));
       this.modalService.get_Delete().subscribe(res => this.delete(res));
-      this.modalService.get_User_Profile().subscribe((res: User) => this.user = res);
+      this.modalService.get_User_Profile().subscribe((res: Employee) => this.user = res);
     }
 
   ngOnInit(): void {
-    Reset_Validators(this.fbGroup);
-    this.reset_FormArray_Val();
     this.result_Data = [];
     this.result_List = [];
     this.read();
   }
 
   ngAfterViewInit(): void {
+    this.reset_Default_Form();    
+  }
+
+  // Reset Defalut Form
+  reset_Default_Form(): void {
+    Reset_Validators(this.fbGroup);
+    this.reset_FormArray_Val();
     this.modalService.set_FormControls(this.form_Controls);
     this.modalService.set_FormGroup(this.fbGroup);
-    this.modalService.set_Form(this.form_);            
+    this.modalService.set_Form(this.form_);
   }
   
   // FormGroup Controls Value
@@ -113,18 +117,24 @@ export class EmployeeComponent implements OnInit {
   reset_FormGroup(status: string): void {     
     if(status == 'create')
     {
-      this.fbGroup.reset(
-        {
-          e_Lv: '1'
-        }
-      );     
+      this.fbGroup.reset({
+          e_Lv: '1',
+          e_PassWord: '',
+          e_ConfirmPassword: ''
+      });
+      this.fb_Value['e_PassWord'].setValidators([Validators.required, Validators.pattern(/^[\d\W\a-zA-Z]{3,30}$/)]);
+      this.fb_Value['e_PassWord'].updateValueAndValidity();
+      this.fb_Value['e_ConfirmPassword'].setValidators([Validators.required, Validators.pattern(/^[\d\W\a-zA-Z]{3,30}$/)]);
+      this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
       // Reset FormArray
       this.reset_FormArray_Val();        
     }
     else
     {
-      this.fbGroup.get('e_PassWord').setValidators(null);
+      this.fb_Value['e_PassWord'].reset('');
+      this.fb_Value['e_PassWord'].setValidators(null);
       this.fb_Value['e_PassWord'].updateValueAndValidity();
+      this.fb_Value['e_ConfirmPassword'].reset('');
       this.fb_Value['e_ConfirmPassword'].setValidators(null);
       this.fb_Value['e_ConfirmPassword'].updateValueAndValidity();
     }
@@ -134,25 +144,17 @@ export class EmployeeComponent implements OnInit {
   // User Profile
   user_Profile(employee: Employee[]): void {
 
-    let user_Session: User | null = this.loginService.read_User_SessionStorage();
+    let user_Session: Employee | null = this.loginService.read_User_SessionStorage();
     
     if(user_Session)
     {
-      const userData = employee.find((item: Employee, index: number) => item.e_JobNumber === user_Session!.jNumber);      
+      const userData = employee.find((item: Employee, index: number) => item.e_JobNumber === user_Session!.e_JobNumber);      
 
       if(userData != undefined)
       {  
         this.loginService.create_User_SessionStorage(userData);
         
-        this.modalService.set_User_Profile({
-          jNumber: userData.e_JobNumber,
-          name: userData.e_Name,
-          lv: userData.e_Lv
-        });   
-      }
-      else
-      {
-        this.loginService.logout();
+        this.modalService.set_User_Profile(userData);   
       }
     }
   }
@@ -177,6 +179,7 @@ export class EmployeeComponent implements OnInit {
           this.alertService.set_Alert(23);
         },
         complete: () => {
+          
         }
       }
     );
@@ -253,7 +256,7 @@ export class EmployeeComponent implements OnInit {
   }
 
   // Update
-  update(fg: FormGroup): void {
+  update(fg: FormGroup): void { 
     this.employeeService.update(fg.value)
     .subscribe(
       {
@@ -272,7 +275,7 @@ export class EmployeeComponent implements OnInit {
           this.alertService.set_Alert(33);
         },
         complete: () => {
-          // this.stateView.next({loading: false, error: false});
+          // this.reset_Default_Form();
         }
       }
     )
@@ -308,11 +311,17 @@ export class EmployeeComponent implements OnInit {
     this.fbGroup.patchValue({
       e_Id: item.e_Id,
       e_Name: item.e_Name,
-      e_JobNumber: item.e_JobNumber,
       e_Email: item.e_Email,
-      e_Lv: item.e_Lv
+      e_JobNumber: item.e_JobNumber
     });
-
+    // Disabled
+    const isDisabled: boolean = this.user.e_Lv == 3 ? false : true;
+    // e_Lv
+    const lv_validators: Validators = this.fb_Value['e_Lv'].validator;      
+    this.fbGroup.setControl('e_Lv', this.fb.control({value: item.e_Lv, disabled: isDisabled},lv_validators));
+    // e_JobNumber
+    // const job_validators: Validators = this.fb_Value['e_JobNumber'].validator;      
+    // this.fbGroup.setControl('e_JobNumber', this.fb.control({value: item.e_JobNumber, disabled: isDisabled},job_validators));
     // Set e_Date Value
     this.set_FormArray_Val(item.e_Date); 
     // Update Modal FormGroup
@@ -330,7 +339,7 @@ export class EmployeeComponent implements OnInit {
     if(dataArray.length == 4)
     {
       const validators: Validators = this.fb_Value['e_Date'].get('0').validator;      
-      const isDisabled: boolean = (this.user.lv == 3 && this.fb_Value_Index[0]) ?  false : true;
+      const isDisabled: boolean = this.user.e_Lv == 3 ? false : true;
       this.fb_Value['e_Date'].get('0').reset({value: dataArray[0], disabled: isDisabled},validators);
       this.fb_Value['e_Date'].get('1').reset({value: dataArray[1], disabled: isDisabled},validators);
       this.fb_Value['e_Date'].get('2').reset(dataArray[2],validators);

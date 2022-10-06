@@ -2,7 +2,7 @@ import { ComponentFactoryResolver, Injectable, ViewChild } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { AlertComponent } from '../components/alert/alert.component';
 import { AlertsDirective } from '../directives/alerts.directive';
-import { Alert } from '../interfaces/alert';
+import { Alerts } from '../interfaces/alerts';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +10,18 @@ import { Alert } from '../interfaces/alert';
 export class AlertService {
 
   // @ViewChild(AlertsDirective) alerts: AlertsDirective;
-  private alerts: Subject<Alert>
+  private alerts: Subject<Alerts>;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) {
-    this.alerts = new Subject<Alert>();
+    this.alerts = new Subject<Alerts>();
   }
 
   // Get Alert
-  public get_Alert(): Observable<Alert> {    
+  public get_Alert(): Observable<Alerts> {     
+    this.alerts.next({
+      status: false,
+      type: 'danger',
+      message: '...'});    
     return this.alerts.asObservable();
   }
 

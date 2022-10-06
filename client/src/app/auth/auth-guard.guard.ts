@@ -12,10 +12,10 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot): boolean {      
 
     const user = this.loginService.read_User_SessionStorage();
-            
+              
     if(user != null)
-    {
-      if(Object.keys(user).length === 3)
+    {      
+      if(Object.keys(user).length === 6)
       { 
         this.router.navigate(['/Tailyn']);
         return false;
@@ -23,5 +23,4 @@ export class AuthGuard implements CanActivate {
     }
     return true;
   }
-  
 }

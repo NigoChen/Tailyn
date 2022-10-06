@@ -21,7 +21,7 @@ class LoginController {
         return __awaiter(this, void 0, void 0, function* () {
             const data = req.body;
             data.passWord = md5_PassWord(data.passWord);
-            const sql = `SELECT e_JobNumber, e_Name, e_Lv FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}'`;
+            const sql = `SELECT e_Id, e_Name, e_Email, e_JobNumber, e_Lv, e_Date FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}' AND e_Lv > 0`;
             yield database_1.default.then(con => {
                 return con.query(sql).then((result) => {
                     if (result.length > 0) {

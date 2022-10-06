@@ -2,7 +2,7 @@ import { Component, ComponentFactoryResolver, ElementRef, EventEmitter, Input, O
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { AlertsDirective } from 'src/app/directives/alerts.directive';
-import { Alert } from 'src/app/interfaces/alert';
+import { Alerts } from 'src/app/interfaces/alerts';
 import { Modal } from 'src/app/interfaces/modal';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
 import { AlertService } from 'src/app/services/alert.service';
@@ -17,12 +17,11 @@ import { ModalService } from 'src/app/services/modal.service';
   styleUrls: ['./modal.component.scss']
 })
 export class ModalComponent {
-
   public form: TemplateRef<any>;
   public fbGroup: FormGroup;
   public errorValidators: object = ErrorValidators;
-  public alerts: Alert;
-
+  public alerts: Alerts;
+  private undo_FbGroup: FormGroup;
   // Modal 
   @ViewChild('modalForm') public modalForm: ElementRef<HTMLInputElement>;
   @ViewChild('modalSM') public modalSM: ElementRef<HTMLInputElement>;
@@ -42,12 +41,6 @@ export class ModalComponent {
     {
       config.backdrop = 'static';
       config.keyboard = false;
-
-      this.alerts = {
-          status: false,
-          type: 'danger',
-          message: '...'
-      }
     }
 
   ngOnInit(): void {
@@ -55,7 +48,7 @@ export class ModalComponent {
       if(res.show)
       {
         if(res.status != 'delete')
-        {
+        {          
           this.ngbModal.open(this.modalForm, {backdropClass: 'light-blue-backdrop', size: res.size, windowClass:'modal-holder'});
         }
         else
@@ -142,6 +135,7 @@ export class ModalComponent {
     this.close();
   }
 
+  // Save
   save(): void {
     if(this.fbGroup.valid && this.fb_Value_Index[0])
     {      

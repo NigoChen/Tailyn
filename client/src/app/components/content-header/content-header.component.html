@@ -15,11 +15,11 @@
       </div>
     </div>
     <!-- /Search Btn -->
-    
+
     <!-- Crud Btns -->
     <ng-container *ngIf="fbGroup != null">
       <div class="col-md-5 col-sm-12 d-flex justify-content-between">
-        <ng-container *ngIf="user.lv > 1">
+        <ng-container *ngIf="user.e_Lv > 1">
           <div class="col text-center">
             <button type="button" class="btn btn-outline-info btn-sm" (click)="create()">新增</button>
           </div>
@@ -27,11 +27,11 @@
         <ng-container *ngIf="check_Value">
           <div class="col text-center">
             <button type="button" class="btn btn-outline-warning btn-sm" (click)="update()"
-              [disabled]="user.lv < 2 || false">更新</button>
+              [disabled]="user.e_Lv < 2 || false">更新</button>
           </div>
           <div class="col text-center">
             <button type="button" class="btn btn-outline-danger btn-sm" (click)="delete()"
-              [disabled]="user.lv < 2 || false">刪除</button>
+              [disabled]="user.e_Lv < 2 || false">刪除</button>
           </div>
         </ng-container>
       </div>

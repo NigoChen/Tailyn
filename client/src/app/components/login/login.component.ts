@@ -13,19 +13,14 @@ import { AlertComponent } from '../alert/alert.component';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-
   // counter
   public iscounter?: Subscription | null;
-  
   // progressbar View
   public progressbar_View: boolean = false;
-
   // progressbar Type
   public progressbar_Type: string = 'secondary';
-
   // progressbar Value
   public progressbar_Value: number = 25;
-
   // FormGroup
   public fbGroup: FormGroup = this.fb.group({
     jNumber: [null, [Validators.required]],
@@ -59,7 +54,6 @@ export class LoginComponent implements OnInit {
     ip: '',
     counter: 0
   };
-
 
   @ViewChild(AlertsDirective) alerts: AlertsDirective;
 
@@ -232,11 +226,11 @@ export class LoginComponent implements OnInit {
   // Login
   login(): void {
 
-    const alertComponent = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
-    this.alerts.viewContainerRef.clear();
-    const componentRef = this.alerts.viewContainerRef.createComponent(alertComponent);
-    componentRef.instance.messages = 'Nigo Chen';    
-    componentRef.instance.status =  true;    
+    // const alertComponent = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
+    // this.alerts.viewContainerRef.clear();
+    // const componentRef = this.alerts.viewContainerRef.createComponent(alertComponent);
+    // componentRef.instance.messages = 'Nigo Chen';    
+    // componentRef.instance.status =  true;    
 
     this.loginService.login(this.fbGroup.value).subscribe(
       {
@@ -268,7 +262,6 @@ export class LoginComponent implements OnInit {
 
   // New PassWord
   new_PassWord(): void {    
-    
     this.loginService.update(this.fbGroup.value).subscribe(
       {
         next: (res: boolean) => {                     
@@ -338,5 +331,10 @@ export class LoginComponent implements OnInit {
     {      
       this.login();
     }
+  }
+
+  // Destroy
+  ngOnDestroy(): void {
+    this.iscounter.unsubscribe();
   }
 }

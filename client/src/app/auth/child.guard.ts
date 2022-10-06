@@ -19,9 +19,14 @@ export class ChildGuard implements CanActivateChild {
 
     const user = this.loginService.read_User_SessionStorage();    
     
-    if((user == null) || (Object.keys(user).length < 3))
+    if((user == null) || (Object.keys(user).length < 5))
     {
       this.router.navigate(['/Login']);
+      return false;
+    }
+    else if(user.e_Lv == 0)
+    {
+      this.loginService.logout();
       return false;
     }
 

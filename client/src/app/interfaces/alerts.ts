@@ -1,4 +1,4 @@
-export interface Alert {
+export interface Alerts {
     status: boolean;
     type: string;
     message: string;

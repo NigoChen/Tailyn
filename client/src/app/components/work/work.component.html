@@ -21,7 +21,7 @@
       </tr>
     </thead>
     <tbody *ngFor="let item of result_List; let i = index"
-      [ngClass]="{'table-selected': item?.w_Id == fb_Value_Index[0]}" (click)="user.lv > 1 && choose(item)">
+      [ngClass]="{'table-selected': item?.w_Id == fb_Value_Index[0]}" (click)="user.e_Lv > 1 && choose(item)">
       <tr align="center" *ngFor="let val of item.w_WorkOrder.split(','); let y = index">
         <td *ngIf="!y" [attr.rowspan]="y" class="table-middle">
           <span *ngIf="!y">
@@ -87,7 +87,7 @@
         <div class="input-group-prepend">
           <span class="input-group-text p-1">姓名</span>
         </div>
-        <input type="text" class="form-control form-control-sm text-center" [value]="user.name" readonly>
+        <input type="text" class="form-control form-control-sm text-center" [value]="user.e_Name" readonly>
       </div>
       <!-- Date -->
       <div class="input-group input-group-sm col">

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { User } from 'src/app/interfaces/user';
+import { Employee } from 'src/app/interfaces/employee';
 import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { ModalService } from 'src/app/services/modal.service';
 })
 export class ContentHeaderComponent implements OnInit {
   // User
-  public user: User;
+  public user: Employee;
   // FormGroup
   public fbGroup: FormGroup;
   // Input Search Text 
@@ -26,7 +26,7 @@ export class ContentHeaderComponent implements OnInit {
   constructor(
     private modalService: ModalService
     ){
-      this.modalService.get_User_Profile().subscribe((res: User) => this.user = res);
+      this.modalService.get_User_Profile().subscribe((res: Employee) => this.user = res);
       this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res); 
     }
 
@@ -83,7 +83,7 @@ export class ContentHeaderComponent implements OnInit {
       {
         if(val != null)
         {          
-          if(val != '' && (val == this.user.jNumber) || this.user.lv == 3)
+          if(val != '' && (val == this.user.e_JobNumber) || this.user.e_Lv == 3)
           {
             return true;
           }
