@@ -8,8 +8,11 @@ import { LoginService } from '../services/login.service';
 
 export class ChildGuard implements CanActivateChild {
 
-  constructor(private loginService: LoginService, private loadingService: LoadingService, private router: Router) {
-  }
+  constructor(
+    private loginService: LoginService, 
+    private loadingService: LoadingService, 
+    private router: Router
+    ) {}
 
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,

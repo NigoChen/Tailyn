@@ -132,10 +132,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
       (<FormArray>this.fb_Value['w_Quantity']).push(new FormControl(1, [Validators.required, Validators.maxLength(4)]));
       (<FormArray>this.fb_Value['w_Remark']).push(new FormControl('ZZZ', Validators.maxLength(50)));
     }
-    Reset_Validators(this.fbGroup, index);
-    
-    console.log(this.fbGroup.value);
-    
+    Reset_Validators(this.fbGroup, index);    
   }
 
   // FormGroup Reset
@@ -383,7 +380,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
   // DateTimePick Value Chekc
   onValue_Check(id: string, index: number): string {
     let values: string = this.fb_Value[id].value;
-    return values.length > 18 ? values.split(',')[index] : '';
+    return values.length > 15 ? values.split(',')[index] : '';
   }
 
   // DateTimePick Value
@@ -391,40 +388,35 @@ export class WorkComponent implements OnInit, AfterViewInit {
 
     let values: any = '';
 
-    if(this.fb_Value_Index[0])
-    {      
-      switch (id)
+    switch (id)
+    {
+      case 'SbMinute':    
+        values = this.onValue_Check('w_BMinute', 0);        
+        break;
+      case 'EbMinute':
+        values = this.onValue_Check('w_BMinute', 1);
+        break;
+      case 'SoMinute':
+        values = this.onValue_Check('w_OMinute', 0);
+        break;
+      case 'EoMinute':
+        values = this.onValue_Check('w_OMinute', 1);
+        break;
+    }
+
+    // Create Form Default Value
+    if(!this.fb_Value_Index[0] && !values.length)
+    {
+      if(id == 'SbMinute' || id == 'SoMinute')
       {
-        case 'SbMinute':    
-          values = this.onValue_Check('w_BMinute', 0);        
-          break;
-        case 'EbMinute':
-          values = this.onValue_Check('w_BMinute', 1);
-          break;
-        case 'SoMinute':
-          values = this.onValue_Check('w_OMinute', 0);
-          break;
-        case 'EoMinute':
-          values = this.onValue_Check('w_OMinute', 1);
-          break;
+        const today: string = this.dateTime.slice(0, 11)+'08:00';
+        values = this.datetim_Replace(today);        
+        this.onDate_Check('w_BMinute', values, 0);
+        this.onDate_Check('w_OMinute', values, 0);
       }
     }
-    else if(id == 'SbMinute' || id == 'SoMinute')
-    {
-      // Default DateTime
-      const today: string = this.dateTime.slice(0, 11)+'08:00';
-      values = this.datetim_Replace(today);
-      this.onDate_Check('w_BMinute', values, 0);
-      this.onDate_Check('w_OMinute', values, 0);
-    }
 
-    if(values.length == 19)
-    {
-      values = values.replace(' ', 'T');
-      // substring skip second value
-      return values.substring(0, 16);
-    }
-
+    values = values.replace(' ', 'T');
     return values;
   }
 
@@ -432,18 +424,19 @@ export class WorkComponent implements OnInit, AfterViewInit {
   datetim_Replace(value: string): string {
     const timestamp = value.replace('T', ' ');
     let datetime = timestamp.replace('/','-');
-    return value ? `${datetime}:00`: '';
+    return value ? `${datetime}`: '';
   }
 
   // Check VALUE
   onDate_Check(name: string, value: string, index: number): void {    
     
     let choose_Value: Array<string> = this.fb_Value[name].value.split(','); 
+
     choose_Value[index] = '';
     choose_Value[2] = '0';
-
+    
     if(value.length)
-    {
+    {            
       // Date Index
       choose_Value[index] = value;
       // Total minutes for array index 2
@@ -464,9 +457,8 @@ export class WorkComponent implements OnInit, AfterViewInit {
     
     this.fb_Value[minutes].patchValue(choose_Value[2]);
     choose_Value[3] = this.fb_Value[deduct].value;
-
     // Update FormGroup Controls Value
-    this.fb_Value[name].patchValue(choose_Value.toString());
+    this.fb_Value[name].patchValue(choose_Value.toString());    
   }
 
   // DateTimePick Event
@@ -476,7 +468,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
     // day2.getTime()-day1.getTime();
     // now.setHours(0,0,0,0);    
     const value = this.datetim_Replace(event.value);
-
+    
     switch (id)
     {
       case 'SbMinute':
@@ -485,14 +477,13 @@ export class WorkComponent implements OnInit, AfterViewInit {
       case 'EbMinute':
         this.onDate_Check('w_BMinute', value, 1);
         break;
-      case 'SoMinute':
+      case 'SoMinute':        
         this.onDate_Check('w_OMinute', value, 0);        
         break;
       case 'EoMinute':
         this.onDate_Check('w_OMinute', value, 1);
         break;
       case 'w_Date':
-
         if(value.length)
         {
           this.fb_Value[id].patchValue(event.value);
@@ -509,8 +500,8 @@ export class WorkComponent implements OnInit, AfterViewInit {
   dateTime_Count(dateTime_Total: Array<string>, name: string): string {
 
     let result: string = '0';
-
-    if(dateTime_Total.toString().length > 42)
+  
+    if(dateTime_Total.toString().length > 36)
     {            
       const start: any = new Date(dateTime_Total[0]);
       const end: any = new Date(dateTime_Total[1]);
@@ -520,10 +511,8 @@ export class WorkComponent implements OnInit, AfterViewInit {
       let minutes: number = Math.floor(hours * 60);      
       
       minutes = (name == 'w_BMinute') ? (minutes - this.fb_Value['w_BDeduct'].value) : (minutes - this.fb_Value['w_ODeduct'].value);
-
       result =  (start.getTime() > end.getTime()) ? `-${minutes}` : `${minutes}`;
     }
-
     return result;
   }
   
@@ -570,7 +559,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
 
   // mouse click 
   @HostListener('mouseup', ['$event']) onClick($event) {
-    this.reset_FormGroup('close');
+    // this.reset_FormGroup('close');
 
     // this.modalService.set_modalMDForm(['hide', 'create']);
 

@@ -320,8 +320,8 @@ export class EmployeeComponent implements OnInit {
     const lv_validators: Validators = this.fb_Value['e_Lv'].validator;      
     this.fbGroup.setControl('e_Lv', this.fb.control({value: item.e_Lv, disabled: isDisabled},lv_validators));
     // e_JobNumber
-    // const job_validators: Validators = this.fb_Value['e_JobNumber'].validator;      
-    // this.fbGroup.setControl('e_JobNumber', this.fb.control({value: item.e_JobNumber, disabled: isDisabled},job_validators));
+    const job_validators: Validators = this.fb_Value['e_JobNumber'].validator;      
+    this.fbGroup.setControl('e_JobNumber', this.fb.control({value: item.e_JobNumber, disabled: isDisabled},job_validators));
     // Set e_Date Value
     this.set_FormArray_Val(item.e_Date); 
     // Update Modal FormGroup
@@ -458,10 +458,9 @@ export class EmployeeComponent implements OnInit {
 
   // mouse click 
   @HostListener('mouseup', ['$event']) onClick($event) {
-
-    if(this.fb_Value_Index[0])
-    {
+    // if(this.fb_Value_Index[0])
+    // {
       // this.reset_FormGroup(['hide', 'create']);    
-    }
+    // }
   }
 }

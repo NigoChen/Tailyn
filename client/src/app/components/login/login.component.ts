@@ -5,7 +5,6 @@ import { Subscription, timer } from 'rxjs';
 import { AlertsDirective } from 'src/app/directives/alerts.directive';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
-import { AlertComponent } from '../alert/alert.component';
 
 @Component({
   selector: 'app-login',
@@ -170,7 +169,6 @@ export class LoginComponent implements OnInit {
 
   // counter
   counter(): void {
-
     this.status.counter = this.loginService.read_Time_SessionStorage();     
 
     if(this.status.counter)

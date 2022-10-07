@@ -104,13 +104,12 @@ export const InputValidators = (fbGroup: FormGroup, key: string = '', index: num
 			// {				
 			// 	fbArray.controls.forEach((c, i) => {
 
-				// Replace , value
-				const values: string = fbArray.controls[index].value.toString();				
-				const date_String: any = values.split('-');
+				// value
+				const values: string = fbArray.controls[index].value.toString();								
 				
-				if(date_String.length > 1)
+				if(key != 'e_Date')
 				{
-					const replaceVal: string = values.replace(/[\-\_\,\][\!\|\~\`\(\)\#\@\%\-\+\=\/\'\$\%\^\&\*\{\}\:\;\"\L\<\>\?\\]/g, '');
+					const replaceVal: string = values.replace(/[\,\][\!\|\~\`\(\)\#\@\%\+\=\/\'\$\%\^\&\*\{\}\:\;\"\L\<\>\?\\]/g, '');
 					fbArray.controls[index].patchValue(replaceVal);
 				}				
 

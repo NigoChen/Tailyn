@@ -18,7 +18,6 @@
         <th scope="col">年資</th>
       </tr>
     </thead>
-    <tbody>
     <tbody *ngFor="let item of result_List; let i = index"
       [ngClass]="{'table-selected': item?.e_Id == fb_Value_Index[0]}" (click)="choose(item)">
       <!-- <tr *ngFor="let item of result_Async$ | async; index as i" [ngClass]="{'text-light bg-dark': item?.e_Id == fb_Value['e_Id'].value}" (click)="choose(item)"> -->
@@ -119,7 +118,7 @@
               <span class="input-group-text"
                 (click)="e_ConfirmPassword_Type.type == 'text' ? e_ConfirmPassword_Type.type = 'password': e_ConfirmPassword_Type.type = 'text'">
                 <i
-                  [ngClass]="{'bi bi-eye-slash-fill': e_ConfirmPassword_Type.type != 'password', 'bi bi-eye-fill': e_ConfirmPassword_Type.type == 'password', 'text-danger': errorValidators['e_ConfirmPassword'].length}"></i>
+                  [ngClass]="{'bi bi-eye-slash-fill': e_ConfirmPassword_Type.type == 'password', 'bi bi-eye-fill': e_ConfirmPassword_Type.type == 'password', 'text-danger': errorValidators['e_ConfirmPassword'].length}"></i>
               </span>
             </div>
           </div>
