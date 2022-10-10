@@ -1,4 +1,5 @@
-import { Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { NavigationEnd, Router, Event } from '@angular/router';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
@@ -8,22 +9,27 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 })
 export class HeaderComponent implements OnInit {
   
-  public sideBar_Value: boolean = false;
-  public navbarCollapsed: boolean = false;
   public sideBar_Show: boolean = false;
+  // @ViewChild(SidebarComponent, { static: false }) siderbar: SidebarComponent;
 
-  constructor() {}
+  constructor(private router: Router) {}
 
-  ngOnInit(): void {}
-
-  siedeBar_Controller(): void {
-    this.sideBar_Value =! this.sideBar_Value;
+  ngOnInit(): void { 
+    this.router.events.subscribe((event: Event) => {      
+      if (event instanceof NavigationEnd)
+      {        
+        this.sideBar_Show = false;
+      }
+    }); 
   }
 
   @HostListener('window:resize', ['$event'])
     onResize(event) {
       const w = document.documentElement.clientWidth;
       const h = document.documentElement.clientHeight;      
+
+      // (this.siderbar['elementRef'].nativeElement as HTMLElement).style.display = 'none';
+        // this.siderbar['elementRef'].nativeElement.style.transition = 'none';
 
       if(this.sideBar_Show && (w > 767))
       {

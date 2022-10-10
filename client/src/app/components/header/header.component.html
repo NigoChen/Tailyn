@@ -6,5 +6,5 @@
     <div class="menu-btn-burger"></div>
   </div>
   <!-- SideBar -->
-  <app-sidebar [ngClass]="{'show-sidebar': !sideBar_Show}"></app-sidebar>
+  <app-sidebar [ngClass]="{'show-sidebar': !sideBar_Show}" [ngStyle]="{'transition': sideBar_Show ? 'all 0.5s linear' : 'none'}"></app-sidebar>
 </nav>

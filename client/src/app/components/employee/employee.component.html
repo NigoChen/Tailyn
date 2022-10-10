@@ -4,45 +4,50 @@
 </div>
 <!-- /Form -->
 
-<!-- Table -->
-<div class="table-responsive table-scrollbar">
-  <table class="table table-bordered table-sm table-hover">
-    <!-- <table class="table table-striped"> -->
-    <thead class="thead-dark">
-      <tr align="center">
-        <th scope="col">#</th>
-        <th scope="col">姓名</th>
-        <th scope="col">信箱</th>
-        <th scope="col">工號</th>
-        <th scope="col">權限</th>
-        <th scope="col">年資</th>
-      </tr>
-    </thead>
-    <tbody *ngFor="let item of result_List; let i = index"
-      [ngClass]="{'table-selected': item?.e_Id == fb_Value_Index[0]}" (click)="choose(item)">
-      <!-- <tr *ngFor="let item of result_Async$ | async; index as i" [ngClass]="{'text-light bg-dark': item?.e_Id == fb_Value['e_Id'].value}" (click)="choose(item)"> -->
-      <tr>
-        <td [class.suspension]="item.e_Lv == '0'">{{ i+1 }}</td>
-        <td>{{ item.e_Name }}</td>
-        <td>{{ item.e_Email }}</td>
-        <td>{{ item.e_JobNumber }}</td>
-        <td>
-          <ngb-rating [rate]="item.e_Lv" readonly="true" class="h6"></ngb-rating>
-        </td>
-        <td>
-          <span>
-            {{ item.e_Date | splite:2 }}年
-          </span>
+<!-- /Grid Table -->
+<div class="grid-container">
+  <div class="grid-header">
+    <div>#</div>
+    <div>姓名</div>
+    <div>信箱</div>
+    <div>工號</div>
+    <div>權限</div>
+    <div>年資</div>
+  </div>
+  <div class="grid-body">
+    <!-- <tr *ngFor="let item of result_Async$ | async; index as i" [ngClass]="{'text-light bg-dark': item?.e_Id == fb_Value['e_Id'].value}" (click)="choose(item)"> -->
+    <div class="grid-content" *ngFor="let item of result_List; let i = index" (click)="user.e_Lv > 1 && choose(item)"
+      [ngClass]="{'grid-selected': item?.e_Id == fb_Value_Index[0]}">
+      <div>{{i+1}}</div>
+      <div [class.suspension]="item.e_Lv==0">
+        <span>
+          {{ item.e_Name }}
+        </span>
+      </div>
+      <div>
+        <span>
+          {{ item.e_Email }}
+        </span>
+      </div>
+      <div>
+        <span>
+          {{ item.e_JobNumber }}
+        </span>
+      </div>
+      <div>
+        <ngb-rating [rate]="item.e_Lv" readonly="true" class="h6"></ngb-rating>
+      </div>
+      <div>
+        <span>
+          {{ item.e_Date | splite:2 }}年
           /
-          <span>
-            {{ item.e_Date | splite:3 }}月
-          </span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          {{ item.e_Date | splite:3 }}月
+        </span>
+      </div>
+    </div>
+  </div>
 </div>
-<!-- /Table -->
+<!-- /Grid Table -->
 
 <!-- Pagination -->
 <div class="d-flex justify-content-center pagination pagination-sm mt-2">
