@@ -1,0 +1,49 @@
+/*** @media only screen ***/
+@media (max-width: 575.99px)
+{
+  /*** table ***/
+  table
+  {
+    position: relative;
+    display: inline-flex;
+    // flex-direction: row;
+    font-size: .8rem; // 10px
+  }
+  /*** Table Selected ***/
+  tbody.table-selected tr,
+  tbody.table-selected td
+  {
+    border: 1px solid var(--dark-color) !important;
+  }
+  table thead tr
+  {
+    position: fixed;
+    z-index: 99;
+    left: 0;
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    width: 40px !important; 
+  }
+  table tbody tr td
+  {
+    display: flex;
+    flex-direction: row;
+    margin: 4px 2px 4px 2px;
+  }
+  table tbody:nth-child(2)
+  {
+    margin-left: 30px;
+  }
+  /*** Table Suspension Style ***/
+  table td.suspension::before 
+  {
+    left: -210px;
+    transform: rotate(66deg);
+  }
+  /*** pagination ***/
+  .pagination .page-item .page-link
+  {
+    font-size: 12px !important;
+  }
+}

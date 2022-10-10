@@ -130,7 +130,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
       (<FormArray>this.fb_Value['w_Model']).push(new FormControl('', Validators.maxLength(20)));
       (<FormArray>this.fb_Value['w_Stand']).push(new FormControl('40', [Validators.required, Validators.maxLength(10)]));
       (<FormArray>this.fb_Value['w_Quantity']).push(new FormControl(1, [Validators.required, Validators.maxLength(4)]));
-      (<FormArray>this.fb_Value['w_Remark']).push(new FormControl('ZZZ', Validators.maxLength(50)));
+      (<FormArray>this.fb_Value['w_Remark']).push(new FormControl('', Validators.maxLength(50)));
     }
     Reset_Validators(this.fbGroup, index);    
   }
@@ -341,7 +341,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
       const validators: Validators = this.fb_Value[name].get('0').validator;      
 
       for(const val of item[name].split(','))
-      {      
+      {           
         formArray.push(new FormControl(val, validators));
       }
 
@@ -549,7 +549,12 @@ export class WorkComponent implements OnInit, AfterViewInit {
     const oMinutes: number = this.fb_Value['w_OMinute'].value.length;
     const bTotalInt: number = parseInt(this.fb_Value['w_BTotal'].value);
     const oTotalInt: number = parseInt(this.fb_Value['w_OTotal'].value);
-    return (bMinutes > 40 && bTotalInt > -1) || (oMinutes > 40 && oTotalInt > -1) ? true : false;
+    console.log(bMinutes);
+    console.log(oMinutes);
+    console.log(bTotalInt);
+    console.log(oTotalInt);
+    
+    return (bMinutes > 32 && bTotalInt > -1) || (oMinutes > 32 && oTotalInt > -1) ? true : false;
   }
 
   // Destroy

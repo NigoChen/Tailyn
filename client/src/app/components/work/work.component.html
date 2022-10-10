@@ -5,11 +5,87 @@
 <!-- /Form -->
 
 <!-- Table -->
-<div class="table-responsive table-scrollbar">
+
+<div class="grid-container">
+  <div class="grid-header">
+    <div>#</div>
+    <div>工號姓名</div>
+    <div>一般工時</div>
+    <div>加班工時</div>
+    <div>工單</div>
+    <div>機種</div>
+    <div>站別</div>
+    <div>數量</div>
+    <div>備註</div>
+    <div>時間</div>
+  </div>
+  <div class="grid-body">
+    <!-- <div class="grid-body"
+    [ngStyle]="{'grid-template-rows': result_List.length ? 'repeat('+result_List.length+', 1fr)':'repeat(1, 1fr)'}"> -->
+    <div class="grid-content" *ngFor="let item of result_List; let i = index" (click)="user.e_Lv > 1 && choose(item)" [ngClass]="{'grid-selected': item?.w_Id == fb_Value_Index[0]}">
+      <div>{{i+1}}</div>
+      <div>
+        <span>
+          {{ item.w_JobNumber }} {{ item.e_Name }}
+        </span>
+      </div>
+      <div>
+        <span>
+          {{ item.w_BTotal }}分 | 已扣除{{ item.w_BDeduct }}
+        </span>
+      </div>
+      <div>
+        <span>
+          {{ item.w_OTotal }}分 | 已扣除{{ item.w_ODeduct }}
+        </span>
+      </div>
+      <div>
+        <div *ngFor="let val of item.w_Quantity.split(','); let y = index" wn>
+          <span>
+            {{ item.w_WorkOrder | splite:y }}
+          </span>
+        </div>
+      </div>
+      <div>
+        <div *ngFor="let val of item.w_Quantity.split(','); let y = index" wn>
+          <span>
+          {{ item.w_Model | splite:y }}
+          </span>
+        </div>
+      </div>
+      <div>
+        <div *ngFor="let val of item.w_Quantity.split(','); let y = index" wn>
+          <span>
+          {{ item.w_Stand | splite:y }}
+          <!-- {{ item.w_Stand | splite:y }} {{item.s_Title}} -->
+          </span>
+        </div>
+      </div>
+      <div>
+        <div *ngFor="let val of item.w_Quantity.split(','); let y = index" wn>
+          <span>
+            {{ item.w_Quantity | splite:y }}
+          </span>
+        </div>
+      </div>
+      <div>
+        <div *ngFor="let val of item.w_Quantity.split(','); let y = index" wn>
+          <span>
+            {{ item.w_Remark | splite:y }}
+          </span>
+        </div>
+      </div>
+      <div>
+        {{ item.w_Date | date: 'yyyy-MM-dd' }}
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <div class="table-responsive table-scrollbar">
   <table class="table table-bordered table-sm">
     <thead class="thead-dark">
       <tr align="center">
-        <th scope="col">工號/姓名</th>
+        <th scope="col">工號姓名</th>
         <th scope="col">一般工時</th>
         <th scope="col">加班工時</th>
         <th scope="col">工單</th>
@@ -21,38 +97,23 @@
       </tr>
     </thead>
     <tbody *ngFor="let item of result_List; let i = index"
-      [ngClass]="{'table-selected': item?.w_Id == fb_Value_Index[0]}" (click)="user.e_Lv > 1 && choose(item)">
+      [ngClass]="{'table-selected': item?.w_Id == fb_Value_Index[0], 'more': item.w_WorkOrder.split(',').length}" (click)="user.e_Lv > 1 && choose(item)">
       <tr align="center" *ngFor="let val of item.w_WorkOrder.split(','); let y = index">
-        <td *ngIf="!y" [attr.rowspan]="y" class="table-middle">
-          <span *ngIf="!y">
+        <td [attr.rowspan]="y" [class.d-none]="y" title="{{ item.w_JobNumber }} {{ item.e_Name }}">
             {{ item.w_JobNumber }} {{ item.e_Name }}
-          </span>
         </td>
-        <td *ngIf="!y" [attr.rowspan]="y" [ngClass]="[item.w_BTotal < 0 ? 'text-danger':'text-truncate', 'table-middle']">
-          <span *ngIf="!y">
-            {{ item.w_BTotal }}分 | 已扣除{{ item.w_BDeduct }}
-          </span>
+        <td [attr.rowspan]="y" [class.d-none]="y" [ngClass]="[item.w_BTotal < 0 ? 'text-danger':'text-truncate']" title="{{ item.w_BTotal }}分 | 已扣除{{ item.w_BDeduct }}">
+          {{ item.w_BTotal }}分 | 已扣除{{ item.w_BDeduct }}
         </td>
-        <td *ngIf="!y" [attr.rowspan]="y" [ngClass]="[item.w_OTotal < 0 ? 'text-danger ':'text-truncate', 'table-middle']">
-          <span *ngIf="!y">
+        <td [attr.rowspan]="y" [class.d-none]="y" [ngClass]="[item.w_OTotal < 0 ? 'text-danger ':'text-truncate']" title="{{ item.w_OTotal }}分 | 已扣除{{ item.w_ODeduct }}">
             {{ item.w_OTotal }}分 | 已扣除{{ item.w_ODeduct }}
-          </span>
         </td>
-        <td class="table-middle">{{ item.w_WorkOrder | splite:y }}</td>
-        <td class="table-middle">{{ item.w_Model | splite:y }}</td>
-        <td class="table-middle">{{ item.w_Stand | splite:y }} {{item.s_Title}}</td>
-        <td class="table-middle">{{ item.w_Quantity | splite:y }}</td>
-        <td>
-          <p *ngIf="item.w_Remark.length > 10; else w_Remark">
-            {{ (item.w_Remark | slice:0:10)+'..' }}
-          </p>
-          <ng-template #w_Remark>
-            <p>
-              {{ item.w_Remark }}
-            </p>
-          </ng-template>
-        </td>
-        <td *ngIf="!y" [attr.rowspan]="y" class="table-middle">
+        <td>{{ item.w_WorkOrder | splite:y }}</td>
+        <td>{{ item.w_Model | splite:y }}</td>
+        <td>{{ item.w_Stand | splite:y }} {{item.s_Title}}</td>
+        <td>{{ item.w_Quantity | splite:y }}</td>
+        <td class="text-break">{{ item.w_Remark | splite:y }}</td>
+        <td *ngIf="!y" [attr.rowspan]="y">
           <span *ngIf="!y">
             {{ item.w_Date | date: 'yyyy-MM-dd' }}
           </span>
@@ -60,12 +121,12 @@
       </tr>
     </tbody>
   </table>
-</div>
+</div> -->
 <!-- /Table -->
 
 <!-- Pagination -->
-<div class="d-flex justify-content-center pagination pagination-sm">
-  <ngb-pagination [collectionSize]="result_Data.length" [(page)]="page" [pageSize]="10" [maxSize]="100" [rotate]="true"
+<div class="d-flex justify-content-center pagination pagination-sm mt-2">
+  <ngb-pagination [collectionSize]="result_Data.length" [(page)]="page" [pageSize]="pageSize" [maxSize]="100" [rotate]="true"
     [boundaryLinks]="true" (pageChange)="refreshResult_List()"></ngb-pagination>
 </div>
 <!-- /Pagination -->
@@ -183,8 +244,7 @@
       <div class="form-row col-12 position-relative">
         <!-- Icon Button -->
         <i [ngClass]="['bi text-info h6 position-absolute icon-btn', i>0 ? 'text-danger bi-dash-square' : 'text-info bi-plus-square']"
-          [title]="i>0 ? '刪除':'新增'"
-          (click)="reset_FormArray(i)">
+          [title]="i>0 ? '刪除':'新增'" (click)="reset_FormArray(i)">
         </i>
         <!-- workOrder -->
         <div class="form-group col text-center mb-1" formArrayName="w_WorkOrder">

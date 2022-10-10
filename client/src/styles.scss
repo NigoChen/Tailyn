@@ -33,11 +33,11 @@ html::-webkit-scrollbar
 }
 html::-webkit-scrollbar-track
 {
-  background-color: transparent;
+  background-color: var(--dark-color);
 }
 html::-webkit-scrollbar-thumb
 {
-  background-color: rgba(200, 0, 0, .5);
+  background-color: rgba(255, 14, 14, 0.6);
   border-radius: 5rem;
 }
 /*** Table Selected ***/
@@ -64,8 +64,8 @@ table td.suspension::before
   background-color: var(--red-color);
   transform: rotate(1deg);
 }
-/*** Table middle ***/
-.table-middle
+/*** Table td middle ***/
+table td
 {
   vertical-align: middle !important;
 }
@@ -119,60 +119,9 @@ table td.suspension::before
     position: sticky;
   }
 }
-
 /*** @media only screen ***/
 @media (max-width: 575.99px)
 {
-  /*** table ***/
-  table
-  {
-    position: relative;
-    display: inline-flex;
-    // flex-direction: row;
-    font-size: .8rem; // 10px
-  }
-  /*** Table Selected ***/
-  tbody.table-selected tr,
-  tbody.table-selected td
-  {
-    border: 1px solid var(--dark-color) !important;
-  }
-  table thead tr
-  {
-    position: fixed;
-    z-index: 99;
-    left: 0;
-    display: flex;
-    gap: 5px;
-    flex-direction: column;
-    width: 40px !important; 
-  }
-  table tbody tr td
-  {
-    display: flex;
-    flex-direction: row;
-    margin: 4px 2px 4px 2px;
-  }
-  table tbody:nth-child(2)
-  {
-    margin-left: 30px;
-  }
-  /*** Table Suspension Style ***/
-  table td.suspension::before 
-  {
-    left: -150px;
-    transform: rotate(65deg);
-    height: 10px;
-    width: 70vw;
-    // transform: rotate(25deg);
-  }
-
-
-
-
-
-
-
   /*** pagination ***/
   .pagination .page-item .page-link
   {

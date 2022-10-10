@@ -1,11 +1,11 @@
 nav > strong
 {
     font-size: 1.2rem;
-    transition: all .5s ease-in-out;
     margin-left: 10px;
     text-transform: uppercase;
     text-align: center;
     width: 100px;
+    transition: all .3s ease-in-out;
 }
 /*** menu button ***/
 .menu-btn
@@ -66,6 +66,8 @@ nav > strong
     nav
     {
         height: 60px !important;
+        width: 100% !important;
+        z-index: 9999 !important;
     }
     nav > strong
     {
@@ -81,18 +83,10 @@ nav > strong
     {
         display: flex;
     }
-
     .show-sidebar
     {
-        top: 50px;
         visibility: hidden;
-        opacity: 0;
     }
-    // .show-sidebar app-sidebar::before
-    // {
-    //     content: '';
-    //     height: 0px;
-    // }
     app-sidebar
     {
         border-width: 5px 0px 30px 0px;
@@ -104,9 +98,7 @@ nav > strong
         // transition: height 0ms 100ms, opacity 100ms 0ms;
         position: fixed;
         visibility: visible;
-        opacity: 1;
         z-index: 999;        
-        transition: all .5s linear;
     }
     app-sidebar::before
     {
@@ -119,24 +111,4 @@ nav > strong
         z-index: 888;        
         transition: all .5s linear;
     }
-
 }
-// @media (max-width: 575.99px)
-// {
-
-// }
-// @media (min-width: 768px) and (max-width: 991.99px)
-// {
-// //   .sidebar
-// //   {
-// //     top: 5rem;
-// //   }
-// }
-// @media (min-width: 992px) and (max-width: 1199.99px)
-// {
-
-// }
-// @media (min-width: 1200px)
-// {
-
-// }
