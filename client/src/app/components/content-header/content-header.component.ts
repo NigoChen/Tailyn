@@ -77,9 +77,9 @@ export class ContentHeaderComponent implements OnInit {
   }
 
   // Check Active Router And User Lv
-  check_Active_Roueter(): void {
+  check_Active_Roueter(): void {    
     // When reload
-    if(this.activatedRoute.snapshot.firstChild.url[0].path == 'Employee' && this.user.e_Lv != 3)
+    if(this.activatedRoute.snapshot.firstChild.routeConfig.path == 'Employee' && this.user.e_Lv != 3)
     {
       this.check_Lv = false;
     }

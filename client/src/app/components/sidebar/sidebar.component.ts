@@ -59,7 +59,6 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.user_Profile();
-    Reset_Validators(this.fbGroup);
     this.alertService.get_Alert().subscribe(res => {this.alerts = res});
   }
 
@@ -140,6 +139,7 @@ export class SidebarComponent implements OnInit {
   
   // Update
   show_Modal(): void { 
+    Reset_Validators(this.fbGroup);
     this.set_FormGroup_Val();
     this.ngbModal.open(this.modalForm, {backdropClass: 'light-blue-backdrop', size: 'sm', windowClass:'modal-holder'});
   }

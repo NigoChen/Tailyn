@@ -10,7 +10,6 @@ import { Modal } from '../interfaces/modal';
 export class ModalService {
 
   private modal: Subject<Modal>;
-  private formControls: Subject<object>;
   private fbGroup: Subject<FormGroup>;
   private form: Subject<TemplateRef<any>>;
   private update: Subject<FormGroup>;
@@ -22,7 +21,6 @@ export class ModalService {
 
   constructor() {
     this.modal = new Subject<Modal>();
-    this.formControls = new Subject<object>();
     this.fbGroup = new Subject<FormGroup>();
     this.form = new Subject<TemplateRef<HTMLElement>>();
     this.update = new Subject<FormGroup>();
@@ -39,16 +37,6 @@ export class ModalService {
 
   public set_modal(value: Modal): void {
     this.modal.next(value);
-  }
-  
-  // Get FormControls
-  public get_FormControls(): Observable<object> {    
-    return this.formControls.asObservable();
-  }
-  
-  // Set FormControls
-  public set_FormControls(controls: object): void {    
-    this.formControls.next(controls);
   }
 
   // Get FormGroup

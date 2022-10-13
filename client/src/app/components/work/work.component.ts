@@ -30,25 +30,8 @@ export class WorkComponent implements OnInit, AfterViewInit {
   public result_List: WorkHours[];
   // User
   public user: Employee;
-  // FormGroup Object
-  public form_Controls: object = {
-    w_Id: [''],
-    w_JobNumber: ['', [Validators.required]],
-    w_BMinute: ['', [Validators.maxLength(50)]],
-    w_OMinute: ['', [Validators.maxLength(50)]],
-    w_WorkOrder: new FormArray([new FormControl('', [Validators.required, Validators.maxLength(20)])]),
-    w_Model: new FormArray([new FormControl('', Validators.maxLength(20))]),
-    w_Stand: new FormArray([new FormControl('', [Validators.required, Validators.maxLength(10)])]),
-    w_Quantity: new FormArray([new FormControl(1, [Validators.required, Validators.maxLength(4)])]),
-    w_Remark: new FormArray([new FormControl('', Validators.maxLength(40))]),
-    w_Date: ['', [Validators.required, Validators.maxLength(20)]],
-    w_BTotal: ['0', [Validators.required]],
-    w_OTotal: ['0', [Validators.required]],
-    w_BDeduct: [70, [Validators.required]],
-    w_ODeduct: [0, [Validators.required]]
-  }
   // FormGroup
-  public fbGroup: FormGroup = this.fb.group(this.form_Controls);
+  public fbGroup: FormGroup;
   // Input Validators blur
   public inputValidators: Function = InputValidators;
   // Input Validators Error
@@ -79,19 +62,39 @@ export class WorkComponent implements OnInit, AfterViewInit {
     {}
 
   ngOnInit(): void {
+    this.default_FormGroup();
     Reset_Validators(this.fbGroup);
     this.result_Data = [];
     this.result_List = [];
     this.read();
     this.user_Profile();
     this.standList$ = this.standService.read();     
-    this.modal_Service();  
+    this.modal_Service();      
   }
 
   ngAfterViewInit(): void {
-    this.modalService.set_FormControls(this.form_Controls);
     this.modalService.set_FormGroup(this.fbGroup);
     this.modalService.set_Form(this.form_);
+  }
+
+  // Default FormGroup
+  default_FormGroup(): void {
+    this.fbGroup = this.fb.group({
+      w_Id: [null],
+      w_JobNumber: [null, [Validators.required]],
+      w_BMinute: [null, [Validators.maxLength(50)]],
+      w_OMinute: [null, [Validators.maxLength(50)]],
+      w_WorkOrder: new FormArray([new FormControl(null, [Validators.required, Validators.maxLength(20)])]),
+      w_Model: new FormArray([new FormControl(null, Validators.maxLength(20))]),
+      w_Stand: new FormArray([new FormControl(null, [Validators.required, Validators.maxLength(10)])]),
+      w_Quantity: new FormArray([new FormControl(null, [Validators.required, Validators.maxLength(4)])]),
+      w_Remark: new FormArray([new FormControl(null, Validators.maxLength(40))]),
+      w_Date: [null, [Validators.required, Validators.maxLength(20)]],
+      w_BTotal: [null, [Validators.required]],
+      w_OTotal: [null, [Validators.required]],
+      w_BDeduct: [null, [Validators.required]],
+      w_ODeduct: [null, [Validators.required]]
+    });
   }
 
   // Modal Service
@@ -114,27 +117,6 @@ export class WorkComponent implements OnInit, AfterViewInit {
     return Object.values(this.fbGroup.value) || '';
   }
 
-  // Add / Remove FormArray
-  reset_FormArray(index: number): void {
-    if(index)
-    {
-      (<FormArray>this.fb_Value['w_WorkOrder']).removeAt(index);
-      (<FormArray>this.fb_Value['w_Model']).removeAt(index);
-      (<FormArray>this.fb_Value['w_Stand']).removeAt(index);
-      (<FormArray>this.fb_Value['w_Quantity']).removeAt(index);
-      (<FormArray>this.fb_Value['w_Remark']).removeAt(index);
-    }
-    else if(this.fb_Value['w_WorkOrder'].value.length < 5)
-    {
-      (<FormArray>this.fb_Value['w_WorkOrder']).push(new FormControl('', [Validators.required, Validators.maxLength(20)]));
-      (<FormArray>this.fb_Value['w_Model']).push(new FormControl('', Validators.maxLength(20)));
-      (<FormArray>this.fb_Value['w_Stand']).push(new FormControl('40', [Validators.required, Validators.maxLength(10)]));
-      (<FormArray>this.fb_Value['w_Quantity']).push(new FormControl(1, [Validators.required, Validators.maxLength(4)]));
-      (<FormArray>this.fb_Value['w_Remark']).push(new FormControl('', Validators.maxLength(50)));
-    }
-    Reset_Validators(this.fbGroup, index);    
-  }
-
   // FormGroup Reset
   reset_FormGroup(status: string): void {    
     if(status == 'create')
@@ -152,10 +134,88 @@ export class WorkComponent implements OnInit, AfterViewInit {
         }
       );                
       // Reset FormArray Value
-      this.reset_FormArray_Val();
+      this.reset_FormArray();
     }
     // Reset ErrorValidators Object
     Reset_Validators(this.fbGroup);
+  }
+
+  // Reset FormArray
+  reset_FormArray(): void {  
+    Object.keys(this.fbGroup.value).forEach((key, i) => {
+      if(this.fb_Value[key].value instanceof Object)
+      {
+        const validators: Validators = this.fb_Value[key].get('0').validator;        
+        
+        if(key == 'w_Stand')
+        {
+          this.fbGroup.setControl(key, this.fb.array([this.fb.control('40',validators)]));
+        }
+        else if(key == 'w_Quantity')
+        {
+          this.fbGroup.setControl(key, this.fb.array([this.fb.control(1,validators)]));
+        }
+        else
+        {                    
+          this.fbGroup.setControl(key, this.fb.array([this.fb.control('',validators)]));
+        }
+      }
+    });
+  }
+
+  // Update FormArray Value
+  update_FormArray(index: number): void {
+    const array_Name: Array<string> = ['w_WorkOrder','w_Model', 'w_Stand', 'w_Quantity', 'w_Remark'];
+
+    if(index)
+    {
+      for(const name of array_Name)
+      {
+        // Delete Value
+        (<FormArray>this.fb_Value[name]).removeAt(index);
+        // Update FormArray
+        this.fbGroup.setControl(name, this.fb_Value[name]);
+      }
+    }
+    else if(this.fb_Value['w_WorkOrder'].value.length < 5)
+    {
+      for(const name of array_Name)
+      {
+        const validators: Validators = this.fb_Value[name].get('0').validator;  
+        
+        if(name == 'w_Stand')
+        {
+          (<FormArray>this.fb_Value[name]).push(new FormControl('40', validators));
+        }
+        else if(name == 'w_Quantity')
+        {
+          (<FormArray>this.fb_Value[name]).push(new FormControl(0, validators));
+        }
+        else
+        {
+          (<FormArray>this.fb_Value[name]).push(new FormControl('', validators));
+        }
+      }
+    }
+    Reset_Validators(this.fbGroup, index);    
+  }
+
+  // Set FormArray Value
+  set_FormArray(item: WorkHours): void { 
+    const array_Name: Array<string> = ['w_WorkOrder','w_Model','w_Stand','w_Quantity','w_Remark'];
+
+    for(const name of array_Name)
+    {      
+      const formArray: FormArray = new FormArray([]);
+      const validators: Validators = this.fb_Value[name].get('0').validator;      
+
+      for(const val of item[name].split(','))
+      {           
+        formArray.push(new FormControl(val, validators));
+      }
+
+      this.fbGroup.setControl(name, formArray);
+    }
   }
 
   // User Profile
@@ -326,55 +386,9 @@ export class WorkComponent implements OnInit, AfterViewInit {
     });
 
     // FormArray Value
-    this.set_FormArray_Val(item);
+    this.set_FormArray(item);
     // Update Modal FormGroup
     this.modalService.set_FormGroup(this.fbGroup);    
-  }
-
-  // Update FormArray Value
-  set_FormArray_Val(item: WorkHours): void { 
-    const array_Name: Array<string> = ['w_WorkOrder','w_Model','w_Stand','w_Quantity','w_Remark'];
-
-    for(const name of array_Name)
-    {      
-      const formArray: FormArray = new FormArray([]);
-      const validators: Validators = this.fb_Value[name].get('0').validator;      
-
-      for(const val of item[name].split(','))
-      {           
-        formArray.push(new FormControl(val, validators));
-      }
-
-      this.fbGroup.setControl(name, formArray);
-    }
-  }
-
-  // Reset FormArray Value
-  reset_FormArray_Val(): void {  
-    Object.keys(this.fbGroup.value).forEach((key, i) => {
-
-      if(this.fb_Value[key].value instanceof Object)
-      {
-        const validators: Validators = this.fb_Value[key].get('0').validator;
-
-        if(key == 'w_Stand')
-        {
-          this.fbGroup.setControl(key, this.fb.array([this.fb.control('40',validators)]));
-        }
-        else if(key == 'w_Quantity')
-        {
-          this.fbGroup.setControl(key, this.fb.array([this.fb.control(1,validators)]));
-        }
-        else if(key == 'w_WorkOrder')
-        {
-          this.fbGroup.setControl(key, this.fb.array([this.fb.control('',validators)]));
-        }
-        else
-        {
-          this.fbGroup.setControl(key, this.fb.array([this.fb.control('')]));
-        }
-      }
-    });
   }
 
   // DateTimePick Value Chekc

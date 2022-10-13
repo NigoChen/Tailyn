@@ -44,6 +44,7 @@ export class ModalComponent {
     }
 
   ngOnInit(): void {
+    this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
     this.modalService.get_modal().subscribe((res: Modal) => {
       if(res.show)
       {
@@ -61,10 +62,11 @@ export class ModalComponent {
         this.close();
       }
     });
-    this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
     this.modalService.get_Form().subscribe(res => this.form = res);
     this.alertService.get_Alert().subscribe(res => this.alerts = res);
   }
+
+  ngAfterViewInit(): void {}
 
   // FormGroup Controls Value
   get fb_Value(): { [key: string]: AbstractControl} {

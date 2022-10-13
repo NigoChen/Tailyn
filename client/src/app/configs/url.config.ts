@@ -27,6 +27,14 @@ export const Urls = {
         update:`${url_Server}/api/workHours/update`,
         delete:`${url_Server}/api/workHours/delete`,
     },
+    repair: {
+        read:`${url_Server}/api/repair/read`,
+        findOne:`${url_Server}/api/repair/find/one`,
+        findLike:`${url_Server}/api/repair/find/like`,
+        create:`${url_Server}/api/repair/create`,
+        update:`${url_Server}/api/repair/update`,
+        delete:`${url_Server}/api/repair/delete`,
+    },
     stand: {
         read:`${url_Server}/api/stand/read`,
         create:`${url_Server}/api/stand/create`,

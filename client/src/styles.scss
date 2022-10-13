@@ -40,6 +40,34 @@ html::-webkit-scrollbar-thumb
   background-color: rgba(255, 14, 14, 0.6);
   border-radius: 5rem;
 }
+/*** Form Icon Button Group ***/
+.form-icon-group
+{
+  position: absolute;
+  width: 35px;
+  height: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  top: 0;
+  right: 0;
+  z-index: 99;
+}
+.form-icon-group b
+{
+  font-style: italic;
+  font-size: xx-small;
+  text-align: center;
+  line-height: 12px;
+  height: 14px;
+  width: 13px;
+  border-radius: 2px;
+  border: var(--dark-color) 1px solid;
+}
+.form-icon-group i
+{
+  cursor: pointer;
+}
 /*** Table Selected ***/
 tbody.table-selected tr,
 tbody.table-selected td

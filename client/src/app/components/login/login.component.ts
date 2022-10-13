@@ -1,6 +1,6 @@
 import { Component, ComponentFactoryResolver, OnInit, ViewChild} from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavigationEnd, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 import { AlertsDirective } from 'src/app/directives/alerts.directive';
 import { LoadingService } from 'src/app/services/loading.service';
@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   public progressbar_Value: number = 25;
   // FormGroup
   public fbGroup: FormGroup = this.fb.group({
-    jNumber: [null, [Validators.required]],
+    jNumber: [null, Validators.required],
     passWord: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
     newPassWord: [null],
     email: [null],

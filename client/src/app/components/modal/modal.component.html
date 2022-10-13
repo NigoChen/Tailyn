@@ -1,7 +1,7 @@
 <!-- Modal Form -->
 <ng-template #modalForm let-modal>
   <!-- Header -->
-  <div class="modal-header">
+  <div class="modal-header" *ngIf="alerts">
     <!-- Alert -->
     <ngb-alert [class.d-none]="!alerts.status" *ngIf="alerts.status" class="modal-title w-100 d-flex justify-content-center pt-3 pb-0" [type]="alerts.type"
       (click)="alerts.status = !alerts.status" animation="true" [dismissible]="true">
@@ -28,7 +28,7 @@
 <!-- Modal SM -->
 <ng-template #modalSM let-modal>
   <!-- Header -->
-  <div class="modal-header">
+  <div class="modal-header" *ngIf="alerts">
     <!-- Alert -->
     <ngb-alert [class.d-none]="!alerts.status" *ngIf="alerts.status" class="modal-title w-100 d-flex justify-content-center pt-3 pb-0" [type]="alerts.type"
       (click)="alerts.status = !alerts.status" animation="true" [dismissible]="true">

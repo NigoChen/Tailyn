@@ -2,12 +2,12 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
-import { WorkHours } from '../interfaces/work-hours';
-import { Urls } from './../configs/url.config';
+import { Urls } from '../configs/url.config';
+import { Repair } from '../interfaces/repair';
 
 @Injectable()
 
-export class WorkHoursService {
+export class RepairService {
 
   constructor(private http: HttpClient) { }
   
@@ -29,9 +29,9 @@ export class WorkHoursService {
   }
 
   // Read
-  public read(): Observable<WorkHours[]>
+  public read(): Observable<Repair[]>
   {
-    return this.http.get<WorkHours[]>(Urls.workHours.read)
+    return this.http.get<Repair[]>(Urls.repair.read)
     .pipe(map(res => {
       if(typeof res !== "object")
       {
@@ -42,38 +42,38 @@ export class WorkHoursService {
   }
 
   // Find One
-  public findOne(user: object): Observable<WorkHours[]>
+  public findOne(user: object): Observable<Repair[]>
   { 
     const jString = JSON.stringify(user);
-    return this.http.get<WorkHours[]>(`${Urls.workHours.findOne}/${jString}`)
+    return this.http.get<Repair[]>(`${Urls.repair.findOne}/${jString}`)
    .pipe(catchError(this.handleError));
   }
 
   // Find Like
-  public findLike(workHours: string): Observable<WorkHours[]>
+  public findLike(repair: string): Observable<Repair[]>
   { 
-    return this.http.get<WorkHours[]>(`${Urls.workHours.findLike}/${workHours}`)
+    return this.http.get<Repair[]>(`${Urls.repair.findLike}/${repair}`)
    .pipe(catchError(this.handleError));
   }
 
   // Create
-  public create(workHours: WorkHours): Observable<boolean>
+  public create(repair: Repair): Observable<boolean>
   {        
-    return this.http.post<boolean>(Urls.workHours.create, workHours)
+    return this.http.post<boolean>(Urls.repair.create, repair)
     .pipe(catchError(this.handleError));
   }
 
   // Update
-  public update(workHours: WorkHours): Observable<boolean>
+  public update(repair: Repair): Observable<boolean>
   {        
-    return this.http.put<boolean>(Urls.workHours.update, workHours)
+    return this.http.put<boolean>(Urls.repair.update, repair)
     .pipe(catchError(this.handleError));
   }
 
   // Delete
   public delete(id: number): Observable<boolean>
   {    
-    return this.http.delete<boolean>(`${Urls.workHours.delete}/${id}`)
+    return this.http.delete<boolean>(`${Urls.repair.delete}/${id}`)
     .pipe(catchError(this.handleError))
   }
 }

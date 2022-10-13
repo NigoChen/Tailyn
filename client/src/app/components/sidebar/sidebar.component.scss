@@ -29,6 +29,10 @@
     position: relative;
     color: var(--white-color);
 }
+.nav-item .nav-link:hover
+{
+    color: red !important;
+}
 .nav-item .nav-link::before
 {
     content: "";
@@ -41,11 +45,10 @@
     opacity: 0;
     transition: .5s;
 }
-
 .nav-item .nav-link:hover::before
 {
     bottom: 8px;
-    opacity: .8;
+    opacity: 1;
 }
 /*** @media only screen ***/
 @media (max-width: 767.99px)

@@ -18,38 +18,36 @@ export let ErrorValidators: {[key: string]: any} = {};
  * 
  * Type number or null for FormArray Reomve index
  */
-export const Reset_Validators = (fbGroup: FormGroup, index: any = null): void => {   
- 
-	Object.keys(fbGroup.controls).forEach((key: any, i: number) => {
+export const Reset_Validators = (fbGroup: FormGroup, index: any = null): void => {
 
+	// console.log(Object.keys(ErrorValidators).length);
+	// console.log(Object.keys(fbGroup.value).length);
+	
+	Object.keys(fbGroup.controls).forEach((key: any, num: number) => {		
+		// FormArray
 		if(fbGroup.controls[key] instanceof FormArray)
 		{			
 			const fbArray: FormArray = <FormArray>fbGroup.controls[key];
+			
+			if(ErrorValidators[key] === undefined)
+			{
+				ErrorValidators[key] = [];
 
-			if(fbArray.controls instanceof Array)
-			{				
-				if(index == null && ErrorValidators[key] == undefined && fbArray.length == 1)
-				{		
-					ErrorValidators[key] = [''];					
+				for(let i=0; i<fbArray.length; i++)
+				{						
+					ErrorValidators[key].push('');
 				}
-				else
-				{			
-					if(fbArray.length == 1)
-					{						
-						ErrorValidators[key] = [''];					
-					}
-					else if(fbArray.length > ErrorValidators[key].length)
-					{
-						for(let i=0; i<fbArray.length; i++)
-						{
-							ErrorValidators[key].push('');
-						}
-					}
-					else if(index)
-					{
-						ErrorValidators[key].splice(index, 1);						
-					}
-				}
+			}
+			else if(fbArray.length > ErrorValidators[key].length)
+			{			
+				for(let i=ErrorValidators[key].length; i<fbArray.length; i++)
+				{						
+					ErrorValidators[key].push('');
+				}				
+			}
+			else if(index && (fbArray.length < ErrorValidators[key].length))
+			{
+				ErrorValidators[key].splice(index, 1);
 			}
 		}
 		else
@@ -57,6 +55,24 @@ export const Reset_Validators = (fbGroup: FormGroup, index: any = null): void =>
 			ErrorValidators[key] = '';
 		}  
 	});
+
+	// Delete Others Key When router Active
+	// if(Object.keys(ErrorValidators).length != Object.keys(fbGroup.value).length)
+	// {			
+	// 	for (const key in ErrorValidators)
+	// 	{
+	// 		if(fbGroup.value[key] === undefined)
+	// 		{
+
+	// 			console.log(key);
+				
+	// 			// delete ErrorValidators[key];
+	// 		}			
+	// 	}
+	// }
+
+
+	// console.log(fbGroup.value);
 }
 /**
  * Input (onBlur)="InputValidators(FormGroup, Controls Name, index)"
@@ -67,76 +83,79 @@ export const Reset_Validators = (fbGroup: FormGroup, index: any = null): void =>
  * 
  * Type Number For FormArray By Index Value
  */
-export const InputValidators = (fbGroup: FormGroup, key: string = '', index: number = 0): any => {
+export const InputValidators = (fbGroup: FormGroup, key: string = ''): any => {
 	
-	if(key.length)
+	if(key.length && fbGroup.controls[key].touched)
 	{
 		if(fbGroup.controls[key] instanceof FormControl)
 		{			
 			const errorKey: ValidationErrors = fbGroup.controls[key].errors; 
 			const otherErrorKey: boolean = fbGroup.hasError('passWordMatch');
 
-			ErrorValidators[key] = ''; 
-		
-			if(errorKey != null)
-			{                        
+			ErrorValidators[key] = '';
+
+			if(errorKey)
+			{        
 				if(errorKey.required)
 				{
 					ErrorValidators[key] = '未輸入';
 				}
-
-				if(errorKey.pattern)
+				else if(errorKey.pattern)
 				{
 					ErrorValidators[key] = '格式錯';
 				}
+				else
+				{
+					ErrorValidators[key] = '異常';
+				}								
 			}
 			else if(otherErrorKey && key == 'e_ConfirmPassword')
 			{
 				ErrorValidators[key] = '密碼不符';            
 			}
-			return ErrorValidators[key];
 		}
 		else
 		{
+			// FormArray
 			const fbArray: FormArray = <FormArray>fbGroup.controls[key];
-				
-			// if(fbArray.controls instanceof Array)
-			// {				
-			// 	fbArray.controls.forEach((c, i) => {
 
-				// value
-				const values: string = fbArray.controls[index].value.toString();								
-				
-				if(key != 'e_Date')
+			for(const i in fbArray.controls)
+			{
+				// FormArray
+				const fbControls: AbstractControl = fbArray.controls[i];
+
+				if(fbControls.touched)
 				{
-					const replaceVal: string = values.replace(/[\,\][\!\|\~\`\(\)\#\@\%\+\=\/\'\$\%\^\&\*\{\}\:\;\"\L\<\>\?\\]/g, '');
-					fbArray.controls[index].patchValue(replaceVal);
-				}				
+					ErrorValidators[key][i] = '';
 
-				// Error Key
-				const errorKey: ValidationErrors = fbArray.controls[index].errors; 
-				
-				ErrorValidators[key][index] = '';
-				
-				if(errorKey)
-				{                        
-					if(errorKey.required)
+					if(key != 'e_Date' && fbArray.valid)
 					{
-						ErrorValidators[key][index] = '未輸入';
-					}
-					else if(errorKey.pattern)
-					{
-						ErrorValidators[key][index] = '格式錯';
-					}
-					else
-					{
-						ErrorValidators[key][index] = '字過多';
+						const values: string = fbControls.value.toString();								
+						const replaceVal: string = values.replace(/[\,\][\!\|\~\`\(\)\#\@\%\+\=\/\'\$\%\^\&\*\{\}\:\;\"\L\<\>\?\\]/g, '');
+						fbControls.patchValue(replaceVal);
+					}						
+
+					// Error Key
+					const errorKey: ValidationErrors = fbControls.errors; 
+					
+					if(errorKey)
+					{           		
+						if(errorKey.required)
+						{
+							ErrorValidators[key][i] = '未輸入';
+						}
+						else if(errorKey.pattern)
+						{
+							ErrorValidators[key][i] = '格式錯';
+						}
+						else
+						{
+							ErrorValidators[key][i] = '異常';
+						}
 					}
 				}
-				// });		
+			}				
 		}
 	}
-	// }
-
 	return ErrorValidators[key];
 }

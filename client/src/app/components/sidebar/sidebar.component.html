@@ -41,18 +41,14 @@
   </ul>
 </div>
 
-<ng-template #form_>
-
-</ng-template>
-
-
 <!-- Modal Form -->
 <ng-template #modalForm let-modal>
   <!-- Header -->
   <div class="modal-header" *ngIf="alerts">
     <!-- Alert -->
-    <ngb-alert *ngIf="alerts.status" class="modal-title w-100 d-flex justify-content-center pt-3 pb-0"
-      [type]="alerts.type" (click)="alerts.status = !alerts.status" animation="true" [dismissible]="true">
+    <ngb-alert [class.d-none]="!alerts.status" *ngIf="alerts.status"
+      class="modal-title w-100 d-flex justify-content-center pt-3 pb-0" [type]="alerts.type"
+      (click)="alerts.status = !alerts.status" animation="true" [dismissible]="true">
       <p>{{ alerts.message }}</p>
     </ngb-alert>
     <!-- /Alert -->
@@ -63,54 +59,32 @@
     <form [formGroup]="fbGroup" #form="ngForm">
       <!-- Name -->
       <div class="form-group row">
-        <label for="name" class="col-3 col-form-label text-center pl-1 pr-1"
-          *ngIf="!errorValidators['e_Name'].length; else e_Name">姓名</label>
-
-        <ng-template #e_Name>
-          <label for="name" class="col-3 col-form-label text-center text-danger pl-1 pr-1">{{ errorValidators['e_Name']
-            }}</label>
-        </ng-template>
-
+        <label for="name"
+          [ngClass]="['col-3 col-form-label text-center pl-1 pr-1', errorValidators['e_Name'].length ? 'text-danger' : '']">
+          {{ errorValidators['e_Name'].length ? errorValidators['e_Name'] : "姓名" }}
+        </label>
         <div class="col pl-2 pr-1">
           <input type="text" id="name" class="form-control" formControlName="e_Name" placeholder="姓名"
             (blur)="inputValidators(fbGroup, 'e_Name')">
         </div>
       </div>
-
       <!-- Job Number -->
       <div class="form-group row">
-        <label for="jobNumber" class="col-3 col-form-label text-center pl-1 pr-1"
-          *ngIf="!errorValidators['e_JobNumber'].length; else e_JobNumber">工號</label>
-
-        <ng-template #e_JobNumber>
-          <label for="jobNumber" class="col-3 col-form-label text-center text-danger pl-1 pr-1">{{
-            errorValidators['e_JobNumber']
-            }}</label>
-        </ng-template>
-
+        <label for="jobNumber"
+          [ngClass]="['col-3 col-form-label text-center pl-1 pr-1', errorValidators['e_JobNumber'].length ? 'text-danger' : '']">
+          {{ errorValidators['e_JobNumber'].length ? errorValidators['e_JobNumber'] : "工號" }}
+        </label>
         <div class="col pl-2 pr-1">
-          <div class="form-control border-0" *ngIf="this.fb_Value['e_JobNumber'].disabled; else jobNumber">
-            {{ this.fb_Value['e_JobNumber'].value }}
-          </div>
-
-          <ng-template #jobNumber>
-            <input type="text" id="jobNumber" class="form-control" formControlName="e_JobNumber" placeholder="工號"
-              (blur)="inputValidators(fbGroup, 'e_JobNumber')" [readonly]="user.e_Lv < 3">
-          </ng-template>
+          <input type="text" id="jobNumber" class="form-control" formControlName="e_JobNumber" placeholder="工號"
+            (blur)="inputValidators(fbGroup, 'e_JobNumber')" [readonly]="user.e_Lv < 3">
         </div>
       </div>
-
       <!-- Password -->
       <div class="form-group row">
-        <label for="passWord" class="col-3 col-form-label text-center pl-1 pr-1"
-          *ngIf="!errorValidators['e_PassWord'].length; else e_PassWord">密碼</label>
-
-        <ng-template #e_PassWord>
-          <label for="passWord" class="col-3 col-form-label text-center text-danger pl-1 pr-1">{{
-            errorValidators['e_PassWord']
-            }}</label>
-        </ng-template>
-
+        <label for="passWord"
+          [ngClass]="['col-3 col-form-label text-center pl-1 pr-1', errorValidators['e_PassWord'].length ? 'text-danger' : '']">
+          {{ errorValidators['e_PassWord'].length ? errorValidators['e_PassWord'] : "密碼" }}
+        </label>
         <div class="col pl-2 pr-1">
           <div class="input-group input-group-md">
             <input type="password" id="passWord" class="form-control" formControlName="e_PassWord" placeholder="密碼"
@@ -125,54 +99,42 @@
           </div>
         </div>
       </div>
-
       <!-- Email -->
       <div class="form-group row">
-        <label for="email" class="col-3 col-form-label text-center pl-1 pr-1"
-          *ngIf="!errorValidators['e_Email'].length; else e_Email">信箱</label>
-
-        <ng-template #e_Email>
-          <label for="email" class="col-3 col-form-label text-center text-danger pl-1 pr-1">{{
-            errorValidators['e_Email']
-            }}</label>
-        </ng-template>
+        <label for="email"
+          [ngClass]="['col-3 col-form-label text-center pl-1 pr-1', errorValidators['e_Email'].length ? 'text-danger' : '']">
+          {{ errorValidators['e_Email'].length ? errorValidators['e_Email'] : "信箱" }}
+        </label>
 
         <div class="col pl-2 pr-1">
           <input type="email" id="email" class="form-control" formControlName="e_Email" placeholder="信箱"
             (blur)="inputValidators(fbGroup, 'e_Email')">
         </div>
       </div>
-
       <!-- Level -->
       <div class="form-group row">
         <label for="lv" class="col-3 col-form-label text-center pl-1 pr-1">權限</label>
-        <div [ngClass]="[this.fb_Value['e_Lv'].disabled ? 'col':'col-3']"
-          *ngIf="this.fb_Value['e_Date'].disabled; else Lv">
+
+        <div class="col-3">
           <ngb-rating [rate]="fb_Value['e_Lv'].value" readonly="true" class="h4"></ngb-rating>
         </div>
 
-        <ng-template #Lv>
-          <div class="col-6 pl-2 pr-1">
-            <select id="lv" class="form-control text-center custom-select" formControlName="e_Lv">
-              <ng-container *ngIf="user.e_Lv == 3">
-                <option value="0" [selected]="fb_Value['e_Lv'].value == 0">
-                  停權
-                </option>
-              </ng-container>
-              <option value="1" [selected]="fb_Value['e_Lv'].value == 1">
-                普通
-              </option>
-              <option value="2" [selected]="fb_Value['e_Lv'].value == 2">
-                中級
-              </option>
-              <ng-container *ngIf="user.e_Lv == 3">
-                <option value="3" [selected]="fb_Value['e_Lv'].value == 3">
-                  高級
-                </option>
-              </ng-container>
-            </select>
-          </div>
-        </ng-template>
+        <div class="col-5 pl-2 pr-1">
+          <select id="lv" class="form-control text-center custom-select" formControlName="e_Lv">
+            <option [value]="0">
+              停權
+            </option>
+            <option [value]="1">
+              普通
+            </option>
+            <option [value]="2">
+              中級
+            </option>
+            <option [value]="3">
+              高級
+            </option>
+          </select>
+        </div>
       </div>
       <!-- Date Start-->
       <div class="form-group row" formArrayName="e_Date">
@@ -188,7 +150,6 @@
           </ng-template>
         </div>
       </div>
-
       <!-- Date End-->
       <div class="form-group row" formArrayName="e_Date">
         <label for="Edate" class="col-3 col-form-label text-center pl-1 pr-1">在職</label>

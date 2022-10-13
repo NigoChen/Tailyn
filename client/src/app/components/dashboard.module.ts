@@ -21,6 +21,7 @@ import { FooterComponent } from './footer/footer.component';
 import { WorkHoursService } from '../services/work-hours.service';
 import { StandService } from '../services/stand.service';
 import { SplitePipe } from '../pipes/splite.pipe';
+import { RepairService } from '../services/repair.service';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { SplitePipe } from '../pipes/splite.pipe';
     ChildGuard,
     EmployeeService,
     WorkHoursService,
+    RepairService,
     StandService,
     // { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],

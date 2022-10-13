@@ -26,17 +26,6 @@ export class EmployeeComponent implements OnInit {
   public result_List: Employee[];
   // User
   public user: Employee;
-  // Form Controls
-  public form_Controls: object = {
-    e_Id: [''],
-    e_Name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\u4e00-\u9fa5]{2,10}$/)]],
-    e_Email: ['', [Validators.required, Validators.maxLength(30), Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/)]],
-    e_JobNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{3,5}$/)]],
-    e_PassWord: ['', [Validators.required, Validators.pattern(/^[\d\W\a-zA-Z]{3,30}$/)]],
-    e_ConfirmPassword: ['', [Validators.required]],
-    e_Lv: ['', [Validators.required, Validators.maxLength(1)]],
-    e_Date: this.fb.array([this.fb.control('', Validators.required)])
-  }
   // e_ConfirmPassword: [
   //   '', 
   //   {
@@ -49,13 +38,7 @@ export class EmployeeComponent implements OnInit {
     
   // ],
   // FormGroup
-  public fbGroup: FormGroup = this.fb.group(
-      this.form_Controls,
-    {
-      updateOn: 'blur',
-      validators: [passwordMatchValidator]
-    }
-  );
+  public fbGroup: FormGroup;
   // Input Validators blur
   public inputValidators: Function = InputValidators;
   // Input Validators Error
@@ -75,32 +58,50 @@ export class EmployeeComponent implements OnInit {
     {
       ngbRatingConfig.max = 3;
       ngbRatingConfig.readonly = true;
-      this.modalService.get_modal().subscribe((res: Modal) => this.reset_FormGroup(res.status));
-      this.modalService.get_Search().subscribe(res => this.search(res));
-      this.modalService.get_Create().subscribe(res => this.create(res));
-      this.modalService.get_Read().subscribe(res => this.read());
-      this.modalService.get_Update().subscribe(res => this.update(res));
-      this.modalService.get_Delete().subscribe(res => this.delete(res));
-      this.modalService.get_User_Profile().subscribe((res: Employee) => this.user = res);
     }
 
   ngOnInit(): void {
+    this.default_FormGroup();
+    Reset_Validators(this.fbGroup);
     this.result_Data = [];
     this.result_List = [];
     this.read();
+    this.modal_Service();
   }
 
   ngAfterViewInit(): void {
-    this.reset_Default_Form();    
-  }
-
-  // Reset Defalut Form
-  reset_Default_Form(): void {
-    Reset_Validators(this.fbGroup);
-    this.reset_FormArray_Val();
-    this.modalService.set_FormControls(this.form_Controls);
     this.modalService.set_FormGroup(this.fbGroup);
     this.modalService.set_Form(this.form_);
+  }
+
+  // Default FormGroup
+  default_FormGroup(): void {
+    this.fbGroup = this.fb.group({
+      e_Id: [''],
+      e_Name: ['', [Validators.required, Validators.pattern(/^[a-zA-Z\u4e00-\u9fa5]{2,10}$/)]],
+      e_Email: ['', [Validators.required, Validators.maxLength(30), Validators.pattern(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/)]],
+      e_JobNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{3,5}$/)]],
+      e_PassWord: ['', [Validators.required, Validators.pattern(/^[\d\W\a-zA-Z]{3,30}$/)]],
+      e_ConfirmPassword: ['', Validators.required],
+      e_Lv: ['', [Validators.required, Validators.maxLength(1)]],
+      e_Date: this.fb.array([this.fb.control('', Validators.required)])
+    },
+    {
+      updateOn: 'blur',
+      validators: [passwordMatchValidator]
+    });
+    this.reset_FormArray_Val();
+  }
+
+  // Modal Service
+  modal_Service(): void {
+    this.modalService.get_modal().subscribe((res: Modal) => this.reset_FormGroup(res.status));
+    this.modalService.get_Search().subscribe(res => this.search(res));
+    this.modalService.get_Create().subscribe(res => this.create(res));
+    this.modalService.get_Read().subscribe(res => this.read());
+    this.modalService.get_Update().subscribe(res => this.update(res));
+    this.modalService.get_Delete().subscribe(res => this.delete(res));
+    this.modalService.get_User_Profile().subscribe((res: Employee) => this.user = res);
   }
   
   // FormGroup Controls Value
@@ -444,7 +445,7 @@ export class EmployeeComponent implements OnInit {
       const end: any      = new Date(data[1]);
       const total: number = Math.abs(end-start);      
       const year: number  = total / (1000 * 3600 * 24 * 365);
-      const month: number = year * 10;
+      const month: number = year * 12;
       // const day: string   = (total / (1000 * 3600 * 24)).toString(); // milliseconds * (secs * mins) * hours       
       data[2] = year.toString().split('.')[0];
       data[3] = month.toFixed();      

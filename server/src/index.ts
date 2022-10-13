@@ -10,6 +10,7 @@ import path from 'path';
 import loginRoutes from './routes/login.routes';
 import workHoursRoutes from './routes/work-hours.routes';
 import standRoutes from './routes/stand.routes';
+import repairRoutes from './routes/repair.routes';
 
 class Server
 {
@@ -42,6 +43,7 @@ class Server
         this.app.use('/api/login', loginRoutes);
         this.app.use('/api/employee', employeeRoutes);
         this.app.use('/api/workHours', workHoursRoutes);
+        this.app.use('/api/repair', repairRoutes);
         this.app.use('/api/stand', standRoutes);
     }
 

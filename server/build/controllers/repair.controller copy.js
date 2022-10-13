@@ -12,9 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.workHoursController = void 0;
+exports.repairController = void 0;
 const database_1 = __importDefault(require("../db/database"));
-class WorkHoursController {
+class RepairController {
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const data = req.body;
@@ -156,29 +156,5 @@ class WorkHoursController {
             });
         });
     }
-    email(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const data = req.body;
-            if (('email' in data) && ('jNumber' in data) && ('ip' in data)) {
-                const sql = `SELECT e_JobNumber,e_Email FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
-                yield database_1.default.then(con => {
-                    return con.query(sql).then((result) => {
-                        if (result.length > 0) {
-                            res.status(200).send(true);
-                        }
-                        else {
-                            res.status(200).send(false);
-                        }
-                    });
-                })
-                    .catch(err => {
-                    res.status(404).send(false);
-                });
-            }
-            else {
-                res.status(200).send(true);
-            }
-        });
-    }
 }
-exports.workHoursController = new WorkHoursController();
+exports.repairController = new RepairController();
