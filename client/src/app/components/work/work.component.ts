@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { WorkHours } from 'src/app/interfaces/work-hours';
 import { LoadingService } from 'src/app/services/loading.service';
@@ -7,14 +7,13 @@ import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/meth
 import { LoginService } from 'src/app/services/login.service';
 import { AlertService } from 'src/app/services/alert.service';
 import { WorkHoursService } from 'src/app/services/work-hours.service';
-import { NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
-import { StandService } from 'src/app/services/stand.service';
-import { Observable } from 'rxjs';
-import { Stand } from 'src/app/interfaces/stand';
+import { ClientService } from 'src/app/services/client.service';
+import { Observable, of } from 'rxjs';
 import { SplitePipe } from 'src/app/pipes/splite.pipe';
 import { DecimalPipe } from '@angular/common';
 import { Modal } from 'src/app/interfaces/modal';
 import { Employee } from 'src/app/interfaces/employee';
+import { Client } from 'src/app/interfaces/client';
 
 @Component({
   selector: 'app-work',
@@ -28,6 +27,8 @@ export class WorkComponent implements OnInit, AfterViewInit {
   // Data
   public result_Data: WorkHours[];
   public result_List: WorkHours[];
+  // Client Data List
+  public client_List$: Observable<Client[]>;
   // User
   public user: Employee;
   // FormGroup
@@ -36,8 +37,6 @@ export class WorkComponent implements OnInit, AfterViewInit {
   public inputValidators: Function = InputValidators;
   // Input Validators Error
   public errorValidators: object = ErrorValidators;
-  // Stand Data List
-  public standList$: Observable<Array<Stand>> | Observable<[]>;
   // Timezone
   public getTimezoneOffset: number = (new Date()).getTimezoneOffset() * 60000;
   // DateTime
@@ -47,18 +46,17 @@ export class WorkComponent implements OnInit, AfterViewInit {
   // Pagination
   public page = 1;
   public pageSize = 15;
+  // Window Size
+  public win_Size: boolean = false;
 
   constructor(
     private loadingService: LoadingService,
     private loginService: LoginService,
     private workHoursService: WorkHoursService,
-    private standService: StandService,
+    private clientService: ClientService,
     private fb: FormBuilder,
     private modalService: ModalService,
-    private alertService: AlertService,
-    private calendar: NgbCalendar,
-    private elementRef: ElementRef,
-    private decimalPipe: DecimalPipe)
+    private alertService: AlertService)
     {}
 
   ngOnInit(): void {
@@ -68,8 +66,30 @@ export class WorkComponent implements OnInit, AfterViewInit {
     this.result_List = [];
     this.read();
     this.user_Profile();
-    this.standList$ = this.standService.read();     
-    this.modal_Service();      
+    this.modal_Service();
+
+    // Client Data
+    let data: Client[] = [];
+
+    this.clientService.read().subscribe((res:Client[]) => {
+
+      const code: Array<string> = res[0].c_Stand_Code.split(',');
+      const stand: Array<string> = res[0].c_Stand.split(',');
+
+      for(const i in code)
+      {
+        data.push({
+          c_Code: '',
+          c_Name: '',
+          c_WorkOrder: '',
+          c_Model: '',
+          c_Stand: stand[i],
+          c_Stand_Code: code[i]
+        });
+      }
+
+    });
+    this.client_List$ = of(data);
   }
 
   ngAfterViewInit(): void {
@@ -86,7 +106,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
       w_OMinute: [null, [Validators.maxLength(50)]],
       w_WorkOrder: new FormArray([new FormControl(null, [Validators.required, Validators.maxLength(20)])]),
       w_Model: new FormArray([new FormControl(null, Validators.maxLength(20))]),
-      w_Stand: new FormArray([new FormControl(null, [Validators.required, Validators.maxLength(10)])]),
+      w_Stand: new FormArray([new FormControl(null, [Validators.required, Validators.maxLength(20)])]),
       w_Quantity: new FormArray([new FormControl(null, [Validators.required, Validators.maxLength(4)])]),
       w_Remark: new FormArray([new FormControl(null, Validators.maxLength(40))]),
       w_Date: [null, [Validators.required, Validators.maxLength(20)]],
@@ -149,7 +169,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
         
         if(key == 'w_Stand')
         {
-          this.fbGroup.setControl(key, this.fb.array([this.fb.control('40',validators)]));
+          this.fbGroup.setControl(key, this.fb.array([this.fb.control('40,維修',validators)]));
         }
         else if(key == 'w_Quantity')
         {
@@ -292,8 +312,6 @@ export class WorkComponent implements OnInit, AfterViewInit {
       return res.w_JobNumber.toLowerCase().includes(term)
           || res.w_Date.toString().toLowerCase().includes(term)
           || res.e_Name?.toLowerCase().includes(term)
-          || res.s_Code?.toLowerCase().includes(term)
-          || res.s_Title?.toLowerCase().includes(term)
           || (res.w_WorkOrder.indexOf(term) > -1)
           || (res.w_Model.indexOf(term) > -1)
           || (res.w_Stand.indexOf(term) > -1)
@@ -576,17 +594,11 @@ export class WorkComponent implements OnInit, AfterViewInit {
     this.modalService.set_FormGroup(null);
   }
 
-  // mouse click 
-  @HostListener('mouseup', ['$event']) onClick($event) {
-    // this.reset_FormGroup('close');
-
-    // this.modalService.set_modalMDForm(['hide', 'create']);
-
-    // console.info('Click event fired', $event);
-    // if($event.which === 2)
-    // {
-
-    //   console.info('Middle mouse button clicked');
-    // }
+  // Window Resize
+  @HostListener('window:resize', ['$event'])
+    onResize(event) {
+      const w = document.documentElement.clientWidth;
+      const h = document.documentElement.clientHeight;
+      this.win_Size = (w > 860) ? false : true;
   }
 }

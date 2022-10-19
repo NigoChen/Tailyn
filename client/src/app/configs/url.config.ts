@@ -1,5 +1,4 @@
 const url_Server: string = 'http://localhost:3000';
-// const url: string = 'http://localhost:3000';
 
 export const Urls = {
     login: {
@@ -35,11 +34,11 @@ export const Urls = {
         update:`${url_Server}/api/repair/update`,
         delete:`${url_Server}/api/repair/delete`,
     },
-    stand: {
-        read:`${url_Server}/api/stand/read`,
-        create:`${url_Server}/api/stand/create`,
-        update:`${url_Server}/api/stand/update`,
-        delete:`${url_Server}/api/stand/delete`,
+    client: {
+        read:`${url_Server}/api/client/read`,
+        create:`${url_Server}/api/client/create`,
+        update:`${url_Server}/api/client/update`,
+        delete:`${url_Server}/api/client/delete`,
     },
     rma: {
         read:`${url_Server}/api/rma/read`,

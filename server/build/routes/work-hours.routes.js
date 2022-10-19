@@ -10,9 +10,6 @@ class WorkHoursRoutes {
     config() {
         this.router.post('/create', work_hours_controller_1.workHoursController.create);
         this.router.get('/read', work_hours_controller_1.workHoursController.read);
-        this.router.get('/find/one/:q', work_hours_controller_1.workHoursController.findOne);
-        this.router.get('/find/like/:q', work_hours_controller_1.workHoursController.findLike);
-        this.router.put('/update', work_hours_controller_1.workHoursController.update);
         this.router.delete('/delete/:id', work_hours_controller_1.workHoursController.delete);
     }
 }

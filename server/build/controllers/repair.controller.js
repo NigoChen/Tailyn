@@ -26,15 +26,73 @@ class RepairController {
             const r_Error = data.r_Error;
             const r_Process = data.r_Process;
             const r_Status = data.r_Status;
-            const r_Client = data.r_Client.toString();
+            const r_Client = data.r_Client;
             const r_Date = data.r_Date;
+            // const sql: string = `BEGIN;`+
+            //                     `REPLACE INTO repair(r_Id, r_JobNumber, r_SerialNumber, r_WorkOrder, r_Model, r_Error, r_Process, r_Status, r_Client, r_Date)`+
+            //                     ` VALUES `+
+            //                     `(${r_Id}, '${r_JobNumber}', '${r_SerialNumber}', '${r_WorkOrder}', '${r_Model}', '${r_Error}', '${r_Process}', '${r_Status}', '${r_Client}', '${r_Date}');`+
+            //                     `REPLACE INTO client(c_Id, c_Code, c_Name)`+
+            //                     ` VALUES `+
+            //                     `(${r_Id}, '1111', 'OIOIOIO');`+
+            //                     `COMMIT;`;
+            // const sql_two: string = `REPLACE INTO repair(r_Id, r_JobNumber, r_SerialNumber, r_WorkOrder, r_Model, r_Error, r_Process, r_Status, r_Client, r_Date)`+
+            //                         ` VALUES `+
+            //                         `('${r_Id}', '${r_JobNumber}', '${r_SerialNumber}', '${r_WorkOrder}', '${r_Model}', '${r_Error}', '${r_Process}', '${r_Status}', '${r_Client}', '${r_Date}')`;
+            // const conned = await (await pool).getConnection();
+            // await conned.beginTransaction();
+            // return await conned.query(sql_one).then(async (result: any) => {
+            // await conned.query(sql_two).then(async (result: any) => {
+            //     if(result.insertId)
+            //     {
+            //         await conned.commit();
+            //         res.status(200).send(true);
+            //     }
+            //     else
+            //     {
+            //         await conned.rollback();
+            //         res.status(200).send(false);
+            //     }
+            //     await conned.release();
+            // fieldCount: 0,
+            // affectedRows: 1,
+            // insertId: 58,
+            // serverStatus: 3,
+            // warningCount: 0,
+            // message: '',
+            // protocol41: true,
+            // changedRows: 0
+            //     })
+            //     .catch(async err => {                
+            //         await conned.rollback();
+            //         await conned.release();
+            //         res.status(404).send(false);
+            //     });
+            // // })
+            // .catch(async err => {
+            //     console.log('111111122');
+            //     await conned.rollback();
+            //     await conned.release();
+            //     res.status(404).send(false);
+            // });
+            // }
+            // catch
+            // {            
+            //     await conned.rollback();
+            //     await conned.release();
+            //     res.status(404).send(false);
+            // }
+            // BEGIN
+            // REPLACE INTO repair(r_Id, r_JobNumber, r_SerialNumber, r_WorkOrder, r_Model, r_Error, r_Process, r_Status, r_Client, r_Date) VALUES (0, '4138', '21272211', 'A.122.3', 'A88723-1', 'C2003,零件破損', '查修中', '待修', 'A3004,宏達電子', '2022-10-16=50');
+            // REPLACE INTO client(c_Id, c_Code, c_Name) VALUES (1, 'ssss', 'sszzz');
+            // COMMIT
             const sql = `REPLACE INTO repair(r_Id, r_JobNumber, r_SerialNumber, r_WorkOrder, r_Model, r_Error, r_Process, r_Status, r_Client, r_Date)` +
                 ` VALUES ` +
                 `(${r_Id}, '${r_JobNumber}', '${r_SerialNumber}', '${r_WorkOrder}', '${r_Model}', '${r_Error}', '${r_Process}', '${r_Status}', '${r_Client}', '${r_Date}')`;
             yield database_1.default.then(con => {
                 return con.query(sql).then((result) => {
                     if (result.insertId > 0) {
-                        res.status(200).send(true);
+                        // res.status(200).send(true);
                     }
                     else {
                         res.status(200).send(false);
@@ -48,20 +106,18 @@ class RepairController {
     }
     read(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            // const sql: string = `SELECT w.*, `+ 
-            // `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_BMinute, ',', 3), ',', -1) AS w_BTotal, `+
-            // `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_OMinute, ',', 3), ',',-1) AS w_OTotal, `+
-            // `CONVERT(SUBSTRING_INDEX(w.w_BMinute, ',', -1),SIGNED) AS w_BDeduct, `+
-            // `CONVERT(SUBSTRING_INDEX(w.w_OMinute, ',', -1),SIGNED) AS w_ODeduct,  `+
-            // `s.s_Title, s.s_Code, `+
-            // `e.e_JobNumber, e.e_Name `+
-            // `FROM workhours w `+
-            // `LEFT JOIN stand s ON w.w_Stand = s.s_Code `+
-            // `LEFT JOIN employee e ON w.w_JobNumber = e.e_JobNumber`;
-            const sql = `Select * From repair`;
+            const sql = `SELECT repair.*,` +
+                `client.c_Code AS 'CODE',` +
+                `client.c_Name AS 'NAME' ` +
+                `FROM repair, client GROUP BY repair.r_Id;`;
+            // const sql: string = `SELECT repair.*, GROUP_CONCAT(client.c_Code SEPARATOR ', ') AS `+
+            //                     `'CODE', GROUP_CONCAT(client.c_Name SEPARATOR ', ') AS `+
+            //                     `'NAME' FROM repair, client GROUP BY repair.r_Id;`;
+            // const sql: string = `Select * From repair`;
             yield database_1.default.then(con => {
                 return con.query(sql).then((result) => {
                     if (result.length > 0) {
+                        console.log(result);
                         res.status(200).json(result);
                     }
                     else {
@@ -71,65 +127,6 @@ class RepairController {
             })
                 .catch(err => {
                 res.status(404).send([]);
-            });
-        });
-    }
-    findOne(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const user = JSON.parse(req.params.q);
-            const sql = `SELECT e_JobNumber,e_Name,e_Email,e_Lv,e_Inventory,e_Img FROM employee WHERE e_Name = '${user.e_Name}' AND e_JobNumber = '${user.e_JobNumber}'`;
-            yield database_1.default.then(con => {
-                return con.query(sql).then((result) => {
-                    if (result.length > 0) {
-                        res.status(200).json(result);
-                    }
-                    else {
-                        res.status(200).json([]);
-                    }
-                });
-            })
-                .catch(err => {
-                res.status(404).send([]);
-            });
-        });
-    }
-    findLike(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const like = req.params.q;
-            const sql = `SELECT * FROM employee WHERE e_JobNumber = '${like}' OR e_Name = '${like}'`;
-            yield database_1.default.then(con => {
-                return con.query(sql).then((result) => {
-                    if (result.length > 0) {
-                        res.status(200).json(result);
-                    }
-                    else {
-                        res.status(200).json([]);
-                    }
-                });
-            })
-                .catch(err => {
-                res.status(404).send([]);
-            });
-        });
-    }
-    update(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const data = req.body;
-            // const sql: string = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}',e_Email = '${data.e_Email}',e_Lv = '${data.e_Lv}' WHERE e_Id = '${data.e_Id}' AND e_JobNumber <> '${data.e_JobNumber}'`;
-            // return con.query('UPDATE employee SET ? WHERE e_Id = ?', [data, data.e_Id])
-            const sql = `UPDATE employee SET e_JobNumber = '${data.e_JobNumber}', e_Name = '${data.e_Name}', e_Email = '${data.e_Email}', e_Lv = '${data.e_Lv}' WHERE e_Id = ${data.e_Id} AND NOT EXISTS (SELECT * FROM (SELECT 1 FROM employee WHERE e_JobNumber = '${data.e_JobNumber}' AND e_Id <> '${data.e_Id}') temp);`;
-            yield database_1.default.then(con => {
-                return con.query(sql).then((result) => {
-                    if (result.affectedRows > 0) {
-                        res.status(200).send(true);
-                    }
-                    else {
-                        res.status(200).send(false);
-                    }
-                });
-            })
-                .catch(err => {
-                res.status(404).send(false);
             });
         });
     }
@@ -137,7 +134,7 @@ class RepairController {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
             yield database_1.default.then(con => {
-                return con.query('DELETE FROM workhours WHERE w_Id = ?', [id])
+                return con.query('DELETE FROM repair WHERE r_Id = ?', [id])
                     .then((result) => {
                     if (result.affectedRows > 0) {
                         res.status(200).send(true);

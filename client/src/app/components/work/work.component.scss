@@ -1,143 +1,63 @@
+/** Grid Table ***/
+.grid-header
+{
+  display: grid;
+  grid-template-columns: 28px 145px 150px 150px 150px 150px 50px 50px 487px 100px; //1317
+  grid-template-rows: 1fr;
+  gap: 0 0.2em;
+  font-weight: 600;
+}
+.grid-content
+{
+  display: grid;
+  grid-template-columns: 28px 145px 150px 150px 150px 150px 50px 50px 487px 100px; //1317
+  gap: 0 0.2em;
+  cursor: pointer;
+}
+/** Form Items Scroll ***/
+.items-scroll
+{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-right: -5px;
+  margin-left: -5px;
+  align-items: flex-start;
+  height: 272px;
+  padding-left: 2px;
+  overflow-y: scroll;
+  scroll-padding-top: 3px;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior-y: contain;
+}
+.items-scroll::-webkit-scrollbar
+{
+  height: 0px;
+  width: 2px;
+}
+.items-scroll div
+{
+  scroll-snap-align: start;
+}
 /*** Date Input ***/
 .datetime-font-size
 {
   font-size: .8em;
 }
-/** Grid Table ***/
-.grid-container
-{
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 40px;
-  justify-items: center;
-  align-items: stretch;
-  gap: 0.6em 0;
-  grid-template-areas:
-  "grid-header"
-  "grid-body";
-  height: 100vh;
-  font-size: 1em;
-  margin-top: 1rem;
-}
-.grid-container .grid-header
-{
-  display: grid;
-  grid-template-columns: 30px 150px 150px 150px 150px 150px 50px 50px 487px 100px; //1317
-  grid-template-rows: 1fr;
-  gap: 0 0.2em;
-  font-weight: 600;
-}
-.grid-container .grid-header div
-{
-  background-color:rgb(246, 246, 246);
-}
-.grid-container > .grid-body
-{
-  display: grid;
-  gap: 0.3em 0;
-}
-grid-container,
-.grid-container .grid-body::-webkit-scrollbar
-{
-  height: .4rem;
-}
-.grid-container .grid-body::-webkit-scrollbar-track
-{
-  background-color: transparent;
-}
-.grid-container .grid-body::-webkit-scrollbar-thumb
-{
-  background-color: rgba(172, 12, 12, 0.5);
-  border-radius: 5rem;
-}
-.grid-container .grid-header > div,
-.grid-container .grid-body .grid-content > div
-{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  border: black 1px solid;
-}
-.grid-container .grid-body .grid-content
-{
-  display: grid;
-  grid-template-columns: 30px 150px 150px 150px 150px 150px 50px 50px 487px 100px;
-  gap: 0 0.2em;
-  cursor: pointer;
-}
-.grid-container .grid-body .grid-content:hover > div
-{
-  background-color:rgb(246, 246, 246);
-}
-.grid-container .grid-body .grid-content.grid-selected > div
-{
-  border: black 2px solid;
-  font-weight: 600;
-}
-.grid-container .grid-body .grid-content > div > div
-{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-.grid-container .grid-body .grid-content > div > div~div
-{
-    border-top: 1px black solid;
-}
 /*** @media only screen ***/
 @media (max-width: 860px)
 {
-  .grid-container
-  {
-    grid-template-columns: 35px;
-    grid-template-rows: 1fr;
-    justify-items: stretch;
-    gap: 0 0.6em;
-    grid-template-areas:
-    "grid-header grid-body";
-    font-size: xx-small;
-    max-height: 650px;
-  }
-  .grid-container .grid-header
+  /** Grid Table ***/
+  .grid-header
   {
     grid-template-columns: 1fr;
     grid-template-rows: 25px 40px 40px 40px 110px 110px 25px 25px 180px 25px;
     gap: 0.2em 0;
   }
-  // .grid-container .grid-header > div
-  // {
-  //   line-height: 14px;
-  // }
-  .grid-container .grid-body
-  {
-    grid-template-columns: repeat(auto-fill, 1fr);
-    grid-template-rows: 1fr;
-    grid-gap: 0 0.2em;
-    grid-auto-columns: minmax(120px, 120px);
-    grid-auto-flow: column;
-    overflow-x: scroll;
-    scroll-padding-top: 7rem;
-    scroll-behavior: smooth;
-  }
-  .grid-container .grid-body .grid-content
+  .grid-content
   {
     grid-template-columns: 1fr;
     grid-template-rows: 25px 40px 40px 40px 110px 110px 25px 25px 180px 25px;
     gap: 0.2em 0;
-  }
-  .grid-container .grid-body .grid-content > div
-  {
-    flex-direction: row;
-    word-break: break-all;
-  }
-  .grid-container .grid-body .grid-content > div > div~div
-  {
-    border-top: 0;
-    border-left: 1px black solid;
   }
 }

@@ -12,9 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.standController = void 0;
+exports.clientController = void 0;
 const database_1 = __importDefault(require("../db/database"));
-class StandController {
+class ClientController {
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const data = req.body;
@@ -96,4 +96,4 @@ class StandController {
         });
     }
 }
-exports.standController = new StandController();
+exports.clientController = new ClientController();

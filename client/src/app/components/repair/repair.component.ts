@@ -1,6 +1,8 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Observable, of } from 'rxjs';
+import { Client } from 'src/app/interfaces/client';
 import { Employee } from 'src/app/interfaces/employee';
 import { Modal } from 'src/app/interfaces/modal';
 import { Repair } from 'src/app/interfaces/repair';
@@ -24,6 +26,8 @@ export class RepairComponent implements OnInit {
   // Data
   public result_Data: Repair[];
   public result_List: Repair[];
+  // Client Data List
+  public client_List$: Observable<Array<Client>> | Observable<[]>;
   // User
   public user: Employee;
   // FormGroup
@@ -35,16 +39,16 @@ export class RepairComponent implements OnInit {
   // Pagination
   public page = 1;
   public pageSize = 15;
-
+  // Window Size
+  public win_Size: boolean = false;
+  
   constructor(
     private loadingService: LoadingService,
     private loginService: LoginService,
     private repairService: RepairService,
     private fb: FormBuilder,
     private modalService: ModalService,
-    private alertService: AlertService,
-    private elementRef: ElementRef,
-    private decimalPipe: DecimalPipe)
+    private alertService: AlertService)
     {}
 
   ngOnInit(): void {
@@ -76,10 +80,7 @@ export class RepairComponent implements OnInit {
       ]),
       r_Process: new FormArray([new FormControl(null, [Validators.required, Validators.maxLength(50)])]),
       r_Status: [null, [Validators.required, Validators.maxLength(10)]],
-      r_Client: new FormArray([
-        new FormControl(null, [Validators.required, Validators.maxLength(20)]),
-        new FormControl(null, [Validators.required, Validators.maxLength(20)])
-      ]),
+      r_Client: [null, [Validators.required, Validators.maxLength(30)]],
       r_Date: new FormArray([new FormControl(null, [Validators.required, Validators.maxLength(20)])]),
       r_Dates: new FormArray([new FormControl(null, [Validators.required, Validators.maxLength(20)])]),
       r_Minutes: new FormArray([new FormControl(0, [Validators.required, Validators.maxLength(3)])]),
@@ -156,20 +157,8 @@ export class RepairComponent implements OnInit {
             ])
           );
         }
-        else if(key == 'r_Client')
-        {
-          this.fbGroup.setControl(key, 
-            this.fb.array([
-              this.fb.control(null, validators),
-              this.fb.control(null, validators)
-            ])
-          );
-        }
       }
-    });
-    
-    console.log(this.fbGroup.value);
-    
+    });    
   }
 
   // Update FormArray Value
@@ -231,7 +220,7 @@ export class RepairComponent implements OnInit {
     // }).reduce((a: number, b: number) =>{
     //   return a+b;
     // });
-    const array_Name: Array<string> = ['r_Dates','r_Minutes', 'r_Date', 'r_Process', 'r_Error', 'r_Client'];
+    const array_Name: Array<string> = ['r_Dates','r_Minutes', 'r_Date', 'r_Process', 'r_Error'];
 
     for(const name of array_Name)
     {      
@@ -289,10 +278,10 @@ export class RepairComponent implements OnInit {
   }
 
   // Create
-  create(fg: FormGroup): void {
+  create(fg: FormGroup): void {  
 
-    console.log(this.fbGroup.value);
-  
+    console.log(fg.value);
+    
     this.repairService.create(fg.value)
       .subscribe(
         {
@@ -327,7 +316,19 @@ export class RepairComponent implements OnInit {
               this.result_Data = res;
               this.result_List = res;
               this.table_List_Sort();
-              this.refreshResult_List();              
+              this.refreshResult_List(); 
+
+              // Client List Data
+              const code: Array<string> = res[0]['CODE'].split(',');
+              const name: Array<string> = res[0]['NAME'].split(',');
+              const val: any = [];
+
+              for(const i in name)
+              {
+                  val.push({c_Code: code[i], c_Name: name[i]});         
+              }
+
+              this.client_List$ = of(val);                  
             }
           },
           error: (err) => {
@@ -350,7 +351,7 @@ export class RepairComponent implements OnInit {
           || res.r_Model.toLowerCase().includes(term)
           || res.r_Status.includes(term)
           || (res.r_Error.indexOf(term) > -1)
-          || (res.r_Client.indexOf(term) > -1)
+          || res.r_Client.toLowerCase().includes(term)
           || (res.r_Date.indexOf(term) > -1)
     });
   }
@@ -371,6 +372,8 @@ export class RepairComponent implements OnInit {
 
   // Update
   update(fg: FormGroup): void {
+    console.log(fg.value);
+
     this.repairService.create(fg.value)
       .subscribe(
         {
@@ -425,7 +428,8 @@ export class RepairComponent implements OnInit {
       r_SerialNumber: item.r_SerialNumber,
       r_WorkOrder: item.r_WorkOrder,
       r_Model: item.r_Model,
-      r_Status: item.r_Status
+      r_Status: item.r_Status,
+      r_Client: item.r_Client
     });
     // FormArray Value
     this.set_FormArray(item);
@@ -487,5 +491,13 @@ export class RepairComponent implements OnInit {
   // Destroy
   ngOnDestroy(): void {
     this.modalService.set_FormGroup(null);
+  }
+
+    // Window Resize
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    const w = document.documentElement.clientWidth;
+    const h = document.documentElement.clientHeight;
+    this.win_Size = (w > 860) ? false : true;
   }
 }

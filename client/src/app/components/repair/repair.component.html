@@ -19,8 +19,9 @@
     <div>狀態</div>
   </div>
   <div class="grid-body">
-    <div class="grid-content" *ngFor="let item of result_List; let i = index" (click)="user.e_Lv > 1 && choose(item)"
-      [ngClass]="{'grid-selected': item?.r_Id == fb_Value_Index[0]}">
+    <div *ngFor="let item of result_List; let i = index" (click)="user.e_Lv > 1 && choose(item)"
+      [ngClass]="{'grid-content': true, 'grid-selected': item?.r_Id == fb_Value_Index[0]}"
+      [ngStyle]="{'grid-column': win_Size ? 'span '+item.r_Process.split(',').length : 'span 1'}">
       <div>{{i+1}}</div>
       <div>
         <span>
@@ -89,23 +90,34 @@
     <div class="form-row border border-dark mb-1">
       <div class="form-row col-12 text-center position-relative">
         <!-- Serial Number -->
-        <div class="form-group col-3 mb-1" formArrayName="r_Client">
+        <!-- <div class="form-group col-3 mb-1" formArrayName="r_Client">
           <label [class.text-danger]="errorValidators['r_Client'][0].length && true">
-            {{ errorValidators['r_Client'][0].length ? errorValidators['r_Client'][0] : "客戶代碼" }}
+            {{ errorValidators['r_Client'][0].length ? "未選擇" : "客戶代碼" }}
           </label>
-          <input type="text" class="form-control form-control-sm text-center" formControlName="0" placeholder="客戶代碼"
+          <select class="form-control form-control-sm text-center" formControlName="0"
             (blur)="inputValidators(fbGroup, 'r_Client')">
-        </div>
+            <option *ngFor="let item of client_List$ | async" [value]="item.c_Code">
+              {{item.c_Code}}
+            </option>
+          </select>
+        </div> -->
         <!-- Serial Number -->
-        <div class="form-group col-4 mb-1" formArrayName="r_Client">
-          <label [class.text-danger]="errorValidators['r_Client'][1].length && true">
-            {{ errorValidators['r_Client'][1].length ? errorValidators['r_Client'][1] : "客戶" }}
+        <div class="form-group col-6 mb-1">
+          <label [class.text-danger]="errorValidators['r_Client'].length && true">
+            {{ errorValidators['r_Client'].length ? "未選擇" : "客戶" }}
           </label>
-          <input type="text" class="form-control form-control-sm text-center" formControlName="1" placeholder="客戶"
+          <!-- <input type="text" class="form-control form-control-sm text-center" formControlName="1" placeholder="客戶"
+            (blur)="inputValidators(fbGroup, 'r_Client')"> -->
+
+          <select class="form-control form-control-sm text-center" formControlName="r_Client"
             (blur)="inputValidators(fbGroup, 'r_Client')">
+            <option *ngFor="let item of client_List$ | async" [value]="item.c_Code+','+item.c_Name">
+              {{item.c_Code}} {{item.c_Name}}
+            </option>
+          </select>
         </div>
         <!-- Status -->
-        <div class="form-group col-3 mb-1">
+        <div class="form-group col-4 mb-1">
           <label [class.text-danger]="errorValidators['r_Status'].length && true">
             {{ errorValidators['r_Status'].length ? errorValidators['r_Status'] : "狀態" }}
           </label>
@@ -181,46 +193,48 @@
       </div>
     </div>
     <!-- FormArray -->
-    <div class="form-row border border-dark text-center mb-1"
-      *ngFor="let val of [].constructor(fb_Value['r_Date'].value.length) let i = index">
-      <div class="form-row col-12 position-relative">
-        <!-- Icon Btn Group -->
-        <div class="form-icon-group">
-          <!-- Badge Number -->
-          <b class="text-dark">{{i+1}}</b>
-          <!-- Icon Button -->
-          <i [ngClass]="['bi', i>0 ? 'text-danger bi-dash-square' : 'text-info bi-plus-square']"
-            [title]="i>0 ? '刪除':'新增'" (click)="update_FormArray(i)">
-          </i>
-        </div>
-        <!-- Dates -->
-        <div class="form-group col-6 mb-1" formArrayName="r_Dates">
-          <label [class.text-danger]="errorValidators['r_Dates'][i].length && true">
-            {{ errorValidators['r_Dates'][i].length ? errorValidators['r_Dates'][i] : "查修日期" }}
-          </label>
-          <input type="date" [id]="i" class="form-control form-control-sm text-center" [formControlName]="i"
-            (input)="date_Change($event.target)">
-        </div>
-        <!-- Minutes -->
-        <div class="form-group col-6 mb-1" formArrayName="r_Minutes">
-          <label [class.text-danger]="errorValidators['r_Minutes'][i] && true">
-            {{ errorValidators['r_Minutes'][i].length ? errorValidators['r_Minutes'][i] : "查修時間" }}
-          </label>
-          <div class="input-group">
-            <input type="number" id="r_Minutes" class="form-control form-control-sm text-center" step="10" min="0"
-              max="470" [formControlName]="i" (input)="minute_Change(i)">
-            <div class="input-group-prepend">
-              <i class="bi bi-clock input-group-text bg-white"></i>
+    <div class="items-scroll border border-dark">
+      <div class="form-row border border-dark text-center mt-1"
+        *ngFor="let val of [].constructor(fb_Value['r_Date'].value.length); let i = index;">
+        <div class="form-row col-12 position-relative">
+          <!-- Icon Btn Group -->
+          <div class="form-icon-group">
+            <!-- Badge Number -->
+            <b class="text-dark">{{i+1}}</b>
+            <!-- Icon Button -->
+            <i [ngClass]="['bi', i>0 ? 'text-danger bi-dash-square' : 'text-info bi-plus-square']"
+              [title]="i>0 ? '刪除':'新增'" (click)="update_FormArray(i)">
+            </i>
+          </div>
+          <!-- Dates -->
+          <div class="form-group col-6 mb-1" formArrayName="r_Dates">
+            <label [class.text-danger]="errorValidators['r_Dates'][i].length && true">
+              {{ errorValidators['r_Dates'][i].length ? errorValidators['r_Dates'][i] : "查修日期" }}
+            </label>
+            <input type="date" [id]="i" class="form-control form-control-sm text-center" [formControlName]="i"
+              (input)="date_Change($event.target)">
+          </div>
+          <!-- Minutes -->
+          <div class="form-group col-6 mb-1" formArrayName="r_Minutes">
+            <label [class.text-danger]="errorValidators['r_Minutes'][i] && true">
+              {{ errorValidators['r_Minutes'][i].length ? errorValidators['r_Minutes'][i] : "查修時間" }}
+            </label>
+            <div class="input-group">
+              <input type="number" id="r_Minutes" class="form-control form-control-sm text-center" step="10" min="0"
+                max="470" [formControlName]="i" (input)="minute_Change(i)">
+              <div class="input-group-prepend">
+                <i class="bi bi-clock input-group-text bg-white"></i>
+              </div>
             </div>
           </div>
-        </div>
-        <!-- Process -->
-        <div class="form-group col-12 mb-1" formArrayName="r_Process">
-          <label [class.text-danger]="errorValidators['r_Process'][i].length && true">
-            {{ errorValidators['r_Process'][i].length ? errorValidators['r_Process'][i] : "查修過程/備註" }}
-          </label>
-          <input type="text" class="form-control form-control-sm text-center" [formControlName]="i"
-            (blur)="inputValidators(fbGroup, 'r_Process')">
+          <!-- Process -->
+          <div class="form-group col-12 mb-1" formArrayName="r_Process">
+            <label [class.text-danger]="errorValidators['r_Process'][i].length && true">
+              {{ errorValidators['r_Process'][i].length ? errorValidators['r_Process'][i] : "查修過程/備註" }}
+            </label>
+            <input type="text" class="form-control form-control-sm text-center" [formControlName]="i"
+              (blur)="inputValidators(fbGroup, 'r_Process')">
+          </div>
         </div>
       </div>
     </div>

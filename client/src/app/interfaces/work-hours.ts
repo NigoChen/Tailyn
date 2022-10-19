@@ -14,6 +14,4 @@ export interface WorkHours {
     w_BDeduct: number;
     w_ODeduct: number;
     e_Name?: string;
-    s_Code?: string;
-    s_Title?: string;
 }

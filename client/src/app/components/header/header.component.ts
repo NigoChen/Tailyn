@@ -1,6 +1,5 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router, Event } from '@angular/router';
-import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-header',
@@ -23,10 +22,11 @@ export class HeaderComponent implements OnInit {
     }); 
   }
 
+  // Window Resize
   @HostListener('window:resize', ['$event'])
     onResize(event) {
       const w = document.documentElement.clientWidth;
-      const h = document.documentElement.clientHeight;      
+      const h = document.documentElement.clientHeight; 
 
       // (this.siderbar['elementRef'].nativeElement as HTMLElement).style.display = 'none';
         // this.siderbar['elementRef'].nativeElement.style.transition = 'none';

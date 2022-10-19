@@ -19,7 +19,7 @@ import { HeaderComponent } from './header/header.component';
 import { ContentHeaderComponent } from './content-header/content-header.component';
 import { FooterComponent } from './footer/footer.component';
 import { WorkHoursService } from '../services/work-hours.service';
-import { StandService } from '../services/stand.service';
+import { ClientService } from '../services/client.service';
 import { SplitePipe } from '../pipes/splite.pipe';
 import { RepairService } from '../services/repair.service';
 
@@ -50,7 +50,7 @@ import { RepairService } from '../services/repair.service';
     EmployeeService,
     WorkHoursService,
     RepairService,
-    StandService,
+    ClientService,
     // { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
 })

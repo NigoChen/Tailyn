@@ -10,9 +10,6 @@ class RepairRoutes {
     config() {
         this.router.post('/create', repair_controller_1.repairController.create);
         this.router.get('/read', repair_controller_1.repairController.read);
-        this.router.get('/find/one/:q', repair_controller_1.repairController.findOne);
-        this.router.get('/find/like/:q', repair_controller_1.repairController.findLike);
-        this.router.put('/update', repair_controller_1.repairController.update);
         this.router.delete('/delete/:id', repair_controller_1.repairController.delete);
     }
 }

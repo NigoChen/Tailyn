@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { filter, map } from 'rxjs/operators';
 import { Employee } from 'src/app/interfaces/employee';
 import { ModalService } from 'src/app/services/modal.service';
 
@@ -93,10 +94,8 @@ export class ContentHeaderComponent implements OnInit {
     }
 
     // When router active
-    this.router.events.subscribe(event => {
-      if(event instanceof NavigationEnd)
-      {
-        if(event.url == '/Tailyn/Employee' && this.user.e_Lv != 3)
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => {      
+        if(e.url == '/Tailyn/Employee' && this.user.e_Lv != 3)
         {
           this.check_Lv = false;
         }
@@ -108,13 +107,11 @@ export class ContentHeaderComponent implements OnInit {
         {
           this.check_Lv = true;
         }
-      }
     });
   }
   
   // Check FormGroup Value
-  get check_Value(): boolean {
-    let lv: boolean = false;
+  get check_Value(): boolean {    
     if(this.fb_Value_Index[0])
     {
       // object to array

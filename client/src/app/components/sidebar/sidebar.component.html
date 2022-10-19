@@ -25,14 +25,14 @@
       </a>
     </li>
   </ul>
-  <ul class="nav px-3">
+  <ul class="nav px-2">
     <li class="nav-item text-nowrap">
-      <div ngbDropdown class="d-inline-block" display="dynamic">
-        <a class="nav-link text-white" id="dropdownBasic1" ngbDropdownToggle>
+      <div ngbDropdown class="d-inline-block" style="cursor: pointer;" display="dynamic">
+        <a class="nav-link p-1 p-md-2 text-white" id="dropdownBasic1" ngbDropdownToggle>
           <i class="bi bi-person-circle"></i>
           <span class="p-1">{{ user.e_JobNumber }}</span>
         </a>
-        <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="shadow header_DropMenu bg-dark">
+        <div ngbDropdownMenu class="shadow header_DropMenu bg-dark">
           <button ngbDropdownItem class="text-center mb-3" (click)="show_Modal()">{{ user.e_Name }}</button>
           <button ngbDropdownItem class="text-center" (click)="logout()">登出</button>
         </div>

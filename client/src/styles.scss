@@ -15,21 +15,16 @@
   padding: 0;
   box-sizing: border-box;
 }
-/*** body ***/
-body
-{
-  font-size: .875rem;
-}
 /*** html ***/
 html
 {
   overflow-x: hidden;
-  scroll-padding-top: 7rem;
+  // scroll-padding-top: 7rem;
   scroll-behavior: smooth;
 }
 html::-webkit-scrollbar
 {
-  width: .6rem;
+  width: 5px;
 }
 html::-webkit-scrollbar-track
 {
@@ -37,8 +32,91 @@ html::-webkit-scrollbar-track
 }
 html::-webkit-scrollbar-thumb
 {
-  background-color: rgba(255, 14, 14, 0.6);
+  background-color: rgba(172, 12, 12, 0.7);
   border-radius: 5rem;
+}
+/*** body ***/
+body
+{
+  overflow-x: hidden;
+  font-size: .875rem;
+}
+/** Grid Table ***/
+.grid-container
+{
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 20px;
+  justify-items: center;
+  align-items: stretch;
+  gap: 0.6em 0;
+  grid-template-areas:
+  "grid-header"
+  "grid-body";
+  height: 100vh;
+  font-size: 1em;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+.grid-header div
+{
+  background-color:rgb(246, 246, 246);
+}
+.grid-body
+{
+  display: grid;
+  gap: 0.3em 0;
+  overflow: hidden;
+}
+.grid-container::-webkit-scrollbar,
+.grid-body::-webkit-scrollbar
+{
+  height: 5px;
+}
+.items-scroll::-webkit-scrollbar-track,
+.grid-container::-webkit-scrollbar-track,
+.grid-body::-webkit-scrollbar-track
+{
+  background-color: transparent;
+}
+.items-scroll::-webkit-scrollbar-thumb,
+.grid-container::-webkit-scrollbar-thumb,
+.grid-body::-webkit-scrollbar-thumb
+{
+  background-color: rgba(172, 12, 12, 0.7);
+  border-radius: 5rem;
+}
+.grid-header > div,
+.grid-content > div
+{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: black 1px solid;
+}
+.grid-content:hover > div
+{
+  background-color:rgb(246, 246, 246);
+}
+.grid-content.grid-selected > div
+{
+  border: black 2px solid;
+  font-weight: 600;
+}
+.grid-content > div > div
+{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.grid-content > div > div~div
+{
+    border-top: 1px black solid;
 }
 /*** Form Icon Button Group ***/
 .form-icon-group
@@ -131,7 +209,8 @@ table td
 }
 .pagination .page-item.active .page-link
 {
-  border-color: var(--red-color) !important;
+  border-color: var(--white-color) !important;
+  background-color: rgba(212, 0, 0, 0.7) !important;
 }
 .pagination .page-link
 {
@@ -148,6 +227,44 @@ table td
   }
 }
 /*** @media only screen ***/
+@media (max-width: 860px)
+{
+  /** Grid Table ***/
+  .grid-container
+  {
+    grid-template-columns: 35px;
+    grid-template-rows: 1fr;
+    justify-items: stretch;
+    gap: 0 0.6em;
+    grid-template-areas:
+    "grid-header grid-body";
+    font-size: xx-small;
+    max-height: 650px;
+    grid-auto-flow: column;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .grid-body
+  {
+    grid-template-columns: repeat(1fr, 1fr);
+    grid-template-rows: 1fr;
+    grid-gap: 0 0.2em;
+    grid-auto-columns: 150px;
+    grid-auto-flow: column;
+    overflow-x: scroll;
+    padding-right: 2px;
+  }
+  .grid-content > div
+  {
+    flex-direction: row;
+    word-break: break-all;
+  }
+  .grid-content > div > div~div
+  {
+    border-top: 0;
+    border-left: 1px black solid;
+  }
+}
 @media (max-width: 575.99px)
 {
   /*** pagination ***/
