@@ -39,9 +39,9 @@
       </div>
       <div>
         <span>
-          {{ item.e_Date | splite:2 }}年
+          {{ item.e_Date | splite:2:',' }}年
           /
-          {{ item.e_Date | splite:3 }}月
+          {{ item.e_Date | splite:3:',' }}月
         </span>
       </div>
     </div>
@@ -50,10 +50,12 @@
 <!-- /Grid Table -->
 
 <!-- Pagination -->
-<div class="d-flex justify-content-center pagination pagination-sm mt-2">
-  <ngb-pagination [collectionSize]="result_Data.length" [(page)]="page" [pageSize]="10" [maxSize]="100" [rotate]="true"
-    [boundaryLinks]="true" (pageChange)="refreshResult_List()"></ngb-pagination>
-</div>
+<ng-container *ngIf="result_Data.length > pageSize">
+  <div class="d-flex justify-content-center pagination pagination-sm mt-2">
+    <ngb-pagination [collectionSize]="result_Data.length" [(page)]="page" [pageSize]="pageSize" [maxSize]="100"
+      [rotate]="true" [boundaryLinks]="true" (pageChange)="refreshResult_List()"></ngb-pagination>
+  </div>
+</ng-container>
 <!-- /Pagination -->
 
 <ng-template #form_>

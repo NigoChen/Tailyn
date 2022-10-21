@@ -2,7 +2,6 @@ import { Component, ComponentFactoryResolver, OnInit, ViewChild} from '@angular/
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
-import { AlertsDirective } from 'src/app/directives/alerts.directive';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
 
@@ -53,8 +52,6 @@ export class LoginComponent implements OnInit {
     ip: '',
     counter: 0
   };
-
-  @ViewChild(AlertsDirective) alerts: AlertsDirective;
 
   // Constructor
   constructor(

@@ -4,25 +4,33 @@
 </div>
 <!-- /Form -->
 
+
+
+
+<!-- <button class="btn btn-primary" type="button" [appFilterData]="result_List" sortBy="r_Client">Text</button> -->
 <!-- Grid Table -->
 <div class="grid-container" [ngStyle]="{'align-items': result_List.length > 5 ? 'stretch':'start'}">
   <div class="grid-header">
-    <div>#</div>
-    <div>工號</div>
+    <div [appSortData]="result_List" sortBy="id">#</div>
+    <!-- <th [mdbTableSort]="result_List" sortBy="i_Produced" style="cursor: pointer;"title="生產排序"> -->
+    <div [appSortData]="result_List" sortBy="r_JobNumber">工號</div>
     <div>客戶</div>
-    <div>序號</div>
+    <div [appSortData]="result_List" sortBy="r_SerialNumber">序號</div>
     <div>工單</div>
     <div>機種</div>
     <div>不良原因</div>
     <div>查修過程</div>
-    <div>日期工時</div>
+    <div>工時</div>
     <div>狀態</div>
+    <div [appSortData]="result_List" sortBy="r_Date">日期</div>
   </div>
+  <!-- <tr *ngFor="let item of result_List.slice().reverse() | slice: pagination.startLimit:(pagination.endLimit); let i=index"
+  style="cursor: pointer; text-align: center;" [title]="item.i_Order" -->
   <div class="grid-body">
     <div *ngFor="let item of result_List; let i = index" (click)="user.e_Lv > 1 && choose(item)"
       [ngClass]="{'grid-content': true, 'grid-selected': item?.r_Id == fb_Value_Index[0]}"
-      [ngStyle]="{'grid-column': win_Size ? 'span '+item.r_Process.split(',').length : 'span 1'}">
-      <div>{{i+1}}</div>
+      [ngStyle]="{'grid-column': win_Size ? 'span '+(item.r_Process | splite:null:',').length : 'span 1'}">
+      <div>{{ item['id'] }}</div>
       <div>
         <span>
           {{ item.r_JobNumber }}
@@ -50,20 +58,20 @@
       </div>
       <div>
         <span>
-          {{ item.r_Error | splite:0 }} {{ item.r_Error | splite:1 }}
+          {{ item.r_Error | splite:0:',' }} {{ item.r_Error | splite:1:',' }}
         </span>
       </div>
       <div>
-        <div *ngFor="let val of item.r_Process.split(','); let y = index">
+        <div *ngFor="let val of item.r_Process | splite:null:','; let y = index">
           <span>
-            {{ item.r_Process | splite:y }}
+            {{ item.r_Process | splite:y:',' }}
           </span>
         </div>
       </div>
       <div>
-        <div *ngFor="let val of item.r_Date.split(','); let y = index">
+        <div *ngFor="let val of item.r_Date | splite:null:','">
           <span>
-            {{ item.r_Date | splite:y }}
+            {{ val | splite:1:'='}}
           </span>
         </div>
       </div>
@@ -72,16 +80,25 @@
           {{ item.r_Status }}
         </span>
       </div>
+      <div>
+        <div *ngFor="let val of item.r_Date | splite:null:','">
+          <span>
+            {{ val | splite:0:'='}}
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 <!-- /Grid Table -->
 
 <!-- Pagination -->
-<!-- <div class="d-flex justify-content-center pagination pagination-sm mt-2">
-    <ngb-pagination [collectionSize]="result_Data.length" [(page)]="page" [pageSize]="pageSize" [maxSize]="100" [rotate]="true"
-      [boundaryLinks]="true" (pageChange)="refreshResult_List()"></ngb-pagination>
-  </div> -->
+<ng-container *ngIf="result_Data.length > pageSize">
+  <div class="d-flex justify-content-center pagination pagination-sm mt-2">
+    <ngb-pagination [collectionSize]="result_Data.length" [(page)]="page" [pageSize]="pageSize" [maxSize]="100"
+      [rotate]="true" [boundaryLinks]="true" (pageChange)="refreshResult_List()"></ngb-pagination>
+  </div>
+</ng-container>
 <!-- /Pagination -->
 
 <ng-template #form_>

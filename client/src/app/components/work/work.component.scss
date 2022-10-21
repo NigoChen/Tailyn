@@ -2,7 +2,7 @@
 .grid-header
 {
   display: grid;
-  grid-template-columns: 28px 145px 150px 150px 150px 150px 50px 50px 487px 100px; //1317
+  grid-template-columns: 26px 145px 150px 150px 150px 150px 75px 50px 485px 90px;
   grid-template-rows: 1fr;
   gap: 0 0.2em;
   font-weight: 600;
@@ -10,7 +10,7 @@
 .grid-content
 {
   display: grid;
-  grid-template-columns: 28px 145px 150px 150px 150px 150px 50px 50px 487px 100px; //1317
+  grid-template-columns: 26px 145px 150px 150px 150px 150px 75px 50px 485px 90px;
   gap: 0 0.2em;
   cursor: pointer;
 }
@@ -51,13 +51,13 @@
   .grid-header
   {
     grid-template-columns: 1fr;
-    grid-template-rows: 25px 40px 40px 40px 110px 110px 25px 25px 180px 25px;
+    grid-template-rows: 22px 40px 40px 40px 110px 110px 25px 25px 185px 24px;
     gap: 0.2em 0;
   }
   .grid-content
   {
     grid-template-columns: 1fr;
-    grid-template-rows: 25px 40px 40px 40px 110px 110px 25px 25px 180px 25px;
+    grid-template-rows: 22px 40px 40px 40px 110px 110px 25px 25px 185px 24px;
     gap: 0.2em 0;
   }
 }

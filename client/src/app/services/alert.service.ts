@@ -1,7 +1,6 @@
 import { ComponentFactoryResolver, Injectable, ViewChild } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { AlertComponent } from '../components/alert/alert.component';
-import { AlertsDirective } from '../directives/alerts.directive';
 import { Alerts } from '../interfaces/alerts';
 
 @Injectable({

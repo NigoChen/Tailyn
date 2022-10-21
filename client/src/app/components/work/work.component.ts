@@ -95,6 +95,8 @@ export class WorkComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.modalService.set_FormGroup(this.fbGroup);
     this.modalService.set_Form(this.form_);
+    // Window Resize
+    this.win_Size = (document.documentElement.clientWidth > 860) ? false : true;
   }
 
   // Default FormGroup
@@ -169,7 +171,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
         
         if(key == 'w_Stand')
         {
-          this.fbGroup.setControl(key, this.fb.array([this.fb.control('40,維修',validators)]));
+          this.fbGroup.setControl(key, this.fb.array([this.fb.control('40 維修',validators)]));
         }
         else if(key == 'w_Quantity')
         {
@@ -235,7 +237,7 @@ export class WorkComponent implements OnInit, AfterViewInit {
       }
 
       this.fbGroup.setControl(name, formArray);
-    }
+    }    
   }
 
   // User Profile
@@ -325,6 +327,8 @@ export class WorkComponent implements OnInit, AfterViewInit {
     this.result_List = this.result_Data
     .map((country, i) => ({id: i + 1, ...country}))
     .slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
+    // Go Top
+    window.scroll(0, 0);
   }
 
   // Table Short
@@ -597,8 +601,6 @@ export class WorkComponent implements OnInit, AfterViewInit {
   // Window Resize
   @HostListener('window:resize', ['$event'])
     onResize(event) {
-      const w = document.documentElement.clientWidth;
-      const h = document.documentElement.clientHeight;
-      this.win_Size = (w > 860) ? false : true;
+      this.win_Size = (document.documentElement.clientWidth > 860) ? false : true;
   }
 }

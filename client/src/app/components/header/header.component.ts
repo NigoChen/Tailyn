@@ -26,8 +26,7 @@ export class HeaderComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
     onResize(event) {
       const w = document.documentElement.clientWidth;
-      const h = document.documentElement.clientHeight; 
-
+      // const h = document.documentElement.clientHeight; 
       // (this.siderbar['elementRef'].nativeElement as HTMLElement).style.display = 'none';
         // this.siderbar['elementRef'].nativeElement.style.transition = 'none';
 

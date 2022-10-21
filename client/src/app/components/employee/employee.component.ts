@@ -247,6 +247,8 @@ export class EmployeeComponent implements OnInit {
     this.result_List = this.result_Data
     .map((country, i) => ({id: i + 1, ...country}))
     .slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
+    // Go Top
+    window.scroll(0, 0);
   }
 
   // Table Short

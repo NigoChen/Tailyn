@@ -1,7 +1,6 @@
 import { Component, ComponentFactoryResolver, ElementRef, EventEmitter, Input, OnInit, Output, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
-import { AlertsDirective } from 'src/app/directives/alerts.directive';
 import { Alerts } from 'src/app/interfaces/alerts';
 import { Modal } from 'src/app/interfaces/modal';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';

@@ -4,8 +4,8 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'splite'
 })
 export class SplitePipe implements PipeTransform {
-  transform(value: string, index: number): string {        
-    const result = value.split(',');
-    return result[index];
+  transform(value: string, index?: any, regExp?: string): any {     
+    const result = value.split(regExp);
+    return (index !=null) ? result[index] : result;
   }
 }

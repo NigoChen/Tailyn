@@ -9,6 +9,7 @@ import { Repair } from 'src/app/interfaces/repair';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
 import { SplitePipe } from 'src/app/pipes/splite.pipe';
 import { AlertService } from 'src/app/services/alert.service';
+import { FilterSortService } from 'src/app/services/filter-sort.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
 import { ModalService } from 'src/app/services/modal.service';
@@ -26,6 +27,7 @@ export class RepairComponent implements OnInit {
   // Data
   public result_Data: Repair[];
   public result_List: Repair[];
+  public result_List_Filter$: Observable<Repair[]>;
   // Client Data List
   public client_List$: Observable<Array<Client>> | Observable<[]>;
   // User
@@ -48,7 +50,8 @@ export class RepairComponent implements OnInit {
     private repairService: RepairService,
     private fb: FormBuilder,
     private modalService: ModalService,
-    private alertService: AlertService)
+    private alertService: AlertService,
+    private filterSortService: FilterSortService)
     {}
 
   ngOnInit(): void {
@@ -63,7 +66,10 @@ export class RepairComponent implements OnInit {
 
   ngAfterViewInit(): void {
     this.modalService.set_FormGroup(this.fbGroup);
-    this.modalService.set_Form(this.form_);
+    this.modalService.set_Form(this.form_);    
+    this.filterSortService.get_data_().subscribe(res => this.result_List = res);
+    // Window Resize
+    this.win_Size = (document.documentElement.clientWidth > 860) ? false : true;
   }
 
   // Default FormGroup
@@ -353,7 +359,39 @@ export class RepairComponent implements OnInit {
           || (res.r_Error.indexOf(term) > -1)
           || res.r_Client.toLowerCase().includes(term)
           || (res.r_Date.indexOf(term) > -1)
-    });
+    });       
+
+  }
+
+  // Sort Data
+  sort(types: any): void {
+    
+    let result: any;
+
+    if (typeof types === "string")
+    {
+      // return [...this.result_List[]].sort().join('');
+
+    }
+    else if(types == "number")
+    {
+
+    }
+    else if(Array.isArray(types))
+    {
+
+    }
+
+    // this.result_List = this.result_Data.filter((res: any) => {      
+    //   return res[name].toLowerCase().includes(term)
+    //       || res.r_SerialNumber.includes(term)
+    //       || res.r_WorkOrder.toLowerCase().includes(term)
+    //       || res.r_Model.toLowerCase().includes(term)
+    //       || res.r_Status.includes(term)
+    //       || (res.r_Error.indexOf(term) > -1)
+    //       || res.r_Client.toLowerCase().includes(term)
+    //       || (res.r_Date.indexOf(term) > -1)
+    // });
   }
 
   // Pagination
@@ -361,7 +399,10 @@ export class RepairComponent implements OnInit {
     this.result_List = this.result_Data
     .map((country, i) => ({id: i + 1, ...country}))
     .slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
+    // Go Top
+    window.scroll(0, 0);
   }
+
 
   // Table Short
   table_List_Sort(name: string = 'w_Id', isAsc: boolean = false): void {    
@@ -496,8 +537,6 @@ export class RepairComponent implements OnInit {
     // Window Resize
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    const w = document.documentElement.clientWidth;
-    const h = document.documentElement.clientHeight;
-    this.win_Size = (w > 860) ? false : true;
+    this.win_Size = (document.documentElement.clientWidth > 860) ? false : true;
   }
 }

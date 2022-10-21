@@ -5,14 +5,11 @@ import { Component, Input, OnInit } from '@angular/core';
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.scss']
 })
-export class AlertComponent implements OnInit {
+export class AlertComponent {
 
   @Input() public status: boolean = false;
   @Input() public types: string = 'danger';
   @Input() public messages: string = '...';
   
   constructor() { }
-
-  ngOnInit(): void {
-  }
 }

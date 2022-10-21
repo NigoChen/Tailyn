@@ -46,17 +46,22 @@ body
 {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 20px;
-  justify-items: center;
-  align-items: stretch;
-  gap: 0.6em 0;
+  grid-template-rows: 25px auto;
+    // grid-template-rows: repeat(30px,minmax(30px,auto-fit));
+  justify-items: start;
+  gap: 3px 0;
   grid-template-areas:
   "grid-header"
   "grid-body";
-  height: 100vh;
+  height: calc(100vh - 10px);
   font-size: 1em;
-  margin-top: 1rem;
+  padding-bottom: 2px;
+  overflow-x: scroll;
+}
+.grid-container > *
+{
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 .grid-header div
 {
@@ -65,8 +70,7 @@ body
 .grid-body
 {
   display: grid;
-  gap: 0.3em 0;
-  overflow: hidden;
+  gap: 2px 0;
 }
 .grid-container::-webkit-scrollbar,
 .grid-body::-webkit-scrollbar
@@ -232,32 +236,29 @@ table td
   /** Grid Table ***/
   .grid-container
   {
-    grid-template-columns: 35px;
+    grid-template-columns: 35px auto;
     grid-template-rows: 1fr;
     justify-items: stretch;
-    gap: 0 0.6em;
+    gap: 0 2px;
     grid-template-areas:
     "grid-header grid-body";
     font-size: xx-small;
     max-height: 650px;
-    grid-auto-flow: column;
-    overflow-x: auto;
-    overflow-y: hidden;
   }
   .grid-body
   {
-    grid-template-columns: repeat(1fr, 1fr);
-    grid-template-rows: 1fr;
     grid-gap: 0 0.2em;
     grid-auto-columns: 150px;
     grid-auto-flow: column;
     overflow-x: scroll;
+    overflow-y: hidden;
     padding-right: 2px;
+    padding-bottom: 3px;
   }
   .grid-content > div
   {
     flex-direction: row;
-    word-break: break-all;
+    // word-break: break-all;
   }
   .grid-content > div > div~div
   {

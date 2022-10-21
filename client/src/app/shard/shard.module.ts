@@ -5,17 +5,19 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoadingComponent } from '../components/loading/loading.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AlertComponent } from '../components/alert/alert.component';
-import { AlertsDirective } from '../directives/alerts.directive';
 import { BootstrapModule } from '../bootstrap/bootstrap.module';
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ErrorInterceptor } from '../helps/error.interceptor';
+import { FilterDataDirective } from '../directives/filter-data.directive';
+import { SortDataDirective } from '../directives/sort-data.directive';
 
 @NgModule({
   declarations: [
     LoadingComponent,    
     AlertComponent,
-    AlertsDirective,
+    FilterDataDirective,
+    SortDataDirective
   ],
   imports: [
     CommonModule,
@@ -33,7 +35,8 @@ import { ErrorInterceptor } from '../helps/error.interceptor';
     BootstrapModule,
     LoadingComponent,
     AlertComponent,
-    AlertsDirective,
+    FilterDataDirective,
+    SortDataDirective,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
