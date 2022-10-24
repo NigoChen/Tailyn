@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 import { Urls } from '../configs/url.config';
 import { Repair } from '../interfaces/repair';
@@ -9,7 +9,11 @@ import { Repair } from '../interfaces/repair';
 
 export class RepairService {
 
-  constructor(private http: HttpClient) { }
+  public repair: BehaviorSubject<Repair[]>;
+
+  constructor(private http: HttpClient) {
+    this.repair = new BehaviorSubject<Repair[]>([]);
+  }
   
   private handleError(errorResponse: HttpErrorResponse)
   {
@@ -33,27 +37,9 @@ export class RepairService {
   {
     return this.http.get<Repair[]>(Urls.repair.read)
     .pipe(map(res => {
-      if(typeof res !== "object")
-      {
-        return [];
-      }
+      this.repair.next(res);
       return res;
     }),shareReplay(1),catchError(this.handleError));
-  }
-
-  // Find One
-  public findOne(user: object): Observable<Repair[]>
-  { 
-    const jString = JSON.stringify(user);
-    return this.http.get<Repair[]>(`${Urls.repair.findOne}/${jString}`)
-   .pipe(catchError(this.handleError));
-  }
-
-  // Find Like
-  public findLike(repair: string): Observable<Repair[]>
-  { 
-    return this.http.get<Repair[]>(`${Urls.repair.findLike}/${repair}`)
-   .pipe(catchError(this.handleError));
   }
 
   // Create

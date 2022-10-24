@@ -33,27 +33,8 @@ export class WorkHoursService {
   {
     return this.http.get<WorkHours[]>(Urls.workHours.read)
     .pipe(map(res => {
-      if(typeof res !== "object")
-      {
-        return [];
-      }
       return res;
     }),shareReplay(1),catchError(this.handleError));
-  }
-
-  // Find One
-  public findOne(user: object): Observable<WorkHours[]>
-  { 
-    const jString = JSON.stringify(user);
-    return this.http.get<WorkHours[]>(`${Urls.workHours.findOne}/${jString}`)
-   .pipe(catchError(this.handleError));
-  }
-
-  // Find Like
-  public findLike(workHours: string): Observable<WorkHours[]>
-  { 
-    return this.http.get<WorkHours[]>(`${Urls.workHours.findLike}/${workHours}`)
-   .pipe(catchError(this.handleError));
   }
 
   // Create

@@ -1,9 +1,10 @@
-import { Component, ComponentFactoryResolver, OnInit, ViewChild} from '@angular/core';
+import { Component, ComponentFactoryResolver, OnInit} from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
+import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
   selector: 'app-login',
@@ -20,13 +21,7 @@ export class LoginComponent implements OnInit {
   // progressbar Value
   public progressbar_Value: number = 25;
   // FormGroup
-  public fbGroup: FormGroup = this.fb.group({
-    jNumber: [null, Validators.required],
-    passWord: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
-    newPassWord: [null],
-    email: [null],
-    code: [null]
-  });
+  public fbGroup: FormGroup;
 
   // FormGroup Error
   public forms: {
@@ -55,15 +50,17 @@ export class LoginComponent implements OnInit {
 
   // Constructor
   constructor(
-    private loadingService: LoadingService,
-    private loginService: LoginService,
-    private fb: FormBuilder,
-    private router: Router,
-    private componentFactoryResolver: ComponentFactoryResolver
-    ){}
+              private loadingService: LoadingService,
+              private loginService: LoginService,
+              private fb: FormBuilder,
+              private router: Router,
+              private componentFactoryResolver: ComponentFactoryResolver,
+              private modalService: ModalService
+              ){}
 
   // NgOnInit
   ngOnInit(): void {
+    this.default_FormGroup();
     this.counter();
   }
 
@@ -78,6 +75,17 @@ export class LoginComponent implements OnInit {
     //   }
     // });
 
+  }
+
+  // Default FormGroup
+  default_FormGroup(): void {
+    this.fbGroup = this.fb.group({
+      jNumber: [null, Validators.required],
+      passWord: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+      newPassWord: [null],
+      email: [null],
+      code: [null]
+    });
   }
 
   // FormGroup Controls Value
@@ -129,7 +137,12 @@ export class LoginComponent implements OnInit {
       this.fb_Value['code'].updateValueAndValidity();
     }
 
-    this.fbGroup.reset();
+    this.fbGroup.reset(
+      {
+        jNumber: this.fb_Value['jNumber'].value,
+        email: this.fb_Value['email'].value
+      }
+    );
   }
 
   // User Ip
@@ -202,7 +215,6 @@ export class LoginComponent implements OnInit {
           this.progressbar_Show(false);
         },
         complete: () => {  
-
           if(this.status.email)
           {            
             this.fb_Value['newPassWord'].setValidators([Validators.required, Validators.minLength(3), Validators.maxLength(20)]);
@@ -237,14 +249,12 @@ export class LoginComponent implements OnInit {
           this.progressbar_Show(false);
         },
         complete: () => {  
-          
           if(this.status.account)
           {            
             this.progressbar_Show(true, true);
             this.loadingService.set_App_Loading(true);
             window.location.reload();
           }
-
           this.fbGroup.reset();
         }
       }
@@ -267,14 +277,13 @@ export class LoginComponent implements OnInit {
           this.progressbar_Show(this.status.system);
         },
         complete: () => {  
-        
           if(this.status.code)
           {            
             this.progressbar_Show(true, true);
-            this.counter();
             this.reset_Forms();
             this.fbGroup.reset();
             this.create_Time_Delay();
+            this.counter();
           }
         }
       }
@@ -330,6 +339,9 @@ export class LoginComponent implements OnInit {
 
   // Destroy
   ngOnDestroy(): void {
-    this.iscounter.unsubscribe();
+    if(this.iscounter)
+    {
+      this.iscounter.unsubscribe();
+    }
   }
 }

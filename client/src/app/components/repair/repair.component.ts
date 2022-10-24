@@ -1,7 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, ElementRef, HostListener, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { Client } from 'src/app/interfaces/client';
 import { Employee } from 'src/app/interfaces/employee';
 import { Modal } from 'src/app/interfaces/modal';
@@ -24,6 +24,13 @@ import { RepairService } from 'src/app/services/repair.service';
 export class RepairComponent implements OnInit {
   // Form
   @ViewChild('form_') form_: TemplateRef<HTMLElement>;
+  // Modal Subscription
+  private get_moda_: Subscription;
+  private get_Search_: Subscription;
+  private get_Create_: Subscription;
+  private get_Read_: Subscription;
+  private get_Update_: Subscription;
+  private get_Delete_: Subscription;
   // Data
   public result_Data: Repair[];
   public result_List: Repair[];
@@ -45,29 +52,27 @@ export class RepairComponent implements OnInit {
   public win_Size: boolean = false;
   
   constructor(
-    private loadingService: LoadingService,
-    private loginService: LoginService,
-    private repairService: RepairService,
-    private fb: FormBuilder,
-    private modalService: ModalService,
-    private alertService: AlertService,
-    private filterSortService: FilterSortService)
-    {}
+              private loadingService: LoadingService,
+              private loginService: LoginService,
+              private repairService: RepairService,
+              private fb: FormBuilder,
+              private modalService: ModalService,
+              private alertService: AlertService,
+              private filterSortService: FilterSortService){}
 
   ngOnInit(): void {
+    this.user = this.loginService.user.value;    
     this.default_FormGroup();
-    Reset_Validators(this.fbGroup);
     this.result_Data = [];
     this.result_List = [];
     this.read();
-    this.user_Profile();
     this.modal_Service();  
   }
 
   ngAfterViewInit(): void {
     this.modalService.set_FormGroup(this.fbGroup);
     this.modalService.set_Form(this.form_);    
-    this.filterSortService.get_data_().subscribe(res => this.result_List = res);
+    // this.filterSortService.get_data_().subscribe(res => this.result_List = res);
     // Window Resize
     this.win_Size = (document.documentElement.clientWidth > 860) ? false : true;
   }
@@ -96,12 +101,12 @@ export class RepairComponent implements OnInit {
 
   // Modal Service
   modal_Service(): void {
-    this.modalService.get_modal().subscribe((res: Modal) => this.reset_FormGroup(res.status));
-    this.modalService.get_Search().subscribe(res => this.search(res));
-    this.modalService.get_Create().subscribe(res => this.create(res));
-    this.modalService.get_Read().subscribe(res => this.read());
-    this.modalService.get_Update().subscribe(res => this.update(res));
-    this.modalService.get_Delete().subscribe(res => this.delete(res));
+    this.get_moda_   = this.modalService.get_modal().subscribe((res: Modal) => this.reset_FormGroup(res.status));
+    this.get_Search_ = this.modalService.get_Search().subscribe(res => this.search(res));
+    this.get_Create_ = this.modalService.get_Create().subscribe(res => this.create(res));
+    this.get_Read_   = this.modalService.get_Read().subscribe(res => this.read());
+    this.get_Update_ = this.modalService.get_Update().subscribe(res => this.update(res));
+    this.get_Delete_ = this.modalService.get_Delete().subscribe(res => this.delete(res));
   }
 
   // FormGroup Controls Value
@@ -135,7 +140,6 @@ export class RepairComponent implements OnInit {
   // Reset FormArray
   reset_FormArray(): void {  
     Object.keys(this.fbGroup.value).forEach((key, i) => {
-
       if(this.fb_Value[key].value instanceof Object)
       {        
         const validators: Validators = this.fb_Value[key].get('0').validator;
@@ -274,20 +278,17 @@ export class RepairComponent implements OnInit {
   }
 
   // User Profile
-  user_Profile(): void {
-    let user_Session: Employee | null = this.loginService.read_User_SessionStorage();
+  // user_Profile(): void {
+  //   let user_Session: Employee | null = this.loginService.read_User_SessionStorage();
 
-    if (user_Session)
-    {      
-        this.user = user_Session;
-    }
-  }
+  //   if (user_Session)
+  //   {      
+  //       this.user = user_Session;
+  //   }
+  // }
 
   // Create
-  create(fg: FormGroup): void {  
-
-    console.log(fg.value);
-    
+  create(fg: FormGroup): void {       
     this.repairService.create(fg.value)
       .subscribe(
         {
@@ -349,18 +350,23 @@ export class RepairComponent implements OnInit {
 
   // Search
   search(searchText: string): void {
+    const term = searchText.toLowerCase();
     this.result_List = this.result_Data.filter(res => {      
-      const term = searchText.toLowerCase();
       return res.r_JobNumber.toLowerCase().includes(term)
-          || res.r_SerialNumber.includes(term)
+          || res.r_SerialNumber.toLowerCase().includes(term)
           || res.r_WorkOrder.toLowerCase().includes(term)
           || res.r_Model.toLowerCase().includes(term)
-          || res.r_Status.includes(term)
+          || res.r_Status.toLowerCase().includes(term)
           || (res.r_Error.indexOf(term) > -1)
-          || res.r_Client.toLowerCase().includes(term)
+          || res.r_Client.includes(term)
           || (res.r_Date.indexOf(term) > -1)
-    });       
+    });      
 
+    this.result_Data = this.result_List;
+        
+    this.result_List = this.result_List
+    .map((country, i) => ({id: i + 1, ...country}))
+    .slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
   }
 
   // Sort Data
@@ -403,7 +409,6 @@ export class RepairComponent implements OnInit {
     window.scroll(0, 0);
   }
 
-
   // Table Short
   table_List_Sort(name: string = 'w_Id', isAsc: boolean = false): void {    
     this.result_List.sort((a:any, b:any) => {     
@@ -413,8 +418,6 @@ export class RepairComponent implements OnInit {
 
   // Update
   update(fg: FormGroup): void {
-    console.log(fg.value);
-
     this.repairService.create(fg.value)
       .subscribe(
         {
@@ -531,7 +534,12 @@ export class RepairComponent implements OnInit {
 
   // Destroy
   ngOnDestroy(): void {
-    this.modalService.set_FormGroup(null);
+    this.get_moda_.unsubscribe();
+    this.get_Search_.unsubscribe();
+    this.get_Create_.unsubscribe();
+    this.get_Read_.unsubscribe();
+    this.get_Update_.unsubscribe();
+    this.get_Delete_.unsubscribe();    
   }
 
     // Window Resize

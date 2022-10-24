@@ -7,4 +7,6 @@ export interface Employee {
     e_ConfirmPassword?: string;
     e_Lv: number;
     e_Date: string;
+    wkcount?: string;
+    rpcount?: string;
 }

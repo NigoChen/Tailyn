@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 import { Urls } from './../configs/url.config';
 import { Employee } from './../interfaces/employee';
@@ -9,7 +9,11 @@ import { Employee } from './../interfaces/employee';
 
 export class EmployeeService {
 
-  constructor(private http: HttpClient) { }
+  public employee: BehaviorSubject<Employee[]>;
+
+  constructor(private http: HttpClient) {
+    this.employee = new BehaviorSubject<Employee[]>([]);
+  }
   
   private handleError(errorResponse: HttpErrorResponse)
   {
@@ -32,28 +36,10 @@ export class EmployeeService {
   public read(): Observable<Employee[]>
   {
     return this.http.get<Employee[]>(Urls.employee.read)
-    .pipe(map(res => {
-      if(typeof res !== "object")
-      {
-        return [];
-      }
-      return res;
-    }),shareReplay(1),catchError(this.handleError));
-  }
-
-  // Find One
-  public findOne(user: object): Observable<Employee[]>
-  { 
-    const jString = JSON.stringify(user);
-    return this.http.get<Employee[]>(`${Urls.employee.findOne}/${jString}`)
-   .pipe(catchError(this.handleError));
-  }
-
-  // Find Like
-  public findLike(employee: string): Observable<Employee[]>
-  { 
-    return this.http.get<Employee[]>(`${Urls.employee.findLike}/${employee}`)
-   .pipe(catchError(this.handleError));
+      .pipe(map((res: Employee[]) => {
+        this.employee.next(res);
+        return res;
+      }),shareReplay(1),catchError(this.handleError));
   }
 
   // Create
@@ -67,19 +53,6 @@ export class EmployeeService {
   public update(employee: Employee): Observable<boolean>
   {        
     return this.http.put<boolean>(Urls.employee.update, employee)
-    .pipe(catchError(this.handleError));
-  }
-  
-  // concat
-  public concat(employee: Employee): Observable<boolean>
-  {        
-    return this.http.put<boolean>(Urls.employee.concat, employee)
-    .pipe(catchError(this.handleError));
-  }
-  // Replace
-  public replace(employee: Employee): Observable<boolean>
-  {        
-    return this.http.put<boolean>(Urls.employee.replace, employee)
     .pipe(catchError(this.handleError));
   }
 

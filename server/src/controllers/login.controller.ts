@@ -16,15 +16,8 @@ class LoginController
         const sql: string = `SELECT e_Id, e_Name, e_Email, e_JobNumber, e_Lv, e_Date FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}' AND e_Lv > 0`;
 
         await pool.then(con => {
-            return con.query(sql).then((result:Array<Object>) => {
-                if(result.length > 0)
-                {
-                    res.status(200).json(result);                    
-                }
-                else
-                {
-                    res.status(200).json([]);
-                }
+            return con.query(sql).then((result: Array<Object>) => {
+                res.status(200).json(result);
             });
         }).catch(err => res.status(404).send([]));
     }
@@ -61,7 +54,7 @@ class LoginController
 
     public async email(req: Request, res: Response): Promise<void>
     {
-        const data: any = req.body;
+        const data: any = req.body;        
 
         if(('email' in data) && ('jNumber' in data) && ('ip' in data))
         {                        
@@ -70,9 +63,8 @@ class LoginController
             await pool.then(con => {
                 return con.query(sql).then((result: Employee[]) => {
                     if (result.length > 0)
-                    {                        
+                    {                                                
                         send_Email(data.ip, result[0].e_Email);
-
                         res.status(200).send(true);
                     }
                     else
@@ -111,42 +103,38 @@ const send_Email = (user_Ip: string, user_Email: string): void =>  {
 
     emailHtml(user_Ip)
     
-    // // email setting
-    // const transporter = nodemailer.createTransport({
-    //     host: 'smtp.gmail.com',
-    //     port: 587,
-    //     secure: false,
-    //     auth: {
-    //         user: 'qwe286454@gmail.com',
-    //         pass: 'hmvpslfwussddpfx'
-    //     }
-    // });
+    // email setting
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: 'qwe286454@gmail.com',
+            pass: 'hmvpslfwussddpfx'
+        }
+    });
 
-    // // email content
-    // const mailOptions = {
-    //     from: '<qwe286454@gmail.com>',
-    //     to: `<${user_Email}>`,
-    //     subject: 'Tailyn 員工密碼通知書',
-    //     html: emailHtml(user_Ip)
-    // }
+    // email content
+    const mailOptions = {
+        from: '<qwe286454@gmail.com>',
+        to: `<${user_Email}>`,
+        subject: 'Tailyn 員工密碼通知書',
+        html: emailHtml(user_Ip)
+    }
 
-    // // send email
-    // transporter.sendMail(mailOptions, function(err) {        
-    //     if (err)
-    //     {
-    //         console.log(err);            
-    //     }
-    // });
+    // send email
+    transporter.sendMail(mailOptions, function(err) {        
+        if (err)
+        {
+            console.log(err);            
+        }
+    });
 
-    // transporter.close();
+    transporter.close();
 }
 
 const emailHtml = (ip: string): string => {
-    
-    const code: string = md5_Code();
-
-    console.log(code);
-    
+    const code: string = md5_Code();    
     let html: string = `<h3>來至IP <u>${ip}</u> 發送了，密碼重新設定通知書，<p>請在5分鐘內輸入代碼: ${code}</p></h3>`;
     return html;
 }

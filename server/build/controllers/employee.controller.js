@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.employeeController = void 0;
-const nodemailer_1 = __importDefault(require("nodemailer"));
 const database_1 = __importDefault(require("./../db/database"));
 const crypto_1 = __importDefault(require("crypto"));
 class EmployeeController {
@@ -47,74 +46,38 @@ class EmployeeController {
     read(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             // const sql:string = 'SELECT employee.* FROM employee WHERE NOT EXISTS(SELECT recycle.r_ClassId, recycle.r_Title FROM recycle WHERE employee.e_Id = recycle.r_ClassId AND recycle.r_Title = "員工") GROUP BY employee.e_Id';
-            const sql = 'SELECT * FROM employee';
+            const sql = `SELECT e.*, ` +
+                `(SELECT COUNT(*) FROM workhours WHERE e.e_JobNumber = workhours.w_JobNumber AND MONTH(workhours.w_Date) = MONTH(CURDATE())) AS wkcount, ` +
+                `(SELECT COUNT(*) FROM repair WHERE e.e_JobNumber = repair.r_JobNumber AND MONTH(SUBSTRING_INDEX(r_Date, '=', 1)) = MONTH(CURRENT_DATE())) AS rpcount ` +
+                `FROM employee AS e`;
+            // SELECT e.*, 
+            // (SELECT COUNT(*) FROM workhours WHERE e.e_JobNumber = workhours.w_JobNumber AND workhours.w_Date = CURDATE()) AS wkcount, 
+            // (SELECT COUNT(*) FROM repair WHERE e.e_JobNumber = repair.r_JobNumber AND SUBSTRING_INDEX(repair.r_Date, ',', 1)) AS rpcount 
+            // FROM employee AS e;
+            //                             SELECT e.*, 
+            // (SELECT COUNT(*) FROM workhours WHERE e.e_JobNumber = workhours.w_JobNumber) AS wkcount, 
+            // (SELECT COUNT(*) FROM repair WHERE e.e_JobNumber = repair.r_JobNumber) AS rpcount 
+            // FROM employee AS e
+            //         SELECT co.*, 
+            //     COALESCE(mod.moduleCount,0) AS moduleCount,
+            //     COALESCE(vid.vidCount,0) AS vidCount
+            // FROM courses AS co
+            //     LEFT JOIN (
+            //             SELECT COUNT(*) AS moduleCount, course_id AS courseId 
+            //             FROM modules
+            //             GROUP BY course_id
+            //         ) AS mod
+            //         ON mod.courseId = co.id
+            //     LEFT JOIN (
+            //             SELECT COUNT(*) AS vidCount, course_id AS courseId 
+            //             FROM videos
+            //             GROUP BY course_id
+            //         ) AS vid
+            //         ON vid.courseId = co.id
+            // ORDER BY co.id DESC
             yield database_1.default.then(con => {
                 return con.query(sql).then((result) => {
-                    if (result.length > 0) {
-                        res.status(200).json(result);
-                    }
-                    else {
-                        res.status(200).json([]);
-                    }
-                });
-            })
-                .catch(err => {
-                res.status(404).send([]);
-            });
-        });
-    }
-    login(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const data = req.body;
-            data.passWord = md5_PassWord(data.passWord);
-            const sql = `SELECT * FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}'`;
-            yield database_1.default.then(con => {
-                return con.query(sql).then((result) => {
-                    if (result.length > 0) {
-                        res.status(200).json(result);
-                    }
-                    else {
-                        res.status(200).json([]);
-                    }
-                });
-            })
-                .catch(err => {
-                res.status(404).send([]);
-            });
-        });
-    }
-    findOne(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const user = JSON.parse(req.params.q);
-            const sql = `SELECT e_JobNumber,e_Name,e_Email,e_Lv,e_Inventory,e_Img FROM employee WHERE e_Name = '${user.e_Name}' AND e_JobNumber = '${user.e_JobNumber}'`;
-            yield database_1.default.then(con => {
-                return con.query(sql).then((result) => {
-                    if (result.length > 0) {
-                        res.status(200).json(result);
-                    }
-                    else {
-                        res.status(200).json([]);
-                    }
-                });
-            })
-                .catch(err => {
-                res.status(404).send([]);
-            });
-        });
-    }
-    findLike(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // con.query('DESCRIBE employee');
-            const like = req.params.q;
-            const sql = `SELECT * FROM employee WHERE e_JobNumber = '${like}' OR e_Name = '${like}'`;
-            yield database_1.default.then(con => {
-                return con.query(sql).then((result) => {
-                    if (result.length > 0) {
-                        res.status(200).json(result);
-                    }
-                    else {
-                        res.status(200).json([]);
-                    }
+                    res.status(200).json(result);
                 });
             })
                 .catch(err => {
@@ -155,71 +118,6 @@ class EmployeeController {
             });
         });
     }
-    update_PassWord(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const data = req.body;
-            if (email_Code == data.code) {
-                data.newPassWord = md5_PassWord(data.newPassWord);
-                const sql = `UPDATE employee SET e_PassWord = '${data.newPassWord}' WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
-                yield database_1.default.then(con => {
-                    return con.query(sql).then((result) => {
-                        if (result.affectedRows > 0) {
-                            res.status(200).send(true);
-                        }
-                        else {
-                            res.status(200).send(false);
-                        }
-                    });
-                })
-                    .catch(err => {
-                    res.status(404).send(false);
-                });
-            }
-            else {
-                res.status(200).send(false);
-            }
-        });
-    }
-    concat(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const data = req.body;
-            const sql = `UPDATE employee SET e_Inventory = CONCAT(e_Inventory, ',') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`;
-            // const query_ = con.query(`UPDATE employee SET e_Inventory = CONCAT(e_Inventory, '${data.e_Inventory},') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
-            yield database_1.default.then(con => {
-                return con.query(sql).then((result) => {
-                    if (result.affectedRows > 0) {
-                        res.status(200).send(true);
-                    }
-                    else {
-                        res.status(200).send(false);
-                    }
-                });
-            })
-                .catch(err => {
-                res.status(404).send(false);
-            });
-        });
-    }
-    replace(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const data = req.body;
-            yield database_1.default.then(con => {
-                const sql = `UPDATE employee SET e_Inventory = REPLACE(TRIM(e_Inventory), ',', '') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`;
-                // const query_ = con.query(`UPDATE employee SET e_Inventory = REPLACE(TRIM(e_Inventory), '${data.e_Inventory},', '') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
-                return con.query(sql).then((result) => {
-                    if (result.affectedRows > 0) {
-                        res.status(200).send(true);
-                    }
-                    else {
-                        res.status(200).send(false);
-                    }
-                });
-            })
-                .catch(err => {
-                res.status(404).send(false);
-            });
-        });
-    }
     delete(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const id = req.params.id;
@@ -239,31 +137,6 @@ class EmployeeController {
             });
         });
     }
-    email(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const data = req.body;
-            if (('email' in data) && ('jNumber' in data) && ('ip' in data)) {
-                const sql = `SELECT e_JobNumber,e_Email FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
-                yield database_1.default.then(con => {
-                    return con.query(sql).then((result) => {
-                        if (result.length > 0) {
-                            send_Email(data.ip, result[0].e_Email);
-                            res.status(200).send(true);
-                        }
-                        else {
-                            res.status(200).send(false);
-                        }
-                    });
-                })
-                    .catch(err => {
-                    res.status(404).send(false);
-                });
-            }
-            else {
-                res.status(200).send(true);
-            }
-        });
-    }
 }
 // check mumber
 // const isBase64 = (encodedString:string) => {
@@ -274,48 +147,5 @@ class EmployeeController {
 const md5_PassWord = (passWord) => {
     const md5 = crypto_1.default.createHash('md5');
     return md5.update(passWord).digest('hex');
-};
-// Create MD5 Hex Number
-let email_Code = '';
-const md5_Code = () => {
-    const md5 = crypto_1.default.createHash('md5');
-    const ramdom_Number = Math.floor(Math.random() * 100);
-    const code = md5.update(ramdom_Number.toString()).digest('hex');
-    email_Code = code;
-    return code;
-};
-// Email Setting
-const send_Email = (user_Ip, user_Email) => {
-    // emailHtml(user_Ip)
-    // email setting
-    const transporter = nodemailer_1.default.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-            user: 'qwe286454@gmail.com',
-            pass: 'hmvpslfwussddpfx'
-        }
-    });
-    // email content
-    const mailOptions = {
-        from: '<qwe286454@gmail.com>',
-        to: `<${user_Email}>`,
-        subject: 'Tailyn 員工密碼通知書',
-        html: emailHtml(user_Ip)
-    };
-    // send email
-    transporter.sendMail(mailOptions, function (err) {
-        if (err) {
-            console.log(err);
-        }
-    });
-    transporter.close();
-};
-const emailHtml = (ip) => {
-    const code = md5_Code();
-    console.log(code);
-    let html = `<h3>來至IP <u>${ip}</u> 發送了，密碼重新設定通知書，<p>請在5分鐘內輸入代碼: ${code}</p></h3>`;
-    return html;
 };
 exports.employeeController = new EmployeeController();

@@ -90,10 +90,9 @@ class RepairController
                             
         await pool.then(con => {
             return con.query(sql).then((result: any) => {   
-                                
-                if (result.insertId > 0)
+                if(result.insertId > 0)
                 {                    
-                    // res.status(200).send(true);
+                    res.status(200).send(true);
                 }
                 else
                 {
@@ -108,10 +107,17 @@ class RepairController
 
     public async read(req: Request, res: Response): Promise<void>
     {
-        const sql: string = `SELECT repair.*,`+
-                            `client.c_Code AS 'CODE',`+
-                            `client.c_Name AS 'NAME' `+
-                            `FROM repair, client GROUP BY repair.r_Id;`;
+        const sql: string = `SELECT r.*,`+
+                            `e.e_JobNumber, e.e_Name,`+
+                            `(SELECT c_Code FROM client) AS CODE,`+
+                            `(SELECT c_Name FROM client) AS NAME `+
+                            `FROM repair r LEFT JOIN employee e ON r.r_JobNumber = e.e_JobNumber`;
+
+                            // const sql: string = `SELECT w.*, `+
+                            // `e.e_JobNumber, e.e_Name `+
+                            // `FROM workhours w `+
+                            // `LEFT JOIN employee e ON w.w_JobNumber = e.e_JobNumber`;
+
         // const sql: string = `SELECT repair.*, GROUP_CONCAT(client.c_Code SEPARATOR ', ') AS `+
         //                     `'CODE', GROUP_CONCAT(client.c_Name SEPARATOR ', ') AS `+
         //                     `'NAME' FROM repair, client GROUP BY repair.r_Id;`;

@@ -13,12 +13,12 @@
         </ng-container>
 
         <!-- Form -->
-        <div class="col shadow p-3 mb-5 bg-white rounded">
+        <div class="col shadow p-3 mb-3 rounded">
             <div class="card" style="width: 18rem; margin-left: auto; margin-right: auto;">
                 <!-- Card Header -->
                 <div class="card-body d-flex align-items-center flex-column">
                     <!-- Title -->
-                    <h1 class="card-title text-danger">Tailyn</h1>
+                    <h1 class="card-title">Tailyn</h1>
                     <div class="alert-danger alert p-1 w-75 text-center mt-2" role="alert"
                         [class.d-none]="(status.account) && (status.email) && (status.system) && (status.code) ? true : false">
                         <small class="form-text" *ngIf="!status.account">工號 或 密碼 錯誤</small>
@@ -36,7 +36,7 @@
                 <!-- /Card Header -->
 
                 <!-- Card Body -->
-                <div class="card-body">
+                <div class="card-body text-white">
                     <form [formGroup]="fbGroup" (ngSubmit)="onSubmit();">
                         <div class="form-group mb-2">
                             <label for="jNumber">工號</label>
@@ -93,8 +93,8 @@
                             </div>
                         </ng-template>
                         <!-- Footer -->
-                        <footer class="d-flex justify-content-between mt-3">
-                            <button type="button" class="btn btn-outline-secondary" (click)="toggle_Form()">
+                        <footer class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-sm btn-link text-white" (click)="toggle_Form()">
                                 <ng-container *ngIf="forms.email; else btn_Email">
                                     返回
                                 </ng-container>
@@ -104,14 +104,14 @@
                             </button>
 
                             <ng-container *ngIf="forms.email; else btn_Login">
-                                <button type="submit" class="btn btn-primary"
+                                <button type="submit" class="btn btn-sm btn-outline-light"
                                     [disabled]="(fb_Value['jNumber'].valid) && (fb_Value['newPassWord'].valid) && (fb_Value['email'].valid) && (fb_Value['code'].valid) && (status.counter == 0) ? false : true">
                                     送出
                                 </button>
                             </ng-container>
 
                             <ng-template #btn_Login>
-                                <button type="submit" class="btn btn-primary"
+                                <button type="submit" class="btn btn-sm btn-outline-light"
                                     [disabled]="(fb_Value['jNumber'].valid) && (fb_Value['passWord'].valid) ? false : true">
                                     登入
                                 </button>

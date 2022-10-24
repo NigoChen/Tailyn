@@ -83,79 +83,85 @@ export const Reset_Validators = (fbGroup: FormGroup, index: any = null): void =>
  * 
  * Type Number For FormArray By Index Value
  */
-export const InputValidators = (fbGroup: FormGroup, key: string = ''): any => {
-	
+export const InputValidators = (fbGroup: FormGroup, key: string = '') => {
+
 	if(key.length && fbGroup.controls[key].touched)
+	{		
+		error_Check(fbGroup, key);
+	}
+	else
 	{
-		if(fbGroup.controls[key] instanceof FormControl)
-		{			
-			const errorKey: ValidationErrors = fbGroup.controls[key].errors; 
-			const otherErrorKey: boolean = fbGroup.hasError('passWordMatch');
+		Object.keys(fbGroup.value).forEach((key, i) => {
+			error_Check(fbGroup, key);
+		});
+	}
+}
 
-			ErrorValidators[key] = '';
+const error_Check = (fbGroup: FormGroup, key: string) => {	
+	if(fbGroup.controls[key] instanceof FormControl)
+	{					
+		const errorKey: ValidationErrors = fbGroup.controls[key].errors; 
+		const otherErrorKey: boolean = fbGroup.hasError('passWordMatch');
 
+		ErrorValidators[key] = '';
+
+		if(errorKey)
+		{        
+			if(errorKey.required)
+			{
+				ErrorValidators[key] = '未輸入';
+			}
+			else if(errorKey.pattern)
+			{
+				ErrorValidators[key] = '格式錯';
+			}
+			else
+			{
+				ErrorValidators[key] = '異常';
+			}								
+		}
+		else if(otherErrorKey && key == 'e_ConfirmPassword')
+		{
+			ErrorValidators[key] = '密碼不符';            
+		}
+	}
+	else
+	{		
+		// FormArray
+		const fbArray: FormArray = <FormArray>fbGroup.controls[key];
+
+		for(const i in fbArray.controls)
+		{
+			// FormArray
+			const fbControls: AbstractControl = fbArray.controls[i];
+			
+			ErrorValidators[key][i] = '';
+
+			if((key != 'e_Date') && (key != 'w_OCheckBox') && fbArray.valid)
+			{
+				const values: string = fbControls.value.toString();								
+				const replaceVal: string = values.replace(/[\,\][\!\|\~\`\(\)\#\@\%\+\=\/\'\$\%\^\&\*\{\}\:\;\"\L\<\>\?\\]/g, '');
+				fbControls.patchValue(replaceVal);
+			}						
+
+			// Error Key
+			const errorKey: ValidationErrors = fbControls.errors; 				
+			
 			if(errorKey)
-			{        
+			{           		
 				if(errorKey.required)
 				{
-					ErrorValidators[key] = '未輸入';
+					ErrorValidators[key][i] = '未輸入';
 				}
 				else if(errorKey.pattern)
 				{
-					ErrorValidators[key] = '格式錯';
+					ErrorValidators[key][i] = '格式錯';
 				}
 				else
 				{
-					ErrorValidators[key] = '異常';
-				}								
-			}
-			else if(otherErrorKey && key == 'e_ConfirmPassword')
-			{
-				ErrorValidators[key] = '密碼不符';            
-			}
-		}
-		else
-		{
-			// FormArray
-			const fbArray: FormArray = <FormArray>fbGroup.controls[key];
-
-			for(const i in fbArray.controls)
-			{
-				// FormArray
-				const fbControls: AbstractControl = fbArray.controls[i];
-
-				if(fbControls.touched)
-				{
-					ErrorValidators[key][i] = '';
-
-					if(key != 'e_Date' && fbArray.valid)
-					{
-						const values: string = fbControls.value.toString();								
-						const replaceVal: string = values.replace(/[\,\][\!\|\~\`\(\)\#\@\%\+\=\/\'\$\%\^\&\*\{\}\:\;\"\L\<\>\?\\]/g, '');
-						fbControls.patchValue(replaceVal);
-					}						
-
-					// Error Key
-					const errorKey: ValidationErrors = fbControls.errors; 
-					
-					if(errorKey)
-					{           		
-						if(errorKey.required)
-						{
-							ErrorValidators[key][i] = '未輸入';
-						}
-						else if(errorKey.pattern)
-						{
-							ErrorValidators[key][i] = '格式錯';
-						}
-						else
-						{
-							ErrorValidators[key][i] = '異常';
-						}
-					}
+					ErrorValidators[key][i] = '異常';
 				}
-			}				
-		}
+			}
+		}				
 	}
-	return ErrorValidators[key];
 }

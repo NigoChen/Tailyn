@@ -1,7 +1,7 @@
 import { Component, ComponentFactoryResolver, ElementRef, EventEmitter, HostListener, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbRatingConfig } from '@ng-bootstrap/ng-bootstrap';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Employee } from 'src/app/interfaces/employee';
 import { Modal } from 'src/app/interfaces/modal';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
@@ -11,6 +11,7 @@ import { EmployeeService } from 'src/app/services/employee.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
 import { ModalService } from 'src/app/services/modal.service';
+import { RepairService } from 'src/app/services/repair.service';
 
 @Component({
   selector: 'app-employee',
@@ -20,6 +21,13 @@ import { ModalService } from 'src/app/services/modal.service';
 export class EmployeeComponent implements OnInit {
   // Form
   @ViewChild('form_') form_: TemplateRef<HTMLElement>;
+  // Modal Subscription
+  private get_moda_: Subscription;
+  private get_Search_: Subscription;
+  private get_Create_: Subscription;
+  private get_Read_: Subscription;
+  private get_Update_: Subscription;
+  private get_Delete_: Subscription;
   // Data
   public result_Async$: Observable<Array<Employee>> | Observable<[]>;
   public result_Data: Employee[];
@@ -48,21 +56,22 @@ export class EmployeeComponent implements OnInit {
   public pageSize = 10;
 
   constructor(
-    private loadingService: LoadingService,
-    private loginService : LoginService,
-    private employeeService: EmployeeService, 
-    private fb: FormBuilder,
-    private modalService: ModalService,
-    private alertService: AlertService,
-    private ngbRatingConfig: NgbRatingConfig)
-    {
-      ngbRatingConfig.max = 3;
-      ngbRatingConfig.readonly = true;
-    }
+              private loadingService: LoadingService,
+              private loginService : LoginService,
+              private employeeService: EmployeeService, 
+              private repairService: RepairService,
+              private fb: FormBuilder,
+              private modalService: ModalService,
+              private alertService: AlertService,
+              private ngbRatingConfig: NgbRatingConfig)
+              {
+                ngbRatingConfig.max = 3;
+                ngbRatingConfig.readonly = true;
+              }
 
   ngOnInit(): void {
+    this.user = this.loginService.user.value;
     this.default_FormGroup();
-    Reset_Validators(this.fbGroup);
     this.result_Data = [];
     this.result_List = [];
     this.read();
@@ -70,6 +79,7 @@ export class EmployeeComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
+    // this.modalService.get_User_Profile().subscribe((res: Employee) => this.user = res);
     this.modalService.set_FormGroup(this.fbGroup);
     this.modalService.set_Form(this.form_);
   }
@@ -94,14 +104,13 @@ export class EmployeeComponent implements OnInit {
   }
 
   // Modal Service
-  modal_Service(): void {
-    this.modalService.get_modal().subscribe((res: Modal) => this.reset_FormGroup(res.status));
-    this.modalService.get_Search().subscribe(res => this.search(res));
-    this.modalService.get_Create().subscribe(res => this.create(res));
-    this.modalService.get_Read().subscribe(res => this.read());
-    this.modalService.get_Update().subscribe(res => this.update(res));
-    this.modalService.get_Delete().subscribe(res => this.delete(res));
-    this.modalService.get_User_Profile().subscribe((res: Employee) => this.user = res);
+  modal_Service(): void {    
+    this.get_moda_   = this.modalService.get_modal().subscribe((res: Modal) => this.reset_FormGroup(res.status));
+    this.get_Search_ = this.modalService.get_Search().subscribe(res => this.search(res));
+    this.get_Create_ = this.modalService.get_Create().subscribe(res => this.create(res));
+    this.get_Read_   = this.modalService.get_Read().subscribe(res => this.read());
+    this.get_Update_ = this.modalService.get_Update().subscribe(res => this.update(res));
+    this.get_Delete_ = this.modalService.get_Delete().subscribe(res => this.delete(res));
   }
   
   // FormGroup Controls Value
@@ -142,22 +151,14 @@ export class EmployeeComponent implements OnInit {
     Reset_Validators(this.fbGroup);
   }
 
-  // User Profile
-  user_Profile(employee: Employee[]): void {
-
-    let user_Session: Employee | null = this.loginService.read_User_SessionStorage();
-    
-    if(user_Session)
-    {
-      const userData = employee.find((item: Employee, index: number) => item.e_JobNumber === user_Session!.e_JobNumber);      
-
-      if(userData != undefined)
-      {  
-        this.loginService.create_User_SessionStorage(userData);
-        
-        this.modalService.set_User_Profile(userData);   
+  // Update User
+  update_User(employee: Employee[]): void {    
+    employee.find((item: Employee, index: number) => {
+      if(this.user.e_JobNumber == item.e_JobNumber)
+      {
+        this.loginService.create_User_SessionStorage(item);
       }
-    }
+    });
   }
   
   // Create
@@ -196,10 +197,10 @@ export class EmployeeComponent implements OnInit {
           if(res.length)
           {            
             // const arr = res[0].e_Inventory.split(',').filter(Boolean);
-            // this.result_Async$ = this.employeeService.read();
+            // this.result_Async$ = this.employeeService.read();            
+            this.update_User(res);
             this.result_Data = res;
-            this.result_List = res;
-            this.user_Profile(res);
+            this.result_List = res;              
             this.table_List_Sort();
             this.refreshResult_List();
           }
@@ -217,13 +218,19 @@ export class EmployeeComponent implements OnInit {
   // Search
   // search(searchText: HTMLInputElement): void {
   search(searchText: string): void {
+    const term = searchText.toLowerCase();
     this.result_List = this.result_Data.filter(res => {      
-      const term = searchText.toLowerCase();
       return res.e_JobNumber.toLowerCase().includes(term)
-          || res.e_Email?.toLowerCase().includes(term)
-          || res.e_Name.toLowerCase().includes(term);
+      || res.e_Email?.toLowerCase().includes(term)
+      || res.e_Name.toLowerCase().includes(term);
           // || this.decimalPipe.transform(res.w_Time).includes(term);
     });
+
+    this.result_Data = this.result_List;
+        
+    this.result_List = this.result_List
+    .map((country, i) => ({id: i + 1, ...country}))
+    .slice((this.page - 1) * this.pageSize, (this.page - 1) * this.pageSize + this.pageSize);
     // this.result_List = [];
 
     // for (const [objKey, obj] of Object.entries(this.result_Data))
@@ -240,6 +247,11 @@ export class EmployeeComponent implements OnInit {
     //     }
     //   }
     // } 
+
+    if(this.result_List.length > 5)
+    {
+      this.refreshResult_List();
+    }
   }
 
   // Pagination
@@ -456,7 +468,12 @@ export class EmployeeComponent implements OnInit {
 
   // Destroy
   ngOnDestroy(): void {
-    this.modalService.set_FormGroup(null);    
+    this.get_moda_.unsubscribe();
+    this.get_Search_.unsubscribe();
+    this.get_Create_.unsubscribe();
+    this.get_Read_.unsubscribe();
+    this.get_Update_.unsubscribe();
+    this.get_Delete_.unsubscribe();
   }
 
   // mouse click 

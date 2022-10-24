@@ -9,4 +9,5 @@ export interface Repair {
     r_Status: string;
     r_Client: string;
     r_Date: string;
+    e_Name?: string;
 }

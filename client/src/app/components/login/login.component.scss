@@ -1,0 +1,43 @@
+.container-sm::before
+{
+    position: absolute;
+    bottom: 10%;
+    content: '© 2022 Tailyn Technologies, Inc. All rights reserved. Designed by Nigo';
+    color: white;
+    font-weight: 200;
+    // text-transform: uppercase;
+    font-size: 1em;
+    letter-spacing: 2px;
+    -webkit-text-stroke: 1px rgba($color: #d9d9d9, $alpha: 1.0);
+}
+.card-body h1
+{
+    color: var(--red-color);
+    font-weight: bolder;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    -webkit-text-stroke: 2px var(--red-color);
+}
+input,
+button,
+label
+{
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+.card
+{
+    background-color: var(--dark-color);
+}
+
+@media (max-width: 860px)
+{
+    .container-sm::before
+    {
+        text-align: center;
+        font-size: 0.6em;
+        display: block;
+        white-space: pre;
+        content: '© 2022 Tailyn Technologies, Inc. All rights reserved.\a Designed by Nigo';
+    }
+}

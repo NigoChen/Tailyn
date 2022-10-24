@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { Employee } from 'src/app/interfaces/employee';
+import { LoginService } from 'src/app/services/login.service';
 import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
@@ -28,18 +29,18 @@ export class ContentHeaderComponent implements OnInit {
   // @Input() fb_Value_:  { [key: string]: AbstractControl};
 
   constructor(
-    private modalService: ModalService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router
-    ){
-      this.modalService.get_User_Profile().subscribe((res: Employee) => this.user = res);
-      this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res); 
-    }
+              private loginService: LoginService,
+              private modalService: ModalService,
+              private activatedRoute: ActivatedRoute,
+              private router: Router
+              ){}
 
   ngOnInit(): void {
+    this.user = this.loginService.user.value;    
     this.searchText = '';
     this.delayTime = true;
     this.check_Active_Roueter();
+    this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res); 
   }
 
   // FormGroup Controls Value By Index
@@ -64,7 +65,7 @@ export class ContentHeaderComponent implements OnInit {
     this.modalService.set_Read(true);
     setTimeout(() => {
       this.delayTime = true;
-    }, 5000);
+    }, 3000);
   }
 
   // Search

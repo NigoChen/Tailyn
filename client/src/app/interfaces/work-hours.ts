@@ -9,9 +9,5 @@ export interface WorkHours {
     w_Quantity: string;
     w_Remark?: string;
     w_Date: Date;
-    w_BTotal: string;
-    w_OTotal: string;
-    w_BDeduct: number;
-    w_ODeduct: number;
     e_Name?: string;
 }

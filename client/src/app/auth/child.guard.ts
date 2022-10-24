@@ -1,6 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateChild, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
+import { Employee } from '../interfaces/employee';
 import { LoadingService } from '../services/loading.service';
 import { LoginService } from '../services/login.service';
 
@@ -9,10 +10,9 @@ import { LoginService } from '../services/login.service';
 export class ChildGuard implements CanActivateChild {
 
   constructor(
-    private loginService: LoginService, 
-    private loadingService: LoadingService, 
-    private router: Router
-    ) {}
+              private loadingService: LoadingService,
+              private loginService: LoginService, 
+              private router: Router){}
 
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
@@ -20,9 +20,9 @@ export class ChildGuard implements CanActivateChild {
 
     this.loadingService.set_Dashboard_Loading(true);
 
-    const user = this.loginService.read_User_SessionStorage();    
-    
-    if((user == null) || (Object.keys(user).length < 5))
+    const user: Employee | null = this.loginService.read_User_SessionStorage();
+
+    if(user == null || (Object.keys(user).length < 5))
     {
       this.router.navigate(['/Login']);
       return false;

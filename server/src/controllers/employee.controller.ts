@@ -40,90 +40,39 @@ class EmployeeController
     public async read(req: Request, res: Response): Promise<void>
     {
         // const sql:string = 'SELECT employee.* FROM employee WHERE NOT EXISTS(SELECT recycle.r_ClassId, recycle.r_Title FROM recycle WHERE employee.e_Id = recycle.r_ClassId AND recycle.r_Title = "員工") GROUP BY employee.e_Id';
-        const sql: string = 'SELECT * FROM employee';
-
+        const sql: string = `SELECT e.*, `+
+                            `(SELECT COUNT(*) FROM workhours WHERE e.e_JobNumber = workhours.w_JobNumber AND MONTH(workhours.w_Date) = MONTH(CURDATE())) AS wkcount, `+
+                            `(SELECT COUNT(*) FROM repair WHERE e.e_JobNumber = repair.r_JobNumber AND MONTH(SUBSTRING_INDEX(r_Date, '=', 1)) = MONTH(CURRENT_DATE())) AS rpcount `+
+                            `FROM employee AS e`;
+                        
+// SELECT e.*, 
+// (SELECT COUNT(*) FROM workhours WHERE e.e_JobNumber = workhours.w_JobNumber AND workhours.w_Date = CURDATE()) AS wkcount, 
+// (SELECT COUNT(*) FROM repair WHERE e.e_JobNumber = repair.r_JobNumber AND SUBSTRING_INDEX(repair.r_Date, ',', 1)) AS rpcount 
+// FROM employee AS e;
+//                             SELECT e.*, 
+// (SELECT COUNT(*) FROM workhours WHERE e.e_JobNumber = workhours.w_JobNumber) AS wkcount, 
+// (SELECT COUNT(*) FROM repair WHERE e.e_JobNumber = repair.r_JobNumber) AS rpcount 
+// FROM employee AS e
+//         SELECT co.*, 
+//     COALESCE(mod.moduleCount,0) AS moduleCount,
+//     COALESCE(vid.vidCount,0) AS vidCount
+// FROM courses AS co
+//     LEFT JOIN (
+//             SELECT COUNT(*) AS moduleCount, course_id AS courseId 
+//             FROM modules
+//             GROUP BY course_id
+//         ) AS mod
+//         ON mod.courseId = co.id
+//     LEFT JOIN (
+//             SELECT COUNT(*) AS vidCount, course_id AS courseId 
+//             FROM videos
+//             GROUP BY course_id
+//         ) AS vid
+//         ON vid.courseId = co.id
+// ORDER BY co.id DESC
         await pool.then(con => {
             return con.query(sql).then((result: Array<Object>) => {
-                if(result.length > 0)
-                {
-                    res.status(200).json(result);
-                }
-                else
-                {
-                    res.status(200).json([]);
-                }
-            });
-        })
-        .catch(err => {
-            res.status(404).send([]);
-        });
-    }
-
-    public async login(req: Request, res: Response): Promise<void>
-    {
-        const data: any = req.body;
-        
-        data.passWord = md5_PassWord(data.passWord);
-
-        const sql: string = `SELECT * FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}'`;
-
-        await pool.then(con => {
-            return con.query(sql).then((result: Array<Object>) => {
-                if(result.length > 0)
-                {
-                    res.status(200).json(result);                    
-                }
-                else
-                {
-                    res.status(200).json([]);
-                }
-            });
-        })
-        .catch(err => {
-            res.status(404).send([]);
-        });
-    }
-
-    public async findOne(req: Request, res: Response): Promise<void>
-    {
-        const user:any = JSON.parse(req.params.q);
-
-        const sql: string = `SELECT e_JobNumber,e_Name,e_Email,e_Lv,e_Inventory,e_Img FROM employee WHERE e_Name = '${user.e_Name}' AND e_JobNumber = '${user.e_JobNumber}'`;
-
-        await pool.then(con => {
-            return con.query(sql).then((result: Array<Employee>) => {                
-                if(result.length > 0)
-                {
-                    res.status(200).json(result);
-                }
-                else
-                {
-                    res.status(200).json([]);
-                }
-            });
-        })
-        .catch(err => {
-            res.status(404).send([]);
-        });
-    }
-
-    public async findLike(req: Request, res: Response): Promise<void>
-    {
-        // con.query('DESCRIBE employee');
-        const like = req.params.q;
-
-        const sql: string = `SELECT * FROM employee WHERE e_JobNumber = '${like}' OR e_Name = '${like}'`;
-
-        await pool.then(con => {
-            return con.query(sql).then((result: Array<Object>) => {
-                if(result.length > 0)
-                {
-                    res.status(200).json(result);
-                }
-                else
-                {
-                    res.status(200).json([]);
-                }
+                res.status(200).json(result);
             });
         })
         .catch(err => {
@@ -174,85 +123,6 @@ class EmployeeController
         });
     }
 
-    public async update_PassWord(req: Request, res: Response): Promise<void>
-    {
-        const data: any = req.body;
-
-        if(email_Code == data.code)
-        {
-            data.newPassWord = md5_PassWord(data.newPassWord);
-
-            const sql: string = `UPDATE employee SET e_PassWord = '${data.newPassWord}' WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
-            
-            await pool.then(con => {
-                return con.query(sql).then((result: any) => {
-                    if (result.affectedRows > 0)
-                    {
-                        res.status(200).send(true);
-                    }
-                    else
-                    {
-                        res.status(200).send(false);
-                    }
-                });
-            })
-            .catch(err => {
-                res.status(404).send(false);
-            });
-        }
-        else
-        {
-            res.status(200).send(false);
-        }
-    }
-
-    public async concat(req: Request, res: Response): Promise<void>
-    {
-        const data:Employee = req.body;
-
-        const sql: string = `UPDATE employee SET e_Inventory = CONCAT(e_Inventory, ',') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`;
-        // const query_ = con.query(`UPDATE employee SET e_Inventory = CONCAT(e_Inventory, '${data.e_Inventory},') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
-        await pool.then(con => {
-            return con.query(sql).then((result: any) => {
-                if (result.affectedRows > 0)
-                {
-                    res.status(200).send(true);
-                }
-                else
-                {
-                    res.status(200).send(false);
-                }
-            });
-        })
-        .catch(err => {
-            res.status(404).send(false);
-        });
-    }
-    
-    public async replace(req: Request, res: Response): Promise<void>
-    {
-        const data:Employee = req.body;
-
-        await pool.then(con => {
-            const sql: string = `UPDATE employee SET e_Inventory = REPLACE(TRIM(e_Inventory), ',', '') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`;
-            // const query_ = con.query(`UPDATE employee SET e_Inventory = REPLACE(TRIM(e_Inventory), '${data.e_Inventory},', '') WHERE e_Name = '${data.e_Name}' AND e_JobNumber = '${data.e_JobNumber}'`);
-
-            return con.query(sql).then((result: any) => {
-                if (result.affectedRows > 0)
-                {
-                    res.status(200).send(true);
-                }
-                else
-                {
-                    res.status(200).send(false);
-                }
-            });
-        })
-        .catch(err => {
-            res.status(404).send(false);
-        });
-    }
-
     public async delete(req: Request, res: Response): Promise<void>
     {
         const id:string = req.params.id;
@@ -274,36 +144,6 @@ class EmployeeController
             res.status(404).send(false);
         });
     }
-
-    public async email(req: Request, res: Response): Promise<void>
-    {
-        const data: any = req.body;
-
-        if(('email' in data) && ('jNumber' in data) && ('ip' in data))
-        {                        
-            const sql: string = `SELECT e_JobNumber,e_Email FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
-            await pool.then(con => {
-                return con.query(sql).then((result: Employee[]) => {
-                    if (result.length > 0)
-                    {                        
-                        send_Email(data.ip, result[0].e_Email);
-                        res.status(200).send(true);
-                    }
-                    else
-                    {
-                        res.status(200).send(false);
-                    }
-                });
-            })
-            .catch(err => {
-                res.status(404).send(false);
-            });
-        }
-        else
-        {
-            res.status(200).send(true);
-        }
-    }
 }
 
 // check mumber
@@ -316,62 +156,6 @@ class EmployeeController
 const md5_PassWord = (passWord:string): string => {
     const md5 = crypto.createHash('md5');
     return md5.update(passWord).digest('hex');
-}
-
-// Create MD5 Hex Number
-let email_Code:string = '';
-
-const md5_Code = (): string => {
-    const md5 = crypto.createHash('md5');
-    const ramdom_Number:number = Math.floor(Math.random() * 100);
-    const code:string = md5.update(ramdom_Number.toString()).digest('hex');    
-    email_Code = code;
-    return code;
-}
-
-// Email Setting
-const send_Email = (user_Ip: string, user_Email: string): void =>  {
-
-    // emailHtml(user_Ip)
-    
-    // email setting
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-            user: 'qwe286454@gmail.com',
-            pass: 'hmvpslfwussddpfx'
-        }
-    });
-
-    // email content
-    const mailOptions = {
-        from: '<qwe286454@gmail.com>',
-        to: `<${user_Email}>`,
-        subject: 'Tailyn 員工密碼通知書',
-        html: emailHtml(user_Ip)
-    }
-
-    // send email
-    transporter.sendMail(mailOptions, function(err) {        
-        if (err)
-        {
-            console.log(err);            
-        }
-    });
-
-    transporter.close();
-}
-
-const emailHtml = (ip: string): string => {
-    
-    const code: string = md5_Code();
-
-    console.log(code);
-    
-    let html: string = `<h3>來至IP <u>${ip}</u> 發送了，密碼重新設定通知書，<p>請在5分鐘內輸入代碼: ${code}</p></h3>`;
-    return html;
 }
 
 export const employeeController = new EmployeeController();

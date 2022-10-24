@@ -16,14 +16,13 @@ import { ModalService } from 'src/app/services/modal.service';
   styleUrls: ['./modal.component.scss']
 })
 export class ModalComponent {
+  // Modal 
+  @ViewChild('modalForm') public modalForm: ElementRef<HTMLInputElement>;
+  @ViewChild('modalSM') public modalSM: ElementRef<HTMLInputElement>;
   public form: TemplateRef<any>;
   public fbGroup: FormGroup;
   public errorValidators: object = ErrorValidators;
   public alerts: Alerts;
-  private undo_FbGroup: FormGroup;
-  // Modal 
-  @ViewChild('modalForm') public modalForm: ElementRef<HTMLInputElement>;
-  @ViewChild('modalSM') public modalSM: ElementRef<HTMLInputElement>;
 
   constructor(
     private ngbModal: NgbModal,
@@ -33,10 +32,7 @@ export class ModalComponent {
     private vref: ViewContainerRef,
     private elementRef: ElementRef,
     private _viewContainerRef: ViewContainerRef,
-    private componentFactoryResolver: ComponentFactoryResolver,
-    private loadingService: LoadingService,
-    private loginService : LoginService,
-    private employeeService: EmployeeService)
+    private componentFactoryResolver: ComponentFactoryResolver)
     {
       config.backdrop = 'static';
       config.keyboard = false;
@@ -44,6 +40,8 @@ export class ModalComponent {
 
   ngOnInit(): void {
     this.modalService.get_FormGroup().subscribe(res => this.fbGroup = res);
+    this.modalService.get_Form().subscribe(res => this.form = res);
+    this.alertService.get_Alert().subscribe(res => this.alerts = res);
     this.modalService.get_modal().subscribe((res: Modal) => {
       if(res.show)
       {
@@ -61,11 +59,10 @@ export class ModalComponent {
         this.close();
       }
     });
-    this.modalService.get_Form().subscribe(res => this.form = res);
-    this.alertService.get_Alert().subscribe(res => this.alerts = res);
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+  }
 
   // FormGroup Controls Value
   get fb_Value(): { [key: string]: AbstractControl} {
@@ -137,14 +134,21 @@ export class ModalComponent {
   }
 
   // Save
-  save(): void {
-    if(this.fbGroup.valid && this.fb_Value_Index[0])
-    {      
-      this.modalService.set_Update(this.fbGroup);
+  save(): void {    
+    if(this.fbGroup.valid)
+    {
+      if(this.fb_Value_Index[0])
+      {      
+        this.modalService.set_Update(this.fbGroup);
+      }
+      else
+      {
+        this.modalService.set_Create(this.fbGroup);
+      }
     }
     else
     {
-      this.modalService.set_Create(this.fbGroup);
+      InputValidators(this.fbGroup);
     }
   }
 }

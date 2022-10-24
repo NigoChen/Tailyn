@@ -92,7 +92,7 @@ class RepairController {
             yield database_1.default.then(con => {
                 return con.query(sql).then((result) => {
                     if (result.insertId > 0) {
-                        // res.status(200).send(true);
+                        res.status(200).send(true);
                     }
                     else {
                         res.status(200).send(false);
@@ -106,10 +106,15 @@ class RepairController {
     }
     read(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `SELECT repair.*,` +
-                `client.c_Code AS 'CODE',` +
-                `client.c_Name AS 'NAME' ` +
-                `FROM repair, client GROUP BY repair.r_Id;`;
+            const sql = `SELECT r.*,` +
+                `e.e_JobNumber, e.e_Name,` +
+                `(SELECT c_Code FROM client) AS CODE,` +
+                `(SELECT c_Name FROM client) AS NAME ` +
+                `FROM repair r LEFT JOIN employee e ON r.r_JobNumber = e.e_JobNumber`;
+            // const sql: string = `SELECT w.*, `+
+            // `e.e_JobNumber, e.e_Name `+
+            // `FROM workhours w `+
+            // `LEFT JOIN employee e ON w.w_JobNumber = e.e_JobNumber`;
             // const sql: string = `SELECT repair.*, GROUP_CONCAT(client.c_Code SEPARATOR ', ') AS `+
             //                     `'CODE', GROUP_CONCAT(client.c_Name SEPARATOR ', ') AS `+
             //                     `'NAME' FROM repair, client GROUP BY repair.r_Id;`;

@@ -4,9 +4,9 @@
 /*** root ***/
 :root
 {
-  --red-color: red;
+  --red-color: #e41a10;
   --white-color: white;
-  --dark-color: #343a40;
+  --dark-color: #103c4a; // rgb(16,60,74)
 }
 /*** all ***/
 *
@@ -40,6 +40,12 @@ body
 {
   overflow-x: hidden;
   font-size: .875rem;
+}
+/** Input Align ***/
+input,
+select
+{
+  text-align: center;
 }
 /** Grid Table ***/
 .grid-container
@@ -132,7 +138,7 @@ body
   justify-content: space-between;
   align-items: center;
   top: 0;
-  right: 0;
+  right: 2px;
   z-index: 99;
 }
 .form-icon-group b

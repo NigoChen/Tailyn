@@ -53,13 +53,17 @@ class WorkHoursController {
     read(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const sql = `SELECT w.*, ` +
-                `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_BMinute, ',', 3), ',', -1) AS w_BTotal, ` +
-                `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_OMinute, ',', 3), ',',-1) AS w_OTotal, ` +
-                `CONVERT(SUBSTRING_INDEX(w.w_BMinute, ',', -1),SIGNED) AS w_BDeduct, ` +
-                `CONVERT(SUBSTRING_INDEX(w.w_OMinute, ',', -1),SIGNED) AS w_ODeduct,  ` +
                 `e.e_JobNumber, e.e_Name ` +
                 `FROM workhours w ` +
                 `LEFT JOIN employee e ON w.w_JobNumber = e.e_JobNumber`;
+            // const sql: string = `SELECT w.*, `+ 
+            // `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_BMinute, ',', 3), ',', -1) AS w_BTotal, `+
+            // `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_OMinute, ',', 3), ',',-1) AS w_OTotal, `+
+            // `CONVERT(SUBSTRING_INDEX(w.w_BMinute, ',', -1),SIGNED) AS w_BDeduct, `+
+            // `CONVERT(SUBSTRING_INDEX(w.w_OMinute, ',', -1),SIGNED) AS w_ODeduct,  `+
+            // `e.e_JobNumber, e.e_Name `+
+            // `FROM workhours w `+
+            // `LEFT JOIN employee e ON w.w_JobNumber = e.e_JobNumber`;
             // const sql: string = `SELECT w.*, `+ 
             // `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_BMinute, ',', 3), ',', -1) AS w_BTotal, `+
             // `SUBSTRING_INDEX(SUBSTRING_INDEX(w.w_OMinute, ',', 3), ',',-1) AS w_OTotal, `+

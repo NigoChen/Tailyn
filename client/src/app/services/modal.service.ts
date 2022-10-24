@@ -1,6 +1,6 @@
 import { Injectable, TemplateRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Employee } from '../interfaces/employee';
 import { Modal } from '../interfaces/modal';
 
@@ -17,7 +17,7 @@ export class ModalService {
   private read: Subject<boolean>;
   private delete: Subject<number>;
   private search: Subject<string>;
-  private user_Profile: Subject<Employee>;
+  // public user_Profile: BehaviorSubject<Employee> =  new BehaviorSubject<Employee>(null);
 
   constructor() {
     this.modal = new Subject<Modal>();
@@ -28,7 +28,6 @@ export class ModalService {
     this.read = new Subject<boolean>();
     this.delete = new Subject<number>();
     this.search = new Subject<string>();
-    this.user_Profile = new Subject<Employee>();
   }
 
   public get_modal(): Observable<Modal> {
@@ -107,15 +106,5 @@ export class ModalService {
   // Set Read
   public set_Search(searchText: string): void {    
     this.search.next(searchText);
-  }
-  
-  // Get Read
-  public get_User_Profile(): Observable<Employee> {    
-    return this.user_Profile.asObservable();
-  }
-
-  // Set Read
-  public set_User_Profile(user: Employee): void {    
-    this.user_Profile.next(user);
   }
 }

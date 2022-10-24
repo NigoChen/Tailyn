@@ -1,16 +1,13 @@
-import { Component, ElementRef, EventEmitter, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Event, NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { Event, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { NgbModal, NgbRatingConfig } from '@ng-bootstrap/ng-bootstrap';
-import { Alert } from 'selenium-webdriver';
 import { Alerts } from 'src/app/interfaces/alerts';
 import { Employee } from 'src/app/interfaces/employee';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
 import { AlertService } from 'src/app/services/alert.service';
 import { EmployeeService } from 'src/app/services/employee.service';
-import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
-import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -44,21 +41,21 @@ export class SidebarComponent implements OnInit {
   @ViewChild('modalForm') public modalForm: ElementRef<HTMLInputElement>;
 
   constructor(
-    private loginService: LoginService,
-    private fb: FormBuilder,
-    private employeeService: EmployeeService,
-    private alertService: AlertService,
-    private ngbRatingConfig: NgbRatingConfig,
-    private router: Router,
-    private elementRef: ElementRef,
-    private ngbModal: NgbModal)
-    {
-      ngbRatingConfig.max = 3;
-      ngbRatingConfig.readonly = true;
-    }
+              private loginService: LoginService,
+              private fb: FormBuilder,
+              private employeeService: EmployeeService,
+              private alertService: AlertService,
+              private ngbRatingConfig: NgbRatingConfig,
+              private router: Router,
+              private elementRef: ElementRef,
+              private ngbModal: NgbModal)
+              {
+                ngbRatingConfig.max = 3;
+                ngbRatingConfig.readonly = true;
+              }
 
   ngOnInit(): void {
-    this.user_Profile();
+    this.user = this.loginService.user.value;    
     this.alertService.get_Alert().subscribe(res => {this.alerts = res});
   }
 
@@ -122,19 +119,6 @@ export class SidebarComponent implements OnInit {
   // FormGroup Controls Value By Index
   get fb_Value_Index(): { [key: number]: string} {
     return Object.values(this.fbGroup.value) || '';
-  }
-  // User Profile
-  user_Profile(): void {
-    let user_Session: Employee | null = this.loginService.read_User_SessionStorage();
-    
-    if (user_Session != null)
-    {
-        this.user = user_Session;
-    }
-    else
-    {
-      this.logout();
-    }
   }
   
   // Update

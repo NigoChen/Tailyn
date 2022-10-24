@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginController = void 0;
+const nodemailer_1 = __importDefault(require("nodemailer"));
 const database_1 = __importDefault(require("../db/database"));
 const crypto_1 = __importDefault(require("crypto"));
 class LoginController {
@@ -24,12 +25,7 @@ class LoginController {
             const sql = `SELECT e_Id, e_Name, e_Email, e_JobNumber, e_Lv, e_Date FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}' AND e_Lv > 0`;
             yield database_1.default.then(con => {
                 return con.query(sql).then((result) => {
-                    if (result.length > 0) {
-                        res.status(200).json(result);
-                    }
-                    else {
-                        res.status(200).json([]);
-                    }
+                    res.status(200).json(result);
                 });
             }).catch(err => res.status(404).send([]));
         });
@@ -97,35 +93,33 @@ const md5_Code = () => {
 // Email Setting
 const send_Email = (user_Ip, user_Email) => {
     emailHtml(user_Ip);
-    // // email setting
-    // const transporter = nodemailer.createTransport({
-    //     host: 'smtp.gmail.com',
-    //     port: 587,
-    //     secure: false,
-    //     auth: {
-    //         user: 'qwe286454@gmail.com',
-    //         pass: 'hmvpslfwussddpfx'
-    //     }
-    // });
-    // // email content
-    // const mailOptions = {
-    //     from: '<qwe286454@gmail.com>',
-    //     to: `<${user_Email}>`,
-    //     subject: 'Tailyn 員工密碼通知書',
-    //     html: emailHtml(user_Ip)
-    // }
-    // // send email
-    // transporter.sendMail(mailOptions, function(err) {        
-    //     if (err)
-    //     {
-    //         console.log(err);            
-    //     }
-    // });
-    // transporter.close();
+    // email setting
+    const transporter = nodemailer_1.default.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: 'qwe286454@gmail.com',
+            pass: 'hmvpslfwussddpfx'
+        }
+    });
+    // email content
+    const mailOptions = {
+        from: '<qwe286454@gmail.com>',
+        to: `<${user_Email}>`,
+        subject: 'Tailyn 員工密碼通知書',
+        html: emailHtml(user_Ip)
+    };
+    // send email
+    transporter.sendMail(mailOptions, function (err) {
+        if (err) {
+            console.log(err);
+        }
+    });
+    transporter.close();
 };
 const emailHtml = (ip) => {
     const code = md5_Code();
-    console.log(code);
     let html = `<h3>來至IP <u>${ip}</u> 發送了，密碼重新設定通知書，<p>請在5分鐘內輸入代碼: ${code}</p></h3>`;
     return html;
 };

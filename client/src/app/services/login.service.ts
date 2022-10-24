@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Urls } from '../configs/url.config';
 import { Employee } from '../interfaces/employee';
@@ -9,10 +9,16 @@ import { LoadingService } from './loading.service';
 @Injectable({
   providedIn: 'root'
 })
-
 export class LoginService {
 
-  constructor(private http: HttpClient, private loadingService: LoadingService) {}
+  public user: BehaviorSubject<Employee>;
+
+  constructor(
+              private http: HttpClient, 
+              private loadingService: LoadingService)
+              {
+                this.user = new BehaviorSubject<Employee>(null);
+              }
 
   private handleError(errorResponse: HttpErrorResponse)
   {
@@ -25,7 +31,7 @@ export class LoginService {
   // Login
   public login(user: object): Observable<boolean> {    
     return this.http.post<Employee[]>(Urls.login.login, user)
-      .pipe(map((res: Employee[]) => {
+      .pipe(map((res: Employee[]) => {        
         if(res.length)
         {
           this.create_User_SessionStorage(res[0]);
@@ -45,6 +51,7 @@ export class LoginService {
   // logout
   public logout(): void {
     this.loadingService.set_Dashboard_Loading(true);
+    this.user.unsubscribe();
     this.delete_Time_SessionStorage();
     this.delete_User_SessionStorage();
   }
@@ -59,7 +66,7 @@ export class LoginService {
   public create_Time_SessionStorage(): void {
     const date_ = new Date();
     date_.setMinutes(date_.getMinutes() + 5);
-    const time_ = date_.getTime().toString();   
+    const time_ = date_.getTime().toString();
     sessionStorage.setItem('time', btoa(time_));
   }
 
@@ -112,27 +119,20 @@ export class LoginService {
   }
   
   // Create User sessionStorage
-  public create_User_SessionStorage(employee: Employee): void {    
-    const old_User: Employee | null = this.read_User_SessionStorage();
-    
+  public create_User_SessionStorage(employee: Employee): void {
     delete employee.e_PassWord;
-
-    if(old_User != null)
-    {
-        if((old_User.e_Name != employee.e_Name) || (old_User.e_Lv != employee.e_Lv))
-        {
-          setTimeout(() => {
-            window.location.reload();
-          }, 1200);
-        }
-    }
-    sessionStorage.setItem('user', btoa(JSON.stringify(employee)));
+    // encodeURI For Chinese
+    sessionStorage.setItem('user', btoa(encodeURI(JSON.stringify(employee))));
   }
 
   // Read User SessionStorage
-  public read_User_SessionStorage(): Employee | null {
-    const user = sessionStorage.getItem('user');
-    return user && JSON.parse(atob(user)); 
+  public read_User_SessionStorage(): Employee | null{
+    const user: any = sessionStorage.getItem('user');
+    if(user)
+    {
+      this.user.next(JSON.parse(decodeURI(atob(user))));
+    }
+    return user && JSON.parse(decodeURI(atob(user)));
   }
 
   // Delete SessionStorage
