@@ -1,79 +1,17 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginController = void 0;
-const nodemailer_1 = __importDefault(require("nodemailer"));
-const database_1 = __importDefault(require("../db/database"));
+const employee_model_1 = __importDefault(require("../models/employee.model"));
 const crypto_1 = __importDefault(require("crypto"));
+const nodemailer_1 = __importDefault(require("nodemailer"));
 class LoginController {
-    // Login
-    login(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const data = req.body;
-            data.passWord = md5_PassWord(data.passWord);
-            const sql = `SELECT e_Id, e_Name, e_Email, e_JobNumber, e_Lv, e_Date FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}' AND e_Lv > 0`;
-            yield database_1.default.then(con => {
-                return con.query(sql).then((result) => {
-                    res.status(200).json(result);
-                });
-            }).catch(err => res.status(404).send([]));
-        });
-    }
-    // Update Password
-    update(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const data = req.body;
-            if (email_Code == data.code) {
-                data.newPassWord = md5_PassWord(data.newPassWord);
-                const sql = `UPDATE employee SET e_PassWord = '${data.newPassWord}' WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
-                yield database_1.default.then(con => {
-                    return con.query(sql).then((result) => {
-                        if (result.affectedRows > 0) {
-                            res.status(200).send(true);
-                        }
-                        else {
-                            res.status(200).send(false);
-                        }
-                    });
-                }).catch(err => res.status(404).send([]));
-            }
-            else {
-                res.status(200).send(false);
-            }
-        });
-    }
-    email(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const data = req.body;
-            if (('email' in data) && ('jNumber' in data) && ('ip' in data)) {
-                const sql = `SELECT e_JobNumber,e_Email FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
-                yield database_1.default.then(con => {
-                    return con.query(sql).then((result) => {
-                        if (result.length > 0) {
-                            send_Email(data.ip, result[0].e_Email);
-                            res.status(200).send(true);
-                        }
-                        else {
-                            res.status(200).send(false);
-                        }
-                    });
-                }).catch(err => res.status(404).send([]));
-            }
-            else {
-                res.status(200).send(true);
-            }
-        });
+    login(req, res, next) {
+        return employee_model_1.default.find({ e_JobNumber: req.body.jNumber, e_PassWord: req.body.passWord })
+            .then(result => res.status(200).json(result))
+            .catch(error => res.status(500).json(false));
     }
 }
 // create localStorage & get IP    

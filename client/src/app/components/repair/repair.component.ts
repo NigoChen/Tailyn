@@ -9,6 +9,7 @@ import { Repair } from 'src/app/interfaces/repair';
 import { ErrorValidators, InputValidators, Reset_Validators } from 'src/app/methods/input-validators';
 import { SplitePipe } from 'src/app/pipes/splite.pipe';
 import { AlertService } from 'src/app/services/alert.service';
+import { ClientService } from 'src/app/services/client.service';
 import { FilterSortService } from 'src/app/services/filter-sort.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
@@ -36,7 +37,7 @@ export class RepairComponent implements OnInit {
   public result_List: Repair[];
   public result_List_Filter$: Observable<Repair[]>;
   // Client Data List
-  public client_List$: Observable<Array<Client>> | Observable<[]>;
+  public client_List$: Observable<any> | Observable<[]>;
   // User
   public user: Employee;
   // FormGroup
@@ -58,6 +59,7 @@ export class RepairComponent implements OnInit {
               private fb: FormBuilder,
               private modalService: ModalService,
               private alertService: AlertService,
+              private clientService: ClientService,
               private filterSortService: FilterSortService){}
 
   ngOnInit(): void {
@@ -326,16 +328,32 @@ export class RepairComponent implements OnInit {
               this.refreshResult_List(); 
 
               // Client List Data
-              const code: Array<string> = res[0]['CODE'].split(',');
-              const name: Array<string> = res[0]['NAME'].split(',');
-              const val: any = [];
+              // const code: Array<string> = res[0]['CODE'].split(',');
+              // const name: Array<string> = res[0]['NAME'].split(',');
+              // const val: any = [];
 
-              for(const i in name)
-              {
-                  val.push({c_Code: code[i], c_Name: name[i]});         
+              // for(const i in name)
+              // {
+              //     val.push({c_Code: code[i], c_Name: name[i]});         
+              // }
+
+              // this.client_List$ = of(val);   
+
+
+
+              if(!this.clientService.client_Option.getValue())
+              {      
+                this.clientService.read().subscribe(res => {                
+          
+                  console.log(res);
+                  
+                  this.clientService.set_client({c_Code: "ssssssss", c_Name: "zzzzzzzzz"});
+                });
               }
-
-              this.client_List$ = of(val);                  
+              
+          
+              this.clientService.get_client().subscribe(s => console.log(s));
+   
             }
           },
           error: (err) => {

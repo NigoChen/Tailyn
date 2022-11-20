@@ -9,8 +9,8 @@ class LoginRoutes {
     }
     config() {
         this.router.post('', login_controller_1.loginController.login);
-        this.router.post('/email', login_controller_1.loginController.email);
-        this.router.put('/update', login_controller_1.loginController.update);
+        // this.router.post('/email', loginController.email);
+        // this.router.put('/update', loginController.update);
     }
 }
 const loginRoutes = new LoginRoutes();

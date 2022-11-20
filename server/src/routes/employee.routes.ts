@@ -14,7 +14,8 @@ class EmployeeRoutes
     {
         this.router.post('/create', employeeController.create);
         this.router.get('/read', employeeController.read);
-        this.router.put('/update', employeeController.update);
+        this.router.get('/find/:id', employeeController.find);
+        this.router.patch('/update/:id', employeeController.update);
         this.router.delete('/delete/:id', employeeController.delete);
     }
 }

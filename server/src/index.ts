@@ -4,13 +4,14 @@ import morgan from 'morgan';
 // cors
 import cors from 'cors';
 // routes
-import indexRoutes from './routes/index.routes';
 import employeeRoutes from './routes/employee.routes';
 import path from 'path';
 import loginRoutes from './routes/login.routes';
 import workHoursRoutes from './routes/work-hours.routes';
 import clientRoutes from './routes/client.routes';
 import repairRoutes from './routes/repair.routes';
+import mongoose from 'mongoose';
+import { mongoose_config } from './config';
 
 class Server
 {
@@ -38,7 +39,7 @@ class Server
 
     routes(): void
     {
-        this.ng_routes();
+        // this.ng_routes();
         // backend router
         // this.app.use('/', indexRoutes);
         this.app.use('/api/login', loginRoutes);
@@ -46,12 +47,24 @@ class Server
         this.app.use('/api/workHours', workHoursRoutes);
         this.app.use('/api/repair', repairRoutes);
         this.app.use('/api/client', clientRoutes);
+        // 404
+        this.app.use((req, res, next) => {
+            // const error = new Error('not found');
+            res.status(404).send('404');
+        });
     }
 
     start(): void
     {
-        this.app.listen(this.app.get('port'), () => {
-            console.log(`Serve on port`, this.app.get('port'));
+        mongoose.connect(mongoose_config.mongo.url, { retryWrites: true, w: 'majority'})
+        .then(() => {
+            this.app.listen(this.app.get('port'), () => {
+                console.log(`Connected to mongodb`);
+                console.log(`Serve on port`, this.app.get('port'));
+            });
+        })
+        .catch((error) => {
+            console.log(`Serve Error`);
         });
     }
 

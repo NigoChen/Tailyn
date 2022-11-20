@@ -12,9 +12,9 @@ class WorkHoursRoutes
 
     config():void
     {
-        this.router.post('/create', workHoursController.create);
-        this.router.get('/read', workHoursController.read);
-        this.router.delete('/delete/:id', workHoursController.delete);
+        // this.router.post('/create', workHoursController.create);
+        // this.router.get('/read', workHoursController.read);
+        // this.router.delete('/delete/:id', workHoursController.delete);
     }
 }
 

@@ -13,8 +13,8 @@ class LoginRoutes
     config(): void
     {
         this.router.post('', loginController.login);
-        this.router.post('/email', loginController.email);
-        this.router.put('/update', loginController.update);
+        // this.router.post('/email', loginController.email);
+        // this.router.put('/update', loginController.update);
     }
 }
 

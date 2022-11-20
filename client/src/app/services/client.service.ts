@@ -1,15 +1,26 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, throwError } from 'rxjs';
 import { catchError, map, shareReplay } from 'rxjs/operators';
 import { Urls } from '../configs/url.config';
 import { Client } from '../interfaces/client';
+
+export interface Client_Option {
+  c_Code: any,
+  c_Name: any
+}
 
 @Injectable()
 
 export class ClientService {
 
-  constructor(private http: HttpClient) { }
+  public client_Option = new BehaviorSubject<Client_Option>(null);
+
+  constructor(private http: HttpClient) {
+
+    console.log('sss');
+    
+  }
   
   private handleError(errorResponse: HttpErrorResponse)
   {
@@ -28,17 +39,19 @@ export class ClientService {
     return throwError(() => message); 
   }
 
+  public get_client(): Observable<Client_Option> {    
+    return this.client_Option.asObservable();
+  }
+
+  public set_client(value: Client_Option): void {    
+    this.client_Option.next(value);
+  }
+
   // Read
   public read(): Observable<Client[]>
   {
     return this.http.get<Client[]>(Urls.client.read)
-    .pipe(map(res => {      
-      if(typeof res !== "object")
-      {
-        return [];
-      }
-      return res;
-    }),shareReplay(1),catchError(this.handleError));
+    .pipe(map(res => res),shareReplay(1),catchError(this.handleError));
   }
 
   // Create

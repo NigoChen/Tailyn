@@ -8,12 +8,15 @@ const express_1 = __importDefault(require("express"));
 const morgan_1 = __importDefault(require("morgan"));
 // cors
 const cors_1 = __importDefault(require("cors"));
+// routes
 const employee_routes_1 = __importDefault(require("./routes/employee.routes"));
 const path_1 = __importDefault(require("path"));
 const login_routes_1 = __importDefault(require("./routes/login.routes"));
 const work_hours_routes_1 = __importDefault(require("./routes/work-hours.routes"));
 const client_routes_1 = __importDefault(require("./routes/client.routes"));
 const repair_routes_1 = __importDefault(require("./routes/repair.routes"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const config_1 = require("./config");
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -32,7 +35,7 @@ class Server {
         // this.app.use('/assets/email', express.static(path.join(__dirname, './assets/email.txt')));
     }
     routes() {
-        this.ng_routes();
+        // this.ng_routes();
         // backend router
         // this.app.use('/', indexRoutes);
         this.app.use('/api/login', login_routes_1.default);
@@ -40,10 +43,22 @@ class Server {
         this.app.use('/api/workHours', work_hours_routes_1.default);
         this.app.use('/api/repair', repair_routes_1.default);
         this.app.use('/api/client', client_routes_1.default);
+        // 404
+        this.app.use((req, res, next) => {
+            // const error = new Error('not found');
+            res.status(404).send('404');
+        });
     }
     start() {
-        this.app.listen(this.app.get('port'), () => {
-            console.log(`Serve on port`, this.app.get('port'));
+        mongoose_1.default.connect(config_1.mongoose_config.mongo.url, { retryWrites: true, w: 'majority' })
+            .then(() => {
+            this.app.listen(this.app.get('port'), () => {
+                console.log(`Connected to mongodb`);
+                console.log(`Serve on port`, this.app.get('port'));
+            });
+        })
+            .catch((error) => {
+            console.log(`Serve Error`);
         });
     }
     ng_routes() {

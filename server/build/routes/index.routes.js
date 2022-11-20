@@ -9,8 +9,6 @@ class IndexRoutes {
     config() {
         this.router.get('/', (req, res) => {
             res.send("Welcome To Tailyn");
-            console.log(`===> ${process.cwd()}`);
-            console.log(`===> ${__dirname}`);
         });
     }
 }

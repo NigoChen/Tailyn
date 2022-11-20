@@ -10,7 +10,8 @@ class EmployeeRoutes {
     config() {
         this.router.post('/create', employee_controller_1.employeeController.create);
         this.router.get('/read', employee_controller_1.employeeController.read);
-        this.router.put('/update', employee_controller_1.employeeController.update);
+        this.router.get('/find/:id', employee_controller_1.employeeController.find);
+        this.router.patch('/update/:id', employee_controller_1.employeeController.update);
         this.router.delete('/delete/:id', employee_controller_1.employeeController.delete);
     }
 }

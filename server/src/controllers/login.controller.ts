@@ -1,84 +1,92 @@
-import { Request, Response } from 'express';
-import nodemailer from 'nodemailer';
-import pool from '../db/database';
+import { NextFunction, Request, Response } from 'express';
+import pool from './../db/database';
 import { Employee } from '../interfaces/employee.interface';
+import Data from '../models/employee.model';
 import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 class LoginController
 {
+    public login(req: Request, res: Response, next: NextFunction): any {        
+        return Data.find({ e_JobNumber: req.body.jNumber, e_PassWord: req.body.passWord })
+        .then(result => res.status(200).json(result))
+        .catch(error => res.status(500).json(false));
+    }
     // Login
-    public async login(req: Request, res: Response): Promise<void>
-    {
-        const data: any = req.body;        
+    // public async login(req: Request, res: Response): void
+    // {
+    //     const data: any = req.body;        
         
-        data.passWord = md5_PassWord(data.passWord);
+    //     data.passWord = md5_PassWord(data.passWord);
 
-        const sql: string = `SELECT e_Id, e_Name, e_Email, e_JobNumber, e_Lv, e_Date FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}' AND e_Lv > 0`;
+    //     const sql: string = `SELECT e_Id, e_Name, e_Email, e_JobNumber, e_Lv, e_Date FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_PassWord = '${data.passWord}' AND e_Lv > 0`;
 
-        await pool.then(con => {
-            return con.query(sql).then((result: Array<Object>) => {
-                res.status(200).json(result);
-            });
-        }).catch(err => res.status(404).send([]));
-    }
+    //     await pool.then(con => {
+    //         return con.query(sql).then((result: Array<Object>) => {
+    //             res.status(200).json(result);
+    //         });
+    //     }).catch(err => res.status(404).send([]));
 
-    // Update Password
-    public async update(req: Request, res: Response): Promise<void>
-    {
-        const data: any = req.body;
+    //     const employee_Schema = mongoose.model('employee');
+    // }
 
-        if(email_Code == data.code)
-        {
-            data.newPassWord = md5_PassWord(data.newPassWord);
+    // // Update Password
+    // public async update(req: Request, res: Response): Promise<void>
+    // {
+    //     const data: any = req.body;
 
-            const sql: string = `UPDATE employee SET e_PassWord = '${data.newPassWord}' WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
+    //     if(email_Code == data.code)
+    //     {
+    //         data.newPassWord = md5_PassWord(data.newPassWord);
 
-            await pool.then(con => {
-                return con.query(sql).then((result: any) => {
-                    if (result.affectedRows > 0)
-                    {
-                        res.status(200).send(true);
-                    }
-                    else
-                    {
-                        res.status(200).send(false);
-                    }
-                });
-            }).catch(err => res.status(404).send([]));
-        }
-        else
-        {
-            res.status(200).send(false);
-        }
-    }
+    //         const sql: string = `UPDATE employee SET e_PassWord = '${data.newPassWord}' WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
 
-    public async email(req: Request, res: Response): Promise<void>
-    {
-        const data: any = req.body;        
+    //         await pool.then(con => {
+    //             return con.query(sql).then((result: any) => {
+    //                 if (result.affectedRows > 0)
+    //                 {
+    //                     res.status(200).send(true);
+    //                 }
+    //                 else
+    //                 {
+    //                     res.status(200).send(false);
+    //                 }
+    //             });
+    //         }).catch(err => res.status(404).send([]));
+    //     }
+    //     else
+    //     {
+    //         res.status(200).send(false);
+    //     }
+    // }
 
-        if(('email' in data) && ('jNumber' in data) && ('ip' in data))
-        {                        
-            const sql: string = `SELECT e_JobNumber,e_Email FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
+    // public async email(req: Request, res: Response): Promise<void>
+    // {
+    //     const data: any = req.body;        
 
-            await pool.then(con => {
-                return con.query(sql).then((result: Employee[]) => {
-                    if (result.length > 0)
-                    {                                                
-                        send_Email(data.ip, result[0].e_Email);
-                        res.status(200).send(true);
-                    }
-                    else
-                    {
-                        res.status(200).send(false);
-                    }
-                });
-            }).catch(err => res.status(404).send([]));
-        }
-        else
-        {
-            res.status(200).send(true);
-        }
-    }
+    //     if(('email' in data) && ('jNumber' in data) && ('ip' in data))
+    //     {                        
+    //         const sql: string = `SELECT e_JobNumber,e_Email FROM employee WHERE e_JobNumber = '${data.jNumber}' AND e_Email = '${data.email}'`;
+
+    //         await pool.then(con => {
+    //             return con.query(sql).then((result: Employee[]) => {
+    //                 if (result.length > 0)
+    //                 {                                                
+    //                     send_Email(data.ip, result[0].e_Email);
+    //                     res.status(200).send(true);
+    //                 }
+    //                 else
+    //                 {
+    //                     res.status(200).send(false);
+    //                 }
+    //             });
+    //         }).catch(err => res.status(404).send([]));
+    //     }
+    //     else
+    //     {
+    //         res.status(200).send(true);
+    //     }
+    // }
 }
 
 // create localStorage & get IP    
