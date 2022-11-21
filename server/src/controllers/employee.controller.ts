@@ -7,7 +7,6 @@ import crypto from 'crypto';
 class EmployeeController
 {
     public create(req: Request, res: Response, next: NextFunction): any {
-         
         const data = new Data(req.body);
 
         return data.save()
