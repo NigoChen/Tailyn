@@ -5,22 +5,13 @@ import { catchError, map, shareReplay } from 'rxjs/operators';
 import { Urls } from '../configs/url.config';
 import { Client } from '../interfaces/client';
 
-export interface Client_Option {
-  c_Code: any,
-  c_Name: any
-}
-
 @Injectable()
 
 export class ClientService {
 
-  public client_Option = new BehaviorSubject<Client_Option>(null);
+  public client_Data = new BehaviorSubject<Client[]>([]);
 
-  constructor(private http: HttpClient) {
-
-    console.log('sss');
-    
-  }
+  constructor(private http: HttpClient) {}
   
   private handleError(errorResponse: HttpErrorResponse)
   {
@@ -39,19 +30,22 @@ export class ClientService {
     return throwError(() => message); 
   }
 
-  public get_client(): Observable<Client_Option> {    
-    return this.client_Option.asObservable();
+  public get_client(): Observable<Client[]> {    
+    return this.client_Data.asObservable();
   }
 
-  public set_client(value: Client_Option): void {    
-    this.client_Option.next(value);
+  public set_client(value: Client[]): void {       
+    this.client_Data.next(value);
   }
 
   // Read
   public read(): Observable<Client[]>
   {
     return this.http.get<Client[]>(Urls.client.read)
-    .pipe(map(res => res),shareReplay(1),catchError(this.handleError));
+    .pipe(map(res => {
+      this.set_client(res);
+      return res;
+    }),shareReplay(1),catchError(this.handleError));
   }
 
   // Create

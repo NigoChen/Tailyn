@@ -13,7 +13,6 @@ export class ChildGuard implements CanActivateChild {
   constructor(
               private loadingService: LoadingService,
               private loginService: LoginService,
-              private clientService: ClientService,
               private router: Router){}
 
   canActivateChild(
@@ -34,20 +33,6 @@ export class ChildGuard implements CanActivateChild {
       this.loginService.logout();
       return false;
     }
-
-    // client Data Request
-    // if(!this.clientService.client_Option.getValue())
-    // {      
-    //   this.clientService.read().subscribe(res => {                
-
-    //     console.log(res);
-        
-    //     this.clientService.set_client({c_Code: "ssssssss", c_Name: "zzzzzzzzz"});
-    //   });
-    // }
-    
-
-    this.clientService.get_client().subscribe(s => console.log(s));
 
     return true;
   }

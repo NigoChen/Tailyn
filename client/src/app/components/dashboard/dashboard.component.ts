@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { Client } from 'src/app/interfaces/client';
+import { ClientService } from 'src/app/services/client.service';
 import { LoadingService } from 'src/app/services/loading.service';
 import { LoginService } from 'src/app/services/login.service';
 import { ModalService } from 'src/app/services/modal.service';
@@ -22,7 +24,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {    
   }
-
+  
   ngAfterViewInit(): void {
     this.dashboard_Loading = this.loadingService.get_Dashboard_Loading().subscribe(res => this.is_Loading = res);    
   }

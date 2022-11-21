@@ -16,6 +16,11 @@ import { LoginService } from 'src/app/services/login.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { RepairService } from 'src/app/services/repair.service';
 
+export interface Client_Option {
+  c_Code: any,
+  c_Name: any
+}
+
 @Component({
   selector: 'app-repair',
   templateUrl: './repair.component.html',
@@ -37,7 +42,7 @@ export class RepairComponent implements OnInit {
   public result_List: Repair[];
   public result_List_Filter$: Observable<Repair[]>;
   // Client Data List
-  public client_List$: Observable<any> | Observable<[]>;
+  public client_List$: Observable<Client[]>;
   // User
   public user: Employee;
   // FormGroup
@@ -68,12 +73,13 @@ export class RepairComponent implements OnInit {
     this.result_Data = [];
     this.result_List = [];
     this.read();
-    this.modal_Service();  
+    this.client_Data();
+    this.modal_Service();
   }
 
   ngAfterViewInit(): void {
     this.modalService.set_FormGroup(this.fbGroup);
-    this.modalService.set_Form(this.form_);    
+    this.modalService.set_Form(this.form_);
     // this.filterSortService.get_data_().subscribe(res => this.result_List = res);
     // Window Resize
     this.win_Size = (document.documentElement.clientWidth > 860) ? false : true;
@@ -325,35 +331,7 @@ export class RepairComponent implements OnInit {
               this.result_Data = res;
               this.result_List = res;
               this.table_List_Sort();
-              this.refreshResult_List(); 
-
-              // Client List Data
-              // const code: Array<string> = res[0]['CODE'].split(',');
-              // const name: Array<string> = res[0]['NAME'].split(',');
-              // const val: any = [];
-
-              // for(const i in name)
-              // {
-              //     val.push({c_Code: code[i], c_Name: name[i]});         
-              // }
-
-              // this.client_List$ = of(val);   
-
-
-
-              if(!this.clientService.client_Option.getValue())
-              {      
-                this.clientService.read().subscribe(res => {                
-          
-                  console.log(res);
-                  
-                  this.clientService.set_client({c_Code: "ssssssss", c_Name: "zzzzzzzzz"});
-                });
-              }
-              
-          
-              this.clientService.get_client().subscribe(s => console.log(s));
-   
+              this.refreshResult_List();
             }
           },
           error: (err) => {
@@ -436,7 +414,7 @@ export class RepairComponent implements OnInit {
 
   // Update
   update(fg: FormGroup): void {
-    this.repairService.create(fg.value)
+    this.repairService.update(fg.value)
       .subscribe(
         {
           next: (res: boolean) => {
@@ -548,6 +526,32 @@ export class RepairComponent implements OnInit {
 
     // Update r_MTotal Value
     this.fb_Value['r_MTotal'].patchValue(total_Minutes);
+  }
+
+  // Client Data
+  client_Data(): void {
+
+    if(!this.clientService.client_Data.getValue().length)
+    {      
+      this.clientService.read().subscribe();
+
+      this.clientService.get_client().subscribe(res => {  
+
+        if(res.length)
+        {          
+          const code: Array<string> = res[0]['c_Code'].split(',');
+          const name: Array<string> = res[0]['c_Name'].split(',');
+          const val: any = [];
+          
+          for(const i in name)
+          {
+            val.push({c_Code: code[i], c_Name: name[i]});         
+          }
+          
+          this.client_List$ = of(val);     
+        }
+      }); 
+    }    
   }
 
   // Destroy
