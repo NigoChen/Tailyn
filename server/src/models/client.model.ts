@@ -3,6 +3,7 @@ import { Client } from "../interfaces/client.interface";
 
 const ISchema: Schema = new Schema(
     {
+        c_Id: { type: Number},
         c_Code: { type: String },
         c_Name: { type: String },
         c_WorkOrder: { type: String },
@@ -11,6 +12,7 @@ const ISchema: Schema = new Schema(
         c_Stand_Code: { type: String }
     },
     {   
+        _id: false,
         collection: 'client',
         versionKey: false
     }

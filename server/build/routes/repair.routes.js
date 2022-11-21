@@ -10,8 +10,9 @@ class RepairRoutes {
     config() {
         this.router.post('/create', repair_controller_1.repairController.create);
         this.router.get('/read', repair_controller_1.repairController.read);
+        this.router.put('/update', repair_controller_1.repairController.update);
         this.router.delete('/delete/:id', repair_controller_1.repairController.delete);
     }
 }
-const eepairRoutes = new RepairRoutes();
-exports.default = eepairRoutes.router;
+const repairRoutes = new RepairRoutes();
+exports.default = repairRoutes.router;

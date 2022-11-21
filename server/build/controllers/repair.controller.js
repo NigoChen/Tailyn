@@ -7,10 +7,14 @@ exports.repairController = void 0;
 const repair_model_1 = __importDefault(require("../models/repair.model"));
 class RepairController {
     create(req, res, next) {
-        const data = new repair_model_1.default(req.body);
-        return data.save()
-            .then(result => res.status(201).send(true))
-            .catch(error => res.status(500).json(false));
+        return repair_model_1.default.find()
+            .then(count => {
+            const data = array_to_string(req.body);
+            data.r_Id = (count.length + 1);
+            return new repair_model_1.default(data).save()
+                .then(result => res.status(201).send(true))
+                .catch(error => res.status(500).json(false));
+        });
     }
     read(req, res, next) {
         //     const sql: string = `SELECT r.*,`+
@@ -192,7 +196,8 @@ class RepairController {
             .catch(error => res.status(500).json(false));
     }
     update(req, res, next) {
-        return repair_model_1.default.findByIdAndUpdate(req.params.id, req.body)
+        const data = array_to_string(req.body);
+        return repair_model_1.default.findOneAndUpdate({ r_Id: data.r_Id }, data)
             .then(result => res.status(200).send(true))
             .catch(error => res.status(500).json(false));
     }
@@ -202,4 +207,12 @@ class RepairController {
             .catch(error => res.status(500).json(false));
     }
 }
+const array_to_string = (data) => {
+    for (const key in data) {
+        if (data[key] instanceof Object) {
+            data[key] = data[key].join();
+        }
+    }
+    return data;
+};
 exports.repairController = new RepairController();

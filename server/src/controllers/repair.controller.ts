@@ -8,11 +8,17 @@ class RepairController
 {
     public create(req: Request, res: Response, next: NextFunction): any {
          
-        const data = new Data(req.body);
+        return Data.find()
+        .then(count => {
+            const data = array_to_string(req.body);
 
-        return data.save()
-        .then(result => res.status(201).send(true))
-        .catch(error => res.status(500).json(false));
+            data.r_Id = (count.length + 1);
+
+            return new Data(data).save()
+            .then(result => res.status(201).send(true))
+            .catch(error => res.status(500).json(false));
+        });
+
     }
 
     public read(req: Request, res: Response, next: NextFunction): any {
@@ -211,8 +217,11 @@ class RepairController
         .catch(error => res.status(500).json(false));
     }
 
-    public update(req: Request, res: Response, next: NextFunction): any {        
-        return Data.findByIdAndUpdate(req.params.id, req.body)
+    public update(req: Request, res: Response, next: NextFunction): any {  
+        
+        const data = array_to_string(req.body);
+        
+        return Data.findOneAndUpdate({r_Id: data.r_Id}, data)
         .then(result => res.status(200).send(true))
         .catch(error => res.status(500).json(false));
     }
@@ -307,6 +316,19 @@ class RepairController
     //         res.status(404).send(false);
     //     });
     // }
+}
+
+const array_to_string = (data: any): Repair => {
+
+    for(const key in data)
+    {            
+        if(data[key] instanceof Object)
+        {
+            data[key] = data[key].join();
+        }
+    }    
+
+    return data;
 }
 
 export const repairController = new RepairController();

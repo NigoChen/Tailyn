@@ -10,14 +10,15 @@ class RepairRoutes
         this.config();
     }
 
-    config():void
+    config(): void
     {
         this.router.post('/create', repairController.create);
         this.router.get('/read', repairController.read);
+        this.router.put('/update', repairController.update);
         this.router.delete('/delete/:id', repairController.delete);
     }
 }
 
-const eepairRoutes = new RepairRoutes();
+const repairRoutes = new RepairRoutes();
 
-export default eepairRoutes.router;
+export default repairRoutes.router;

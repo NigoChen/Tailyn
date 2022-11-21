@@ -3,6 +3,7 @@ import { Repair } from "../interfaces/repair.interface";
 
 const ISchema: Schema = new Schema(
     {
+        r_Id: { type: Number },
         r_JobNumber: { type: String, required: true},
         r_SerialNumber: { type: String, required: true},
         r_WorkOrder: { type: String, required: true},

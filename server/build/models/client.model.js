@@ -25,6 +25,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const ISchema = new mongoose_1.Schema({
+    c_Id: { type: Number },
     c_Code: { type: String },
     c_Name: { type: String },
     c_WorkOrder: { type: String },
@@ -32,6 +33,7 @@ const ISchema = new mongoose_1.Schema({
     c_Stand: { type: String },
     c_Stand_Code: { type: String }
 }, {
+    _id: false,
     collection: 'client',
     versionKey: false
 });
