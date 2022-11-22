@@ -171,7 +171,7 @@ class RepairController {
             },
             {
                 "$project": {
-                    _id: 0,
+                    _id: 1,
                     employee: 0,
                     e_Email: 0,
                     e_JobNumber: 0,
@@ -197,7 +197,8 @@ class RepairController {
     }
     update(req, res, next) {
         const data = array_to_string(req.body);
-        return repair_model_1.default.findOneAndUpdate({ r_Id: data.r_Id }, data)
+        // return Data.findOneAndUpdate({r_Id: data.r_Id}, data)
+        return repair_model_1.default.findByIdAndUpdate(data._id, data)
             .then(result => res.status(200).send(true))
             .catch(error => res.status(500).json(false));
     }

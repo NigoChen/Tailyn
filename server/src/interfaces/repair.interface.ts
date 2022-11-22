@@ -1,4 +1,5 @@
 export interface Repair {
+    _id?: number;
     r_Id?: number;
     r_JobNumber: string;
     r_SerialNumber: string;
