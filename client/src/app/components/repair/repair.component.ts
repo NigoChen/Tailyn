@@ -326,6 +326,9 @@ export class RepairComponent implements OnInit {
       .subscribe(
         {
           next: (res: Repair[]) => {
+
+            console.log(res);
+            
             if (res.length)
             {                                         
               this.result_Data = res;

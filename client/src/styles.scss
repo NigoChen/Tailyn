@@ -82,6 +82,7 @@ select
 .grid-body::-webkit-scrollbar
 {
   height: 5px;
+  width: 5px;
 }
 .items-scroll::-webkit-scrollbar-track,
 .grid-container::-webkit-scrollbar-track,
@@ -249,7 +250,7 @@ table td
     grid-template-areas:
     "grid-header grid-body";
     font-size: xx-small;
-    max-height: 650px;
+    max-height: 656px;
   }
   .grid-body
   {
